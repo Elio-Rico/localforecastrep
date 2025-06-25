@@ -1,2 +1,5 @@
 ^localforecastrep\.Rproj$
 ^\.Rproj\.user$
+^scripts.*$
+^output.*$
+^stata.*$

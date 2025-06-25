@@ -51,3 +51,6 @@ rsconnect/
 .Rdata
 .DS_Store
 .quarto
+
+# Consensus Economics Data (Confidential)
+inst/data/raw/ce/
