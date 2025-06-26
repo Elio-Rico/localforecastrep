@@ -262,3 +262,5 @@ prepare_institution_info <- function(df,
   return(unique_inst)
 }
 
+
+# SWEDEN

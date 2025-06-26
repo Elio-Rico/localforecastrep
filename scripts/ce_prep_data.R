@@ -244,6 +244,70 @@ gdp_data_c4 <- prepare_institution_info(
 )
 
 
+# SWITZERLAND:
+
+# further cleaning :
+gdp_data_c5 <- standardize_institution_names(gdp_data_c4, replacements = c(
+  "KOF Swiss Econ Inst" = "KOF/ETH",
+  "KOF Swiss Econ. Inst." = "KOF/ETH",
+  "KOF/ETH Zentrum" = "KOF/ETH",
+  "Zurcher Kantonalbank" = "Zürcher Kantonalbank",
+  "IHS Global Insight" = "IHS Markit",
+  "IHS Economics" = "IHS Markit",
+  "Global Insight" = "IHS Markit",
+  "Oxford - BAK" = "Oxford - BAK Basel"
+)
+)
+
+# CANADA info:  - later on, we might source that out into stata file.
+gdp_data_c6 <- prepare_institution_info(
+  df = gdp_data_c5,
+  country_name = "Switzerland",
+  local_list = c(
+    "BAK Basel", "ETH Zentrum", "Institut Crea", "KOF/ETH", "Luzerner Kantonalbank",
+    "St. Gallen ZZ", "Swiss Life", "Swiss Life Asset Mgrs", "Wellershoff & Partners",
+    "WPuls", "Zürcher Kantonalbank", "Bantleon Bank"
+  ),
+  multinational_list = c(
+    "Allianz", "Bank Julius Baer", "Bank Vontobel", "Citigroup", "Credit Suisse",
+    "Fitch Ratings", "Goldman Sachs", "HSBC", "IHS Markit", "ING Financial Markets",
+    "JP Morgan", "Moody's Analytics", "Morgan Stanley", "Nomura",
+    "Oxford - BAK Basel", "Pictet & Cie", "UBS", "UBS Switzerland"
+  ),
+  foreign_list =  c(
+    "Bank of America - Merrill", "Citigroup", "JP Morgan", "Moody's Analytics",
+    "Fitch Ratings", "Goldman Sachs", "Morgan Stanley",
+    "Capital Economics", "Econ Intelligence Unit", "HSBC", "IHS Markit",
+    "Inst Fiscal Studies", "Oxford Economics", "ING Financial Markets", "Nomura"
+  ),
+  source_notes = list(
+    "Capital Economics" = "HQ in London, UK",
+    "Oxford - BAK Basel" = "Collaboration between Oxford Economics and BAK Basel. For this reason, we will label this as local. However, note that there are also single entries for Oxford Economics and BAK for some time. If they were not mentioned together, Oxford Economics was labelled foreign and BAK local"
+  ),
+  headquarters_map = list(
+    # USA institutions
+    "Bank of America - Merrill" = "USA",
+    "Citigroup" = "USA",
+    "JP Morgan" = "USA",
+    "Moody's Analytics" = "USA",
+    "Fitch Ratings" = "USA",
+    "Goldman Sachs" = "USA",
+    "Morgan Stanley" = "USA",
+    # UK institutions
+    "Capital Economics" = "GBR",
+    "Econ Intelligence Unit" = "GBR",
+    "HSBC" = "GBR",
+    "IHS Markit" = "GBR",
+    "Inst Fiscal Studies" = "GBR",
+    "Oxford Economics" = "GBR",
+    # Swiss
+    "UBS" = "CHE",
+    # Netherlands
+    "ING Financial Markets" = "NLD",
+    # Japan
+    "Nomura" = "JPN"
+  )
+)
 
 
 
