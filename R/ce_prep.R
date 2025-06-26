@@ -198,52 +198,7 @@ parse_forecasts <- function(data, col_idx, year1, year2, date, country) {
 
 
 
-standardize_institution_names <- function(df) {
-  # Define all alternative names mapping to standardized names
-  replacements <- c(
-    "American Int'l Group" = "American International Group",
-    "American Intl Group" = "American International Group",
-    "Amoco" = "Amoco Corporation",
-    "Amoco Corp" = "Amoco Corporation",
-    "BMO Financial Markets" = "BMO Capital Markets",
-    "Brown Brothers" = "Brown Brothers Harriman",
-    "Chase" = "Chase Manhatten Bank",
-    "Chase Manhatten" = "Chase Manhatten Bank",
-    "Chemical Bank" = "Chemical Banking",
-    "Core States" = "CoreStates Financial Corporation",
-    "CoreStates Fin Corp" = "CoreStates Financial Corporation",
-    "CoreStates" = "CoreStates Financial Corporation",
-    "CRT Govt Securities" = "CRT Govt. Securities",
-    "CS First Boston" = "Credit Suisse First Boston",
-    "FannieMae" = "Fannie Mae",
-    "Ford Motor" = "Ford Motor Company",
-    "Ford Motor Corp" = "Ford Motor Company",
-    "Georgia State Uni." = "Georgia State University",
-    "IHS Global Insight" = "IHS Markit",
-    "IHS Economics" = "IHS Markit",
-    "J P Morgan" = "JP Morgan",
-    "Moody's Economy.com" = "Moody's Analytics",
-    "Mortgage Bankers" = "Mortgage Bankers Association",
-    "Mortgage Bankers Assoc" = "Mortgage Bankers Association",
-    "Mortgage Bankers Assoc." = "Mortgage Bankers Association",
-    "Nat Assn Manufacturers" = "Nat Assn of Manufacturers",
-    "Nat Assn of Homebuilders" = "Nat Assn of Home Builders",
-    "Nat. Ass. of Homebuilders" = "Nat Assn of Home Builders",
-    "Natl Assoc of Home Builders" = "Nat Assn of Home Builders",
-    "PNC Financial Services" = "PNC Bank",
-    "Prudential Insurance" = "Prudential Financial",
-    "Regional Financial Ass." = "Regional Financial Associates Inc",
-    "Regional Financial Assocs" = "Regional Financial Associates Inc",
-    "Sears Roebuck" = "Sears Roebuck & Co",
-    "Smith Barney" = "Smith Barney Shearson",
-    "Standard & Poors" = "Standard & Poor's",
-    "U.S. Trust" = "United States Trust",
-    "Wells Fargo Bank" = "Wells Fargo",
-    "WEFA Group" = "Wharton Econometric Forecasting Associates",
-    "The WEFA Group" = "Wharton Econometric Forecasting Associates",
-    "Economy.com" = "Moody's Analytics",
-    "Global Insight" = "IHS Markit"
-  )
+standardize_institution_names <- function(df, replacements) {
 
   dfclean <- df %>%
     mutate(Institution = recode(Institution, !!!replacements))
@@ -307,30 +262,3 @@ prepare_institution_info <- function(df,
   return(unique_inst)
 }
 
-
-
-
-
-standardize_institution_names_2 <- function(df) {
-  # Define all alternative names mapping to standardized names
-  replacements <- c(
-    "Caisse de depot" = "Caisse de Depot",
-    "Caisse de Depots" = "Caisse de Depot",
-    "Centre for Spatial Econ" = "Centre for Spatial Economics",
-    "Centre for Spatial Econ." = "Centre for Spatial Economics",
-    "DRI - Canada" = "DRI Canada",
-    "DRI  Canada" = "DRI Canada",
-    "Du Pont" = "DuPont Canada",
-    "Merrill Lynch - Canada" = "Merrill Lynch Canada",
-    "RBC Dominion Securities" = "RBC - Dominion Securities",
-    "RBC Dominion" = "RBC - Dominion Securities",
-    "Toronto Dominion" = "Toronto Dominion Bank",
-    "Conference Board" = "Conf Board of Canada",
-    "Royal Trust" = "Royal Trust (Canada)"
-  )
-
-  dfclean <- df %>%
-    mutate(Institution = recode(Institution, !!!replacements))
-
-  return(dfclean)
-}
