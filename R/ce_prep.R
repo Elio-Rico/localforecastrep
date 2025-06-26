@@ -263,4 +263,767 @@ prepare_institution_info <- function(df,
 }
 
 
-# SWEDEN
+
+ce_prep_usa <- function(data){
+
+
+  data_out <- prepare_institution_info(
+    df = data,
+    country_name = "USA",
+    local_list = c(
+      "Bethlehem Steel","Chrysler","CRT Govt. Securities","Daimler Chrysler","Dynamic Econ Strategy",
+      "Fannie Mae","First Chicago","First Fidelity","First Trust Advisors","First Union Corp",
+      "Ford Motor Company","General Motors","Georgia State University","Griggs & Santow",
+      "Inforum - Univ of Maryland","Kemper Financial","Marine Midland","Mortgage Bankers Association",
+      "Nat Assn of Home Builders","Provident Bank","RDQ Economics","Regional Financial Associates Inc",
+      "Robert Fry Economics","Shawmut Bank","Shawmut National","The University of Michigan",
+      "Univ of Michigan - RSQE","Nat Assn of Manufacturers"
+    ),
+    multinational_list = c(
+      "Action Economics","Amoco Corporation","Bank America Corp","Bank of America - Merrill",
+      "Bank of Boston","Bank One Corp","Bankers Trust","Barclays","Barclays Capital","BBVA",
+      "BBVA Compass","Bear Stearns","BMO Capital Markets","BP Amoco","Brown Brothers Harriman",
+      "Chase Manhattan","Chase Manhatten Bank","Chase Manhattan Bank","Chemical Banking",
+      "Continental Bank","CoreStates Financial Corporation","Credit Suisse","Credit Suisse First Boston",
+      "DRI-WEFA","Dun & Bradstreet","DuPont","Eaton Corporation","Econ Intelligence Unit",
+      "FedEx Corporation","First Boston","Goldman Sachs","HSBC","IHS Markit","JP Morgan",
+      "Lehman Brothers","Macroeconomic Advisers","Manufacturers Hanover","Mass Financial Services",
+      "Mellon Bank","Merrill Lynch","Metropolitan Life","Moody's Analytics","Morgan Guaranty",
+      "Morgan Stanley","NationsBank","Nomura","Northern Trust","Oxford Economics","Paine Webber",
+      "PNC Bank","Prudential Financial","Roubini Global Econ","Royal Bank of Canada",
+      "Shearson Lehman","Smith Barney Shearson","Standard & Poor's","Swiss Re","The Conference Board",
+      "UBS","United States Trust","US Chamber of Commerce","Wachovia Corp","Wells Capital",
+      "Wells Capital Mgmt","Wells Fargo","Wharton Econometric Forecasting Associates","Citigroup",
+      "American International Group","Sears Roebuck & Co","CIBC Capital Markets","CIBC World Markets",
+      "BBVA Bancomer"
+    ),
+    foreign_list = c(),
+    source_notes = list(
+      "BBVA Compass" = "Headquarter in the US. In June 2019, BBVA unified its brand worldwide and BBVA Compass is renamed BBVA USA.",
+      "Barclays" = "Headquarter in the UK",
+      "BMO Capital Markets" = "Headquarter in Canada",
+      "CIBC Capital Markets" = "Headquarter in Canada",
+      "CIBC World Markets" = "Headquarter in Canada",
+      "Credit Suisse" = 'Headquarter in Switzerland. However, note that we consider "Credit Suisse First Boston" to be local with its headquarter in the United States.',
+      "CRT Govt. Securities" = "Credit Risk Transfer (CRT) securities are general obligations of the US Federal National Mortgage Association. Hence, local to United States.",
+      "DRI-WEFA" = "May 7, 2001: Global Insight announced it would acquire DRI and WEFA from their respective parent companies to form its first subsidiary, DRI-WEFA Inc.",
+      "DuPont" = "Is an American company. Prior to the spinoffs it was the world's largest chemical company in terms of sales.",
+      "Eaton Corporation" = "Headquarter in Ireland",
+      "Econ Intelligence Unit" = "The Economist Intelligence Unit. Headquarter in the UK",
+      "IHS Markit" = "Headquarter in the UK",
+      "HSBC" = "Headquarter in the UK",
+      "Nomura" = "A Japanese financial holding company and a principal member of the Nomura Group",
+      "Oxford Economics" = "Headquarter in the UK",
+      "Roubini Global Econ" = "Headquarter in the UK",
+      "Royal Bank of Canada" = "Headquarter in Canada",
+      "Swiss Re" = "Headquarter in Switzerland",
+      "UBS" = "Headquarter in Switzerland"
+    ),
+    headquarters_map = list(
+      "Barclays" = "GBR",
+      "Barclays Capital" = "GBR",
+      "Econ Intelligence Unit" = "GBR",
+      "HSBC" = "GBR",
+      "IHS Markit" = "GBR",
+      "Oxford Economics" = "GBR",
+      "Roubini Global Econ" = "GBR",
+      "BMO Capital Markets" = "CAN",
+      "CIBC Capital Markets" = "CAN",
+      "CIBC World Markets" = "CAN",
+      "Royal Bank of Canada" = "CAN",
+      "Credit Suisse" = "CHE",
+      "UBS" = "CHE",
+      "Swiss Re" = "CHE",
+      "Eaton Corporation" = "IRL",
+      "Nomura" = "JPN"
+    )
+  )
+
+
+  return(data_out)
+
+}
+
+
+ce_prep_canada <- function(data){
+
+  data_out <- prepare_institution_info(
+    df = data,
+    country_name = "Canada",
+    local_list = c(
+      "Bank of Montreal", "Burns Fry", "Centre for Spatial Economics", "Conf Board of Canada",
+      "DRI Canada", "Economap", "EDC Economics", "Informetrica", "Institute of Policy Analysis",
+      "Levesque Beaubien", "Loewen Ondaatje", "National Bank Financial",
+      "National Bank of Canada", "Nesbitt Burns", "Nesbitt Thomson", "Richardson Greenshields",
+      "Stokes Econ Consulting", "University of Toronto", "WEFA Canada"
+    ),
+    multinational_list = c(
+      "Bank of America - Merrill", "BMO Capital Markets", "Bank of Nova Scotia", "Bunting Warburg",
+      "Caisse de Depot", "Canadian Imperial Bank", "Capital Economics", "CIBC",
+      "CIBC Capital Markets", "CIBC Markets", "CIBC Wood Gundy", "CIBC World Markets",
+      "Citigroup", "Desjardins", "DuPont Canada", "HSBC", "IHS Markit", "JP Morgan",
+      "JP Morgan Canada", "McLean McCarthy", "Merrill Lynch Canada", "Moody's Analytics",
+      "RBC - Dominion Securities", "Royal Bank of Canada", "Royal Trust (Canada)",
+      "Scotia Economics", "Scotia McLeod", "Sun Life", "Toronto Dominion Bank",
+      "UBS", "Wood Gundy", "BMO Nesbitt Burns"
+    ),
+    foreign_list =  c(
+      "Bank of America - Merrill",
+      "Capital Economics",
+      "Citigroup",
+      "JP Morgan",
+      "Moody's Analytics",
+      "Econ Intelligence Unit",
+      "HSBC",
+      "IHS Markit",
+      "Inst Fiscal Studies",
+      "Oxford Economics",
+      "UBS"
+    ),
+    source_notes = list(
+      "Bunting Warburg" = "The company was formerly known as UBS Bunting Warburg Dillon Read and Bunting Warburg Inc. The company is headquartered in Toronto, Canada.",
+      "Caisse de Depot" = "Caisse de dépôt et placement du Québec, not to be confused with Caisse des dépôts et consignations.",
+      "Capital Economics" = "Headquarter in the UK",
+      "Economap" = "Economap Inc.,  Toronto, Ontario",
+      "Inst Fiscal Studies" = "Institute for Fiscal Studies, UK headquarter",
+      "Institute of Policy Analysis" = "likely to be from the university of toronto: https://edirc.repec.org/data/ipautca.html",
+      "McLean McCarthy" = "The Canadian securities house McLean McCarthy Ltd. – founded in 1972 – was acquired by Deutsche Bank (Canada)",
+      "National Bank Financial" = "National Bank Financial is a wholly-owned subsidiary of National Bank and is the result of the merger between Lévesque Beaubien Geoffrion and First Marathon Inc. in September 1999",
+      "Scotia Economics" = "Very likely, this is the Research Union of Bank of Nova Scotia -> Canada"
+    ),
+    headquarters_map = list(
+      # USA institutions
+      "Bank of America - Merrill" = "USA",
+      "Citigroup" = "USA",
+      "JP Morgan" = "USA",
+      "Moody's Analytics" = "USA",
+      # UK institutions
+      "Capital Economics" = "GBR",
+      "Econ Intelligence Unit" = "GBR",
+      "HSBC" = "GBR",
+      "IHS Markit" = "GBR",
+      "Inst Fiscal Studies" = "GBR",
+      "Oxford Economics" = "GBR",
+      # Switzerland
+      "UBS" = "CHE"
+    )
+  )
+
+  return(data_out)
+}
+
+
+ce_prep_switzerland <- function(data){
+
+
+  data_out <- prepare_institution_info(
+    df = data,
+    country_name = "Switzerland",
+    local_list = c(
+      "BAK Basel", "ETH Zentrum", "Institut Crea", "KOF/ETH", "Luzerner Kantonalbank",
+      "St. Gallen ZZ", "Swiss Life", "Swiss Life Asset Mgrs", "Wellershoff & Partners",
+      "WPuls", "Zürcher Kantonalbank", "Bantleon Bank"
+    ),
+    multinational_list = c(
+      "Allianz", "Bank Julius Baer", "Bank Vontobel", "Citigroup", "Credit Suisse",
+      "Fitch Ratings", "Goldman Sachs", "HSBC", "IHS Markit", "ING Financial Markets",
+      "JP Morgan", "Moody's Analytics", "Morgan Stanley", "Nomura",
+      "Oxford - BAK Basel", "Pictet & Cie", "UBS", "UBS Switzerland"
+    ),
+    foreign_list =  c(
+      "Bank of America - Merrill", "Citigroup", "JP Morgan", "Moody's Analytics",
+      "Fitch Ratings", "Goldman Sachs", "Morgan Stanley",
+      "Capital Economics", "Econ Intelligence Unit", "HSBC", "IHS Markit",
+      "Inst Fiscal Studies", "Oxford Economics", "ING Financial Markets", "Nomura"
+    ),
+    source_notes = list(
+      "Capital Economics" = "HQ in London, UK",
+      "Oxford - BAK Basel" = "Collaboration between Oxford Economics and BAK Basel. For this reason, we will label this as local. However, note that there are also single entries for Oxford Economics and BAK for some time. If they were not mentioned together, Oxford Economics was labelled foreign and BAK local"
+    ),
+    headquarters_map = list(
+      # USA institutions
+      "Bank of America - Merrill" = "USA",
+      "Citigroup" = "USA",
+      "JP Morgan" = "USA",
+      "Moody's Analytics" = "USA",
+      "Fitch Ratings" = "USA",
+      "Goldman Sachs" = "USA",
+      "Morgan Stanley" = "USA",
+      # UK institutions
+      "Capital Economics" = "GBR",
+      "Econ Intelligence Unit" = "GBR",
+      "HSBC" = "GBR",
+      "IHS Markit" = "GBR",
+      "Inst Fiscal Studies" = "GBR",
+      "Oxford Economics" = "GBR",
+      # Swiss
+      "UBS" = "CHE",
+      # Netherlands
+      "ING Financial Markets" = "NLD",
+      # Japan
+      "Nomura" = "JPN"
+    )
+  )
+
+  return(data_out)
+
+}
+
+
+ce_prep_sweden <- function(data){
+
+  data_out <- prepare_institution_info(
+    df = data,
+    country_name = "Sweden",
+    local_list = c(
+      "Aragon Fondkommission", "Confed of Swed Enterprise", "Erik Penser Bank", "Ficope Finanskonsult",
+      "Industrieforbundet", "Matteus Fondkommission", "National Institute - NIER",
+      "Öhman Mutual Funds and Asset Management", "SA Makro", "SBAB Bank", "Volvo",
+      "Hagströmer & Qviberg Bank"
+    ),
+    multinational_list = c(
+      "Alfred Berg", "Bank of America Merrill", "BNP Paribas", "Citigroup", "EY Item Club",
+      "Goldman Sachs", "Hagglof - SG Warburg", "HSBC", "ING Financial Markets", "JP Morgan",
+      "MeritaNordbanken", "Merrill Lynch", "Moody's Analytics", "Morgan Stanley", "Nordbanken",
+      "Nordea", "Nordea Nordbanken", "NYKredit", "SBC Warburg", "Skandiabanken",
+      "Skandinaviska Enskilda Banken", "Svenska Handelsbanken", "Swedbank", "UBS",
+      "UBS Limited", "UBS Warburg", "Warburg Dillon Read"
+    ),
+    foreign_list =  c(
+      "Capital Economics", "Econ Intelligence Unit", "Euromonitor Intl", "Industrial Bank of Japan",
+      "Mizuho Financial Group", "Oxford Economics", "UniCredit", "IHS Markit"
+    ),
+    source_notes = list(
+      "Capital Economics" = "HQ in London, UK",
+      "Hagglof - SG Warburg" = "The British investment bank S G Warburg acquires Gota's fund commissioning business Hägglöf & Ponsbach. Hence, we label the headquarter as Sweden due to Hägglöf & Ponsbach. However, SG Warburg itself is from the UK.",
+      "Industrieforbundet" = "Industrieforbundet, the federation of Swedish industries",
+      "National Institute - NIER" = "The National Institute of Economic Research (NIER) is a government agency operating under the Ministry of Finance. We perform analyses and forecasts of the Swedish and international economy as a basis for economic policy in Sweden, and conduct related research.",
+      "UBS Warburg" = "Foreign: S. G. Warburg & Co. war eine Investmentbank mit Sitz in London. Starting on 9 June 2003, all UBS business groups, including UBS Paine Webber and UBS Warburg, were rebranded under the UBS moniker following company's start of operations as a unified global entity. Hence, we set UBS Warburg to foreign.",
+      "SBC Warburg" = "Als der SBV 1995 die 1934 gegründete Investmentbank S.G. Warburg Plc. in London übernahm, änderte er deren Namen in „SBC Warburg - A Division of Swiss Bank Corporation“ und integrierte diese als Unternehmensbereich Investment Banking in das Unternehmen. Hence, foreign",
+      "UBS Limited" = "Is a credit institution in Great Britain. Hence, foreign, headquarter in UK.",
+      "Warburg Dillon Read " = "Warburg Dillon Read war kurzzeitig der Markenname des Unternehmensbereichs Investment Banking des damaligen Schweizerischen Bankvereins (SBV) und der späteren UBS...",
+      "Alfred Berg" = "Local: In addition to Alfred Berg’s own extensive range of investment solutions, we are the sole distributor of BNP Paribas Asset Management’s investment products and services in Norway and Sweden.",
+      "EY Item Club" = "The EY ITEM Club is a leading UK economic forecasting group. HQ in UK",
+      "MeritaNordbanken" = "This is Swedish-Finnish. Hence local.",
+      "SA Makro" = "Could not find any source for this. Presumably, this is just SBAB Bank Macro division. Hence local. But not sure."
+    ),
+    headquarters_map = list(
+      # USA
+      "Bank of America - Merrill" = "USA",
+      "Bank of America Merrill" = "USA",
+      "Citigroup" = "USA",
+      "JP Morgan" = "USA",
+      "Moody's Analytics" = "USA",
+      "Fitch Ratings" = "USA",
+      "Goldman Sachs" = "USA",
+      "Morgan Stanley" = "USA",
+      "Merrill Lynch" = "USA",
+      # UK
+      "Capital Economics" = "GBR",
+      "Econ Intelligence Unit" = "GBR",
+      "HSBC" = "GBR",
+      "IHS Markit" = "GBR",
+      "Inst Fiscal Studies" = "GBR",
+      "Oxford Economics" = "GBR",
+      "Euromonitor Intl" = "GBR",
+      "EY Item Club" = "GBR",
+      "SBC Warburg" = "GBR",
+      "UBS Limited" = "GBR",
+      # Switzerland
+      "UBS" = "CHE",
+      "UBS Warburg" = "CHE",
+      "Warburg Dillon Read" = "CHE",
+      # Netherlands
+      "ING Financial Markets" = "NLD",
+      # Japan
+      "Nomura" = "JPN",
+      "Industrial Bank of Japan" = "JPN",
+      "Mizuho Financial Group" = "JPN",
+      # France
+      "BNP Paribas" = "FRA",
+      # Norway
+      "Nordbanken" = "NOR",
+      # Denmark
+      "NYKredit" = "DNK",
+      # Italy
+      "UniCredit" = "ITA"
+    )
+  )
+
+  return(data_out)
+
+
+}
+
+
+
+ce_prep_japan <- function(data){
+
+  data_out <- prepare_institution_info(
+    df = data,
+    country_name = "Japan",
+    local_list = c(
+      "Fuji Research Institute",
+      "ITOCHU Institute",
+      "Japan Tech Info Services Corp",
+      "Kokumin Keizai Research Inst.",
+      "Mitsubishi UFJ Research",
+      "Nikko Research Center",
+      "Nippon Steel Research Institute",
+      "NLI Research Institute",
+      "Sakura Institute of Research",
+      "Sanwa Research Institute Corp.",
+      "Shinsei Bank",
+      "Toyota Motor Corporation",
+      "Japan Ctr for Econ Research",
+      "Mizuho Research Institute"
+    ),
+    multinational_list = c(
+      "Bank of Tokyo-Mitsubishi UFJ",
+      "Barclays Capital Group",
+      "Baring Securities - Japan",
+      "BZW - Japan",
+      "Citigroup Global Mkts Japan",
+      "Credit Suisse",
+      "Credit Suisse First Boston",
+      "CS First Boston",
+      "Daiwa Securities Research",
+      "Deutsche Bank (Asia)",
+      "Dresdner Kleinwort (Asia)",
+      "Euromonitor Intl",
+      "Global Insight",
+      "Goldman Sachs",
+      "Hitachi Research Institute",
+      "HSBC",
+      "IHS Economics",
+      "IHS Global Insight",
+      "IHS Markit",
+      "Industrial Bank of Japan",
+      "Jardine Fleming - Tokyo",
+      "Jardine Fleming Securities",
+      "JP Morgan",
+      "JP Morgan - Japan",
+      "Kleinwort Benson - Tokyo",
+      "Lehman Brothers",
+      "Long Term Credit Bank Japan",
+      "LTCB Warburg - Japan",
+      "Merrill Lynch - Japan",
+      "Mitsubishi Bank",
+      "Mitsubishi Research Institute",
+      "Mitsubushi Bank",  # Likely a typo of Mitsubishi Bank
+      "Mizuho Research Institute",
+      "Mizuho Securities",
+      "Moody's Analytics",
+      "Morgan Stanley",
+      "MUFG Bank",
+      "Nikko Salomon Smith Barney",
+      "Nippon Credit Bank",
+      "Nomura Research Institute",
+      "Salomon Brothers Asia Ltd.",
+      "Salomon Smith Barney Asia (Citigroup)",
+      "Schroders - Japan",
+      "SG Warburg - Japan",
+      "Smith Barney (Shearson) Tokyo",
+      "Societe Generale",
+      "Sumitomo Life Research Institute",
+      "Tokai Bank",
+      "UBS",
+      "UBS Phillips & Drew (Securities) Tokyo",
+      "UBS Warburg",
+      "UFJ Institute",
+      "Warburg Dillon Read - Japan",
+      "Yamaichi Research Institute",
+      "Dai-Ichi Kangyo Bank",
+      "IBJ Securities"
+    ),
+    foreign_list =  c(
+      "Capital Economics",
+      "Econ Intelligence Unit",
+      "Oxford Economics"
+    ),
+    source_notes = list(
+      "Jardine Fleming Securities" = "Jardine Fleming Securities has headquarter in China.",
+      "JP Morgan" = "Only about 4 entries are not from JP Morgan Japan. I guess this is a typo; hence all JP Morgan for Japan are marked as local.",
+      "Nikko Salomon Smith Barney" = "Joint venture of Nikko (Japanese) and Smith Barney (Morgan Stanley, USA). We label it as local due to Nikko's Japanese origin.",
+      "Sanwa Research Institute Corp." = "Separately, MUFG has its own think tank, Mitsubishi UFJ Research and Consulting (MURC), a conglomerate including Sanwa Research Institute. Hence, local.",
+      "Mitsubishi UFJ Research" = "Mitsubishi UFJ Research, Bank of Tokyo-Mitsubishi UFJ, and Mitsubishi Research Institute are different institutions but all with HQ in Japan.",
+      "Mizuho Securities" = "Mizuho Securities and Mizuho Research Institute are different entities."
+    ),
+    headquarters_map = c(
+      # United States
+      "Bank of America - Merrill" = "USA",
+      "Citigroup" = "USA",
+      "Moody's Analytics" = "USA",
+      "Fitch Ratings" = "USA",
+      "Goldman Sachs" = "USA",
+      "Morgan Stanley" = "USA",
+      "Bank of America Merrill" = "USA",
+      "Merrill Lynch" = "USA",
+      "Credit Suisse First Boston" = "USA",
+      "Lehman Brothers" = "USA",
+
+      # United Kingdom
+      "Capital Economics" = "GBR",
+      "Econ Intelligence Unit" = "GBR",
+      "HSBC" = "GBR",
+      "IHS Markit" = "GBR",
+      "Inst Fiscal Studies" = "GBR",
+      "Oxford Economics" = "GBR",
+      "Euromonitor Intl" = "GBR",
+      "EY Item Club" = "GBR",
+      "SBC Warburg" = "GBR",
+      "UBS Limited" = "GBR",
+      "Barclays Capital Group" = "GBR",
+
+      # Switzerland
+      "UBS" = "CHE",
+      "UBS Warburg" = "CHE",
+      "Warburg Dillon Read" = "CHE",
+      "Credit Suisse" = "CHE",
+
+      # Netherlands
+      "ING Financial Markets" = "NLD",
+
+      # Japan
+      "Nomura" = "JPN",
+      "Industrial Bank of Japan" = "JPN",
+      "Mizuho Financial Group" = "JPN",
+
+      # France
+      "BNP Paribas" = "FRA",
+      "Societe Generale" = "FRA",
+
+      # Norway
+      "Nordbanken" = "NOR",
+
+      # Denmark
+      "NYKredit" = "DNK",
+
+      # Italy
+      "UniCredit" = "ITA",
+
+      # China
+      "Jardine Fleming Securities" = "CHN"
+    )
+  )
+
+  return(data_out)
+
+}
+
+
+
+
+
+
+
+ce_prep_mexico <- function(data){
+
+  data_out <- prepare_institution_info(
+    df = data,
+    country_name = "Mexico",
+    local_list = c(
+      "Actinver Casa de Bolsa", "American Chamber Of Commerce Of México A.C.", "Analitica Consultores",
+      "Asesoria Estrategica", "Banamex", "Banorte", "BBVA Bancomer", "CAIE-ITAM", "Comermex", "Consultores Economicos",
+      "Ecanal", "Economia Aplicada", "ESANE Consultores SC", "GBM/Atlantico", "GEA", "Grupo Bursametrica",
+      "Grupo Bursatil Mexicano", "Grupo CAPEM", "Invex Grupo Financiero", "Jonathan Heath & Assoc", "Latin Source",
+      "Macro Asesoria Econ", "Prognosis Economia Finanzas e Inversiones, S.C.", "Banco Ve por Más", "Vector Casa de Bolsa",
+      "CIEMEX-WEFA", "Ve Por Mas"
+    ),
+    multinational_list = c(
+      "Banco BPI", "Banco Interacciones, SA", "Bank of America", "Bank of America Merrill Lynch",
+      "Bankers Trust", "Barclays", "Barclays Capital", "BofA - Merrill Lynch", "Bulltick", "Chase Manhattan",
+      "Citigroup", "Commission on Environmental, Economic and Social Policy (CEESP)", "Credit Suisse",
+      "CS First Boston", "Deutschebank Research", "First Boston", "Fitch Ratings", "General Motors",
+      "Global Insight", "Grupo Financiero Scotiabank", "HSBC", "HSBC Mexico", "IHS Economics", "IHS Global Insight",
+      "ING", "ING Bank", "ING Barings", "J P Morgan", "JP Morgan", "JP Morgan Chase", "JP Morgan Mexico",
+      "Lehman Brothers", "Merrill Lynch", "Monex", "Moody's Analytics", "Morgan Guaranty", "Morgan Stanley",
+      "Multivalores", "Salomon Brothers", "Santander Investment", "Santander Mexico", "Santander Serfin Mexico",
+      "Standard Chartered", "UBS", "UBS Securities", "UBS Warburg", "Credit Suisse First Boston", "Dresdner Kleinwort",
+      "IHS Markit", "Swiss Re", "BBVA"
+    ),
+    foreign_list =  c(
+      "Action Economics", "AGPV", "Capital Economics", "Center Klein Forecasting", "Dresdner Kleinwort Ben.",
+      "Econ Intelligence Unit", "Euromonitor Intl", "IDEAglobal", "Kleinwort Benson Secs", "Oxford Economics",
+      "Roubini Global Econ", "Warburg Dillon Read", "XP Securities"
+    ),
+    source_notes = list(
+      "AGPV" = "Azpurua, Garcia-Palacios & Velazquez, from Venezuela!",
+      "Grupo Financiero Scotiabank" = "I assumed that Scotiabank was actually the Grupo Financiero Scotiabank to which also several subsidiaries such as Scotiabank Mexico, Scotia Casa de Bolsa, Scotia Fondos and Scotia Afore belong to. Since this Grupo Financiero has its headquarter in Mexico, I declared it as local.",
+      "Center Klein Forecasting" = "I guess it is the Center of ARNE CHRISTIAN KLEIN, from the WWU Münster.",
+      "Comermex" = "Multibanco Comermex (bought by Inverlat and became Comermex Inverlat) Scotiabank Inverlat. Since Inverlat is local, Comermex is also local.",
+      "Commission on Environmental, Economic and Social Policy (CEESP)" = "Regional Office for Mexico, Central America and the Caribbean San Jose, Costa Rica",
+      "Jonathan Heath & Assoc" = "https://jonathanheath.net/ from Mexico",
+      "Santander Investment" = "Looking at all Santanders that made forecasts for Mexico, it must almost surely be Santander Mexico, and hence local.",
+      "UBS Securities" = "UBS Securities Co., Ltd. ist eine chinesische Investmentbank und Maklerfirma. Es ist seit 2018 eine Tochtergesellschaft der multinationalen Finanzgruppe UBS."
+    ),
+    headquarters_map = c(
+      # Local Mexico
+      "local" = "MEX",
+
+      # Institutions mapped individually
+      "Bank of America" = "USA",
+      "Bank of America Merrill Lynch" = "USA",
+      "Bank of America Merrill" = "USA",
+      "Bankers Trust" = "USA",
+      "Action Economics" = "USA",
+      "BofA - Merrill Lynch" = "USA",
+      "Bulltick" = "USA",
+      "Chase Manhattan" = "USA",
+      "Citigroup" = "USA",
+      "First Boston" = "USA",
+      "Fitch Ratings" = "USA",
+      "General Motors" = "USA",
+      "JP Morgan" = "USA",
+      "JP Morgan Chase" = "USA",
+      "Lehman Brothers" = "USA",
+      "Merrill Lynch" = "USA",
+      "Moody's Analytics" = "USA",
+      "Morgan Guaranty" = "USA",
+      "Morgan Stanley" = "USA",
+      "Salomon Brothers" = "USA",
+
+      "Capital Economics" = "GBR",
+      "Barclays Capital" = "GBR",
+      "Barclays Capital Group" = "GBR",
+      "Barclays" = "GBR",
+      "Econ Intelligence Unit" = "GBR",
+      "Euromonitor Intl" = "GBR",
+      "HSBC" = "GBR",
+      "IDEAglobal" = "GBR",
+      "IHS Markit" = "GBR",
+      "Kleinwort Benson Secs" = "GBR",
+      "Oxford Economics" = "GBR",
+      "Roubini Global Econ" = "GBR",
+      "Standard Chartered" = "GBR",
+      "XP Securities" = "GBR",
+      "IHS Economics" = "GBR",
+      "IHS Global Insight" = "GBR",
+
+      "ING Financial Markets" = "NLD",
+      "ING" = "NLD",
+      "ING Bank" = "NLD",
+      "ING Barings" = "NLD",
+
+      "Monex" = "LIE",
+
+      "UBS" = "CHE",
+      "UBS Warburg" = "CHE",
+      "Warburg Dillon Read" = "CHE",
+      "Credit Suisse" = "CHE",
+
+      "AGPV" = "VEN",
+      "Banco BPI" = "POR",
+
+      "Center Klein Forecasting" = "GER",
+      "Deutschebank Research" = "GER",
+      "Dresdner Kleinwort" = "GER",
+      "Dresdner Kleinwort Ben." = "GER",
+
+      "Commission on Environmental, Economic and Social Policy (CEESP)" = "CRI",
+
+      "UBS Securities" = "CHN"
+    )
+  )
+
+  return(data_out)
+
+}
+
+
+
+
+
+ce_prep_argentina <- function(data){
+
+  data_out <- prepare_institution_info(
+    df = data,
+    country_name = "Argentina",
+    local_list = c(
+      "Abeceb.com",
+      "ALPHA",
+      "Asesores Economicos",
+      "Banco Credicoop",
+      "Banco Galicia",
+      "Banco Tornquist",
+      "Delphos Investment",
+      "Eco Go",
+      "Eco Go/Estudio Bein",
+      "Ecolatina",
+      "Econométrica S.A. - Novedades",
+      "Econviews",
+      "Elypsis",
+      "Espert & Asociados",
+      "Estudio Bein & Asoc",
+      "Estudio Espert",
+      "Exante Consultora",
+      "Fundación de Investigaciones Económicas Latinoamericanas (FIEL)",
+      "Fundación para el Análisis Socioeconómico de Latinoamérica (FASEL)",
+      "IERAL Fundacion Mediterranea",
+      "Jose Luis Espert & Asoc",
+      "LCG. Consultora Labour Capital & Growth",
+      "M & S Consultores",
+      "Macro Fundamentals - Estudio Broda y Asociados",
+      "Macroview",
+      "MVAS Macroeconomia",
+      "Orlando Ferreres & Asoc",
+      "Overdata",
+      "PROECO",
+      "Puente Hnos",
+      "Fundacion Capital"
+    ),
+    multinational_list = c(
+      "Bank of America",
+      "Bank of America Merrill Lynch",
+      "Bankers Trust",
+      "Barclays Capital",
+      "BBVA Argentina",
+      "BBVA Banco Frances",
+      "BBVA Bancomer",
+      "BBVA Securities",
+      "Bear Stearns",
+      "BofA - Merrill Lynch",
+      "Bulltick",
+      "Chartered West LB",
+      "Citigroup",
+      "Credit Lyonnais Argentina",
+      "Credit Suisse",
+      "Credit Suisse First Boston",
+      "CSM Worldwide",
+      "Deutschebank Research",
+      "Dresdner Kleinwort",
+      "Dresdner Kleinwort Ben.",
+      "First Boston",
+      "General Motors",
+      "Goldman Sachs",
+      "HSBC",
+      "ING Barings",
+      "ING Financial Markets",
+      "Itau BBA",
+      "JP Morgan",
+      "JP Morgan Chase",
+      "Kleinwort Benson Secs",
+      "Lehman Brothers",
+      "Merrill Lynch",
+      "Morgan Guaranty",
+      "Morgan Stanley",
+      "Salomon Brothers",
+      "Salomon Smith Barney Asia (Citigroup)",
+      "Santander Investment",
+      "Scotiabank Quilmes",
+      "SSB Citigroup",
+      "UBS Warburg",
+      "Warburg Dillon Read",
+      "West Merchant Bank Ltd",
+      "XP Securities",
+      "BBVA"
+    ),
+    foreign_list =  c(
+      "ACM Research",
+      "BBV Latinvest",
+      "Capital Economics",
+      "Corp Group",
+      "Datarisk",
+      "Econ Intelligence Unit",
+      "Euromonitor Intl",
+      "IDEAglobal",
+      "IHS Markit",
+      "Jorge Avila y Asociados",
+      "Moody's Analytics",
+      "Oxford Economics"
+    ),
+    source_notes = list(
+      "BBVA Banco Frances" = "Changed name to BBVA Argentina",
+      "ALPHA" = "No information found - hence local",
+      "Asesores Economicos" = "http://www.cyt-asesores.com.ar/contacto.php"
+    ),
+    headquarters_map = c(
+      "Bank of America" = "USA",
+      "Bank of America Merrill Lynch" = "USA",
+      "BBVA Securities" = "USA",
+      "ACM Research" = "USA",
+      "Bear Stearns" = "USA",
+      "Credit Suisse First Boston" = "USA",
+      "CSM Worldwide" = "USA",
+      "Goldman Sachs" = "USA",
+      "SSB Citigroup" = "USA",
+      "Bank of America Merrill" = "USA",
+      "Bankers Trust" = "USA",
+      "Action Economics" = "USA",
+      "BofA - Merrill Lynch" = "USA",
+      "Bulltick" = "USA",
+      "Chase Manhattan" = "USA",
+      "Citigroup" = "USA",
+      "First Boston" = "USA",
+      "Fitch Ratings" = "USA",
+      "General Motors" = "USA",
+      "JP Morgan" = "USA",
+      "JP Morgan Chase" = "USA",
+      "Lehman Brothers" = "USA",
+      "Merrill Lynch" = "USA",
+      "Moody's Analytics" = "USA",
+      "Morgan Guaranty" = "USA",
+      "Morgan Stanley" = "USA",
+      "Salomon Brothers" = "USA",
+
+      "Capital Economics" = "GBR",
+      "Barclays Capital" = "GBR",
+      "Chartered West LB" = "GBR",
+      "West Merchant Bank Ltd" = "GBR",
+      "BBV Latinvest" = "GBR",
+      "Barclays Capital Group" = "GBR",
+      "Barclays" = "GBR",
+      "Econ Intelligence Unit" = "GBR",
+      "Euromonitor Intl" = "GBR",
+      "HSBC" = "GBR",
+      "IDEAglobal" = "GBR",
+      "IHS Markit" = "GBR",
+      "Kleinwort Benson Secs" = "GBR",
+      "Oxford Economics" = "GBR",
+      "Roubini Global Econ" = "GBR",
+      "Standard Chartered" = "GBR",
+      "XP Securities" = "GBR",
+
+      "Corp Group" = "CHL",
+
+      "Datarisk" = "BRA",
+      "Itau BBA" = "BRA",
+
+      "Jorge Avila y Asociados" = "PAN",
+
+      "Salomon Smith Barney Asia (Citigroup)" = "USA",
+
+      "BBVA Bancomer" = "MEX",
+
+      "ING Financial Markets" = "NLD",
+      "ING" = "NLD",
+      "ING Bank" = "NLD",
+      "ING Barings" = "NLD",
+
+      "Monex" = "LIE",
+
+      "UBS" = "CHE",
+      "UBS Warburg" = "CHE",
+      "Warburg Dillon Read" = "CHE",
+      "Credit Suisse" = "CHE",
+
+      "AGPV" = "VEN",
+
+      "Banco BPI" = "POR",
+
+      "Center Klein Forecasting" = "GER",
+      "Deutschebank Research" = "GER",
+      "Dresdner Kleinwort" = "GER",
+      "Dresdner Kleinwort Ben." = "GER",
+
+      "Commission on Environmental, Economic and Social Policy (CEESP)" = "CRI",
+
+      "UBS Securities" = "CHN"
+    )
+  )
+
+  return(data_out)
+
+}
+
+
