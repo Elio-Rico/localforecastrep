@@ -54,3 +54,4 @@ rsconnect/
 
 # Consensus Economics Data (Confidential)
 inst/data/raw/ce/
+inst/data/produced/ce/

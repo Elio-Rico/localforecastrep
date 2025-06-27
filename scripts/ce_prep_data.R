@@ -36,7 +36,7 @@ gdp_data <- ce_prep_gdp(path = path_ce(),
                  )
 
 
-saveRDS(gdp_data, file = "inst/data/produced/gdp_data.rds")
+saveRDS(gdp_data, file = "inst/data/produced/ce/gdp_data.rds")
 
 
 # some initial cleaning
@@ -302,4 +302,59 @@ gdp_data_c13 <- standardize_institution_names(gdp_data_c12, replacements = c(
 
 # ARGENTINA
 gdp_data_c14 <- ce_prep_argentina(gdp_data_c13)
+
+
+# further cleaning:
+gdp_data_c15 <- standardize_institution_names(gdp_data_c14, replacements = c(
+        "Banco da Bahia" = "Banco da Bahia Invest",
+        "C Contador e Asocs" = "C Contador & Asocs",
+        "Grupo Bursatil Mex" = "Grupo Bursatil Mexicano",
+        "J.P. Morgan" = "JP Morgan",
+        "M B Asociados" = "M B Associadosn",
+        "MB Associados" = "M B Associadosn",
+        "IPEA" = "IPEA - Instituto de Pesquisa Econômica Aplicada",
+        "Rosenberg" = "Rosenberg Consultoria",
+        "UFRJ" = "UFRJ Universidade Federal do Rio de Janeiro",
+        "Univ. Federal do RJ" = "UFRJ Universidade Federal do Rio de Janeiro",
+        "Unibanco" = "Itau Unibanco"
+      )
+  )
+
+
+# BRAZIL
+gdp_data_c16 <- ce_prep_brazil(gdp_data_c15)
+
+
+# further cleaning:
+gdp_data_c17 <- standardize_institution_names(gdp_data_c16, replacements =c(
+    "Credit Suisse First Bstn" = "Credit Suisse First Boston",
+    "G.K. Goh" = "G.K. Goh Securities",
+    "GK Goh Securities" = "G.K. Goh Securities",
+    "Mizuho Research Inst" = "Mizuho Research Institute",
+    "Oxford Econ Forecast" = "Oxford Economics",
+    "Oxford Econ Forecasting" = "Oxford Economics",
+    "SSB/Citibank" = "Salomon Smith Barney Asia (Citigroup)",
+    "SSB Citibank" = "Salomon Smith Barney Asia (Citigroup)",
+    "Standard Chartered Bank" = "Standard Chartered",
+    "UOB Kayhian" = "UOB Kay Hian",
+    "UOB KayHian" = "UOB Kay Hian",
+    "WI Carr" = "W.I.Carr"
+  )
+)
+
+
+# CHINA:
+gdp_data_c18 <- ce_prep_china(gdp_data_c17)
+
+# further cleaning:
+gdp_data_c19 <- standardize_institution_names(gdp_data_c18, replacements =c(
+  "CMB Research" = "Chase Manhattan Rsrch",
+  "Natl Cncil Apl Eco Rsrch" = "National Council of Applied Economic Research - India",
+  "W.I.Carr" = "W.I.Carr"  # This is redundant (same before and after), but included as-is
+)
+)
+
+# INDIA:
+gdp_data_c20 <- ce_prep_india(gdp_data_c19)
+
 

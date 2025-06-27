@@ -831,9 +831,6 @@ ce_prep_mexico <- function(data){
 }
 
 
-
-
-
 ce_prep_argentina <- function(data){
 
   data_out <- prepare_institution_info(
@@ -1026,4 +1023,262 @@ ce_prep_argentina <- function(data){
 
 }
 
+
+
+
+
+ce_prep_brazil <- function(data){
+
+  data_out <- prepare_institution_info(
+    df = data,
+    country_name = "Brazil",
+    local_list = c(
+      "4e Consultoria","Arazul Capital","Banco BBM","Banco BV","Banco Crefisul SA","Banco da Bahia Invest",
+      "Banco Fator","Banco Itamarati","Banco Votorantim","Banespa","Bco Estado (Banespa)","Datalynk",
+      "E J Reis","Fritsch, Franco e Asociades","Fundacao G Vargas","GO Associados",
+      "IPEA - Instituto de Pesquisa Econômica Aplicada","LCA Consultores","M B Associados","M B Associadosn",
+      "Macrometrica","MCM Consultores","Parallaxis Economics","Pezco Economics","Reis e Moreira",
+      "Rosenberg Consultoria","SILCON/C.R. Contador","Tendencias","Trend Analise Economica",
+      "UFRJ Universidade Federal do Rio de Janeiro"
+    ),
+    multinational_list = c(
+      "Banco Bradesco","Banco Safra","Bank of America - Brazil","Bank of America Merrill Lynch","Bankers Trust",
+      "Barclays","Barclays Capital","BBVA Bancomer","BBVA Brasil","BBVA Securities","BCP Securities",
+      "BNP Paribas","BofA - Merrill Lynch","Citibank Brazil","Citigroup","Credit Suisse First Boston",
+      "CSFB Garantia","Deutsche Bank","Dresdner Kleinwort","Dresdner Kleinwort Ben.","Eaton",
+      "Eaton Corporation","Euler Hermes","Euromonitor Intl","First Boston","Fitch Ratings","General Motors",
+      "GlobalData","Goldman Sachs","HSBC","HSBC Brazil","IHS Markit","ING","ING Bank","ING Barings",
+      "Itau BBA","Itau Corretora","Itau Unibanco","J P Morgan","JP Morgan","JP Morgan Chase",
+      "JP Morgan Chase Brazil","Kleinwort Benson Secs","Lehman Brothers","Lloyds Bank - Sao Paulo",
+      "Lloyds TSB Brazil","Lombard Street Research","Merrill Lynch","Moody's Analytics",
+      "Morgan Guaranty","Morgan Stanley","Rabobank","Royal Bank of Scotland","Salomon Brothers",
+      "Santander Brazil","Santander Investment","SBC Warburg","Standard Chartered",
+      "Standard Chartered Bank","Timetric","UBS Securities","BBVA"
+    ),
+    foreign_list =  c(
+      "C Contador & Asocs","Capital Economics","Econ Intelligence Unit","Grupo Bursatil Mexicano","GW Consultants",
+      "IDEAglobal","Oxford Economics","RGE Monitor", "RGE","Roubini Global Econ"
+    ),
+    source_notes = list(
+      "BCP Securities" = "Has a localisation in Sao Paola, hence not sure if local or foreign. Hence, I will put it as local.",
+      "CSFB Garantia" = "Former Banco Garantia which was taken over by Credit Suisse (First Boston). Banco Garantia is from Brazil which is why we put the dummy equal to local here.",
+      "Datalynk" = "Possibly Datalynx actually, which is Brazilian",
+      "GW Consultants" = "GW Consultants is located in Keerbergen, FLEMISH BRABANT, Belgium and is part of the Consulting Services Industry."
+    ),
+    headquarters_map = c(
+      # USA
+      "Bank of America" = "USA", "Bank of America Merrill Lynch" = "USA", "Bankers Trust" = "USA",
+      "BBVA Securities" = "USA", "BofA - Merrill Lynch" = "USA", "Citigroup" = "USA",
+      "Credit Suisse First Boston" = "USA", "Lehman Brothers" = "USA", "First Boston" = "USA",
+      "Merrill Lynch" = "USA", "Moody's Analytics" = "USA", "Fitch Ratings" = "USA",
+      "General Motors" = "USA", "Goldman Sachs" = "USA", "JP Morgan" = "USA",
+      "JP Morgan Chase" = "USA", "Morgan Guaranty" = "USA", "Morgan Stanley" = "USA",
+      "Salomon Brothers" = "USA",
+
+      # GBR
+      "Barclays Capital" = "GBR", "Barclays" = "GBR", "Capital Economics" = "GBR",
+      "Econ Intelligence Unit" = "GBR", "Euromonitor Intl" = "GBR", "GlobalData" = "GBR",
+      "HSBC" = "GBR", "IDEAglobal" = "GBR", "IHS Markit" = "GBR",
+      "Kleinwort Benson Secs" = "GBR", "Lombard Street Research" = "GBR", "Oxford Economics" = "GBR",
+      "Roubini Global Econ" = "GBR", "Royal Bank of Scotland" = "GBR", "SBC Warburg" = "GBR",
+      "Standard Chartered" = "GBR", "Standard Chartered Bank" = "GBR", "Timetric" = "GBR",
+      "XP Securities" = "GBR",
+
+      # Other countries
+      "BBVA Bancomer" = "MEX",
+      "Grupo Bursatil Mexicano" = "MEX",
+      "BNP Paribas" = "FRA",
+      "Euler Hermes" = "FRA",
+      "C Contador & Asocs" = "PER",
+      "Deutsche Bank" = "GER", "Dresdner Kleinwort" = "GER", "Dresdner Kleinwort Ben." = "GER",
+      "Eaton" = "IRL", "Eaton Corporation" = "IRL",
+      "GW Consultants" = "BEL",
+      "ING Financial Markets" = "NLD", "ING" = "NLD", "ING Bank" = "NLD", "ING Barings" = "NLD",
+      "UBS Securities" = "CHN"
+    )
+  )
+
+  return(data_out)
+
+}
+
+
+
+
+
+
+ce_prep_china <- function(data){
+
+  data_out <- prepare_institution_info(
+    df = data,
+    country_name = "China",
+    local_list = c(
+      "Bank of China", "Bank of China (H.K.)", "Bank of China (HK)", "Crosby Securities",
+      "Hang Seng Bank", "Hongkong Bank Research", "Sun Hung Kai Research"
+    ),
+    multinational_list = c(
+      "ABN Amro", "Allianz", "Asia Equity", "Bank of America", "Bank of East Asia", "Bankers Trust",
+      "Barclays", "Barclays Capital", "Baring Securities", "BBVA", "BNP Paribas", "BNP Paribas Peregrine",
+      "BNP Prime Peregrine", "BofA - Merrill Lynch", "Chase JF", "Chase Manhattan", "China Int'l Capital Corp",
+      "Citigroup", "Credit Suisse", "Credit Suisse First Boston", "CS First Boston", "Daiwa Capital Markets",
+      "Daiwa Research Inst", "DBS Bank", "Deutsche Bank", "Deutsche Morgan Grenfell", "Dresdner Kleinwort",
+      "Econ Intelligence Unit", "Euromonitor Intl", "Experian", "Global Insight", "Goldman Sachs Asia",
+      "Hongkong Bank Research", "HSBC", "HSBC Economics", "HSBC James Capel Asia", "HSBC Research",
+      "IHS Economics", "IHS Global Insight", "IHS Markit", "ING", "ING Barings", "James Capel Asia",
+      "JP Morgan (Hong Kong)", "JP Morgan Chase", "JP Morgan Hong Kong", "Lehman Brothers",
+      "Lehman Brothers Asia", "Merrill Lynch", "MF Global", "Moody's Analytics", "Morgan Grenfell Asia",
+      "Morgan Stanley Asia", "NatWest Markets", "Nomura International (HK)", "Nomura", "Nomura Research Inst",
+      "Peregrine", "Salomon Smith Barney", "Salomon Smith Barney Asia (Citigroup)", "Schroder Securities",
+      "Schroders", "SG Securities", "SG Warburg Securities", "Smith New Court", "Societe Generale",
+      "Standard Chartered", "SocGen-Crosby", "South China Securities", "Timetric", "UBS", "UBS Securities",
+      "UBS Warburg", "UOB Kay Hian", "W.I.Carr", "BBVA Bancomer", "GlobalData", "Jardine Fleming - Tokyo",
+      "Schroders - Japan"
+    ),
+    foreign_list =  c(
+      "Capital Economics", "FAZ InfoDienste", "FAZ Institut", "FERI", "G.K. Goh Securities",
+      "Mizuho Research Institute", "Oxford Economics", "Oxford Economics USA", "Sakura Inst of Research"
+    ),
+    source_notes = list(
+      "Baring Securities" = "Not exactly sure if local or foreign. Baring Securuties had several overseas operating subsidiaries, including two in Singapore: Barings Securities (Singapore) Pte Ltd. (BSS), which principally engaged in securities trading, and Barings Futures (Singapore) Pte Ltd. (BFS), which BSL formed to allow Barings to trade on SIMEX. Since not sure, we set it to local.",
+      "BNP Paribas Peregrine" = "Peregrine (including Peregrine Investments Holdings Limited and Peregrine Infrastructure Investments Limited) was an investment company based in Hong Kong. It was liquidated following the downturn of the Indonesian economy during the Asian financial crisis, and was acquired by BNP Paribas. Hence local.",
+      "Chase JF" = "Chase JF Ltd. provides investment banking and financial services in the Asia-Pacific region."
+    ),
+    headquarters_map = c(
+      "Bank of America" = "USA", "Bank of America Merrill Lynch" = "USA", "Bankers Trust" = "USA", "BofA - Merrill Lynch" = "USA",
+      "JP Morgan Chase" = "USA", "Chase Manhattan" = "USA", "Citigroup" = "USA", "Credit Suisse First Boston" = "USA",
+      "Lehman Brothers" = "USA", "Merrill Lynch" = "USA", "MF Global" = "USA", "Moody's Analytics" = "USA",
+      "Oxford Economics USA" = "USA", "Salomon Smith Barney Asia (Citigroup)" = "USA",
+
+      "Barclays Capital" = "GBR", "Barclays" = "GBR", "Deutsche Morgan Grenfell" = "GBR", "Capital Economics" = "GBR",
+      "Daiwa Capital Markets" = "GBR", "Econ Intelligence Unit" = "GBR", "Euromonitor Intl" = "GBR", "GlobalData" = "GBR",
+      "HSBC" = "GBR", "HSBC Economics" = "GBR", "HSBC Research" = "GBR", "IHS Markit" = "GBR", "NatWest Markets" = "GBR",
+      "Oxford Economics" = "GBR", "Smith New Court" = "GBR", "Standard Chartered" = "GBR", "Timetric" = "GBR",
+
+      "ING Financial Markets" = "NLD", "ING" = "NLD", "ING Bank" = "NLD", "ING Barings" = "NLD", "ABN Amro" = "NLD",
+
+      "Deutsche Bank" = "GER", "Dresdner Kleinwort" = "GER", "Dresdner Kleinwort Ben." = "GER", "Allianz" = "GER",
+      "FAZ InfoDienste" = "GER", "FAZ Institut" = "GER", "FERI" = "GER",
+
+      "BBVA Bancomer" = "MEX", "BNP Paribas" = "FRA", "SG Securities" = "FRA", "Societe Generale" = "FRA",
+
+      "UBS" = "CHE", "UBS Warburg" = "CHE", "Warburg Dillon Read" = "CHE", "Credit Suisse" = "CHE", "SG Warburg Securities" = "CHE",
+
+      "Daiwa Research Inst" = "JPN", "Jardine Fleming - Tokyo" = "JPN", "Mizuho Research Institute" = "JPN", "Nomura" = "JPN",
+      "Nomura Research Inst" = "JPN", "Sakura Inst of Research" = "JPN", "Schroders - Japan" = "JPN",
+
+      "DBS Bank" = "MYS", "G.K. Goh Securities" = "MYS", "UOB Kay Hian" = "MYS",
+
+      "Eaton" = "IRL", "Eaton Corporation" = "IRL", "Experian" = "IRL",
+
+      "UBS Securities" = "CHN"
+    )
+  )
+
+  return(data_out)
+
+}
+
+
+
+ce_prep_india <- function(data){
+
+  data_out <- prepare_institution_info(
+    df = data,
+    country_name = "India",
+    local_list = c(
+      "CDE-DSE", "CDE-DSE Research", "CMIE", "Confed of Indian Industry", "CRISIL", "DSP Financial Consult",
+      "Hindustan Lever", "IEG - DSE Research", "India Ratings & Research", "Kotak Securities",
+      "National Council of Applied Economic Research - India", "Oxus Research",
+      "Tata Services (DES)", "UTI Securities"
+    ),
+    multinational_list = c(
+      "ABN Amro", "ABN Amro India", "American Express Bank", "ANZ Bank", "ANZ Grindlays Bank",
+      "ANZ Investment Bank", "Bank of Tokyo", "Bank of Tokyo-Mitsubishi", "Bank of Tokyo-Mitsubishi UFJ",
+      "Bank of Tokyo Mitsubishi", "Barclays", "Barclays Capital", "Bk of Tokyo-Mitsubishi UFJ",
+      "BNP Paribas", "BofA - Merrill Lynch", "Chase JF", "Chase Manhattan Bank", "Chase Manhattan Rsrch",
+      "Citigroup", "Credit Suisse", "Credit Suisse First Boston", "DBS Bank", "Deloitte India", "Deutsche Bank",
+      "Deutsche Morgan Grenfell", "DRI-WEFA", "DSP Merrill Lynch", "Experian", "Experian Business Strat",
+      "Experian Business Strategies", "General Motors", "Global Insight", "GlobalData", "Goldman Sachs",
+      "Goldman Sachs Asia", "W.I.Carr", "HSBC", "HSBC Batlivala & Karani", "HSBC Securities",
+      "ICICI Bank", "ICICI Securities", "IHS Economics", "IHS Global Insight", "IHS Markit",
+      "ING", "ING Barings", "Jardine Fleming India", "JP Morgan", "JP Morgan Chase",
+      "Lehman Brothers", "Lehman Brothers Asia", "Merrill Lynch", "Morgan Stanley",
+      "Morgan Stanley (Bombay)", "Morgan Stanley Asia", "MUFG Bank", "NatWest Markets", "Nomura",
+      "Peregrine", "Rabobank", "Salomon Smith Barney Asia (Citigroup)", "SG Securities",
+      "Soc-Gen Crosby", "SocGen-Crosby", "Societe Generale", "Standard Chartered",
+      "Timetric", "UBS", "UBS Securities", "UBS Warburg", "Tata Services (DES)",
+      "BBVA Bancomer", "Wharton Econometric Forecasting Associates"
+    ),
+    foreign_list =  c(
+      "BBVA", "Crosby Securities", "Dresdner Bank", "Econ Intelligence Unit", "FERI",
+      "Moody's Economy.com", "Moody's Analytics", "Oxford Economics", "WEFA Group"
+    ),
+    source_notes = list(
+      "DRI-WEFA" = "DRI merged with WEFA to form Global Insight",
+      "DSP Financial Consult" = "Both DSP financial consult and merrill lynch are located in mumbai",
+      "DSP Merrill Lynch" = "Both DSP financial consult and merrill lynch are located in mumbai",
+      "HSBC Securities" = "is located in the US contrary to the HSBC."
+    ),
+    headquarters_map = c(
+      # USA
+      "Bank of America" = "USA", "Bank of America Merrill Lynch" = "USA", "American Express Bank" = "USA",
+      "BofA - Merrill Lynch" = "USA", "Chase Manhattan Bank" = "USA", "Chase Manhattan Rsrch" = "USA",
+      "Citigroup" = "USA", "Credit Suisse First Boston" = "USA", "DRI-WEFA" = "USA",
+      "Econ Intelligence Unit" = "USA", "General Motors" = "USA", "Goldman Sachs" = "USA",
+      "HSBC Securities" = "USA", "JP Morgan Chase" = "USA", "JP Morgan" = "USA", "Lehman Brothers" = "USA",
+      "Merrill Lynch" = "USA", "Moody's Analytics" = "USA", "Morgan Stanley" = "USA",
+      "Salomon Smith Barney Asia (Citigroup)" = "USA", "Wharton Econometric Forecasting Associates" = "USA",
+
+      # GBR
+      "Barclays Capital" = "GBR", "Barclays" = "GBR", "ANZ Bank" = "GBR", "ANZ Grindlays Bank" = "GBR",
+      "Deutsche Morgan Grenfell" = "GBR", "GlobalData" = "GBR", "HSBC" = "GBR", "IHS Markit" = "GBR",
+      "NatWest Markets" = "GBR", "Oxford Economics" = "GBR", "Standard Chartered" = "GBR",
+      "Timetric" = "GBR", "HSBC Economics" = "GBR", "HSBC Research" = "GBR", "Smith New Court" = "GBR",
+
+      # NLD
+      "ING Financial Markets" = "NLD", "ING" = "NLD", "ING Bank" = "NLD", "ING Barings" = "NLD", "ABN Amro" = "NLD",
+
+      # AUS
+      "ANZ Investment Bank" = "AUS",
+
+      # JPN
+      "Bank of Tokyo-Mitsubishi" = "JPN", "Mitsubishi UFJ Research" = "JPN", "Mitsubishi Research Institute" = "JPN",
+      "Bank of Tokyo-Mitsubishi UFJ" = "JPN", "Bk of Tokyo-Mitsubishi UFJ" = "JPN", "MUFG Bank" = "JPN",
+      "Daiwa Research Inst" = "JPN", "Jardine Fleming - Tokyo" = "JPN", "Mizuho Research Institute" = "JPN",
+      "Nomura" = "JPN", "Nomura Research Inst" = "JPN", "Sakura Inst of Research" = "JPN",
+      "Schroders - Japan" = "JPN",
+
+      # MEX
+      "BBVA Bancomer" = "MEX",
+
+      # FRA
+      "BNP Paribas" = "FRA", "SG Securities" = "FRA", "Societe Generale" = "FRA",
+
+      # CHE
+      "UBS" = "CHE", "UBS Warburg" = "CHE", "Warburg Dillon Read" = "CHE", "Credit Suisse" = "CHE",
+      "SG Warburg Securities" = "CHE",
+
+      # CHN
+      "Crosby Securities" = "CHN", "SocGen-Crosby" = "CHN", "Soc-Gen Crosby" = "CHN",
+
+      # MYS
+      "DBS Bank" = "MYS", "G.K. Goh Securities" = "MYS", "UOB Kay Hian" = "MYS",
+
+      # GER
+      "Deutsche Bank" = "GER", "Dresdner Kleinwort" = "GER", "Dresdner Kleinwort Ben." = "GER",
+      "Dresdner Bank" = "GER", "Allianz" = "GER", "FAZ InfoDienste" = "GER", "FAZ Institut" = "GER",
+      "FERI" = "GER", "ICICI Bank" = "GER", "ICICI Securities" = "GER",
+
+      # IRL
+      "Eaton" = "IRL", "Eaton Corporation" = "IRL", "Experian" = "IRL",
+      "Experian Business Strat" = "IRL", "Experian Business Strategies" = "IRL",
+
+      # CHN (again)
+      "UBS Securities" = "CHN"
+    )
+  )
+
+  return(data_out)
+
+}
 
