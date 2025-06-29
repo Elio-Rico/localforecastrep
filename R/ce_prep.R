@@ -1282,3 +1282,62 @@ ce_prep_india <- function(data){
 
 }
 
+
+
+
+ce_prep_gdp_stata <- function(data, institution_info){
+
+  ind <- data$gdp_data_individual
+  sum <- data$gdp_data_sum
+
+
+  all_inst <- bind_rows(institution_info)
+
+  ind <- ind %>%
+    dplyr::full_join(all_inst,by=c("Institution","Country"))
+
+  ind_f <- ind |>
+    mutate(country = replace(country, country == "USA", "United States")) |>
+    select(Country, Date, Institution, Year, current, local, local.2, source, headquarter) |>
+    rename_with(tolower) |>
+    mutate(local = as.factor(local),
+           local.2 = as.factor(local.2),
+           current = as.factor(current)
+           ) |>
+    mutate(
+      local = labelled(local, labels = c("Foreign" = 0, "Local" = 1)),
+      local.2 = labelled(local.2, labels = c("Local" = 1, "Multinational" = 2, "Foreign" = 3))
+    ) |>
+    rename(year_forecast = year)
+
+  sum_f <- sum |>
+    mutate(country = replace(country, country == "USA", "United States")) |>
+    select(Country, Date, Measure, Year, current) |>
+    rename_with(tolower) |>
+    rename(year_forecast = year)
+
+
+  return(list(df_gdp_stata = ind_f,
+              df_gdp_stata_sum = sum_f)
+         )
+
+
+}
+
+
+
+write_gdp_data <- function(data_input){
+
+  stata <- list()
+  # Save as dta file
+  stata$df_gdp_stata <- data_input$df_gdp_stata |>
+    rename(local_2 = local.2)
+
+  haven::write_dta(stata[["df_gdp_stata"]], path = "inst/data/produced/ce/df_gdp_stata.dta")
+  haven::write_dta(data_input[["df_gdp_stata_sum"]], path = "inst/data/produced/ce/df_gdp_stata_sum.dta")
+
+  # save as rds file:
+  saveRDS(data_input[["df_gdp_stata"]], file = "inst/data/produced/ce/df_gdp_stata.rds")
+  saveRDS(data_input[["df_gdp_stata_sum"]], file = "inst/data/produced/ce/df_gdp_stata_sum.rds")
+
+}

@@ -1,6 +1,8 @@
 
 devtools::load_all(".")
 library("tidyverse")
+library("haven")
+library("cli")
 
 
 list_of_countries <- c("Austria","Argentina", "Brazil","Belgium","Bulgaria","Canada","Chile","China",
@@ -27,6 +29,7 @@ list.of.months <- c("jan","feb","mar","apr","may","jun",
 # GDP
 # ---------------------
 
+cli::cli_alert_info("Loading GDP data...")
 # prepare gdp data:
 gdp_data <- ce_prep_gdp(path = path_ce(),
                  lscountries = list_of_countries,
@@ -37,6 +40,9 @@ gdp_data <- ce_prep_gdp(path = path_ce(),
 
 
 saveRDS(gdp_data, file = "inst/data/produced/ce/gdp_data.rds")
+
+
+cli::cli_alert_info("Cleaning and preparing GDP data...")
 
 
 # some initial cleaning
@@ -88,11 +94,11 @@ gdp_data_c1 <- standardize_institution_names(gdp_data$individual,   # Define all
 
 
 # USA info:  - later on, we might source that out into stata file.
-gdp_data_c2 <- ce_prep_usa(gdp_data_c1)
+inst_usa <- ce_prep_usa(gdp_data_c1)
 
 
 # further cleaning :
-gdp_data_c3 <- standardize_institution_names(gdp_data_c2,
+gdp_data_c2 <- standardize_institution_names(gdp_data_c1,
                                              replacements = c(
                                             "Caisse de depot" = "Caisse de Depot",
                                             "Caisse de Depots" = "Caisse de Depot",
@@ -110,10 +116,10 @@ gdp_data_c3 <- standardize_institution_names(gdp_data_c2,
                                           )
 
 # CANADA info:  - later on, we might source that out into stata file.
-gdp_data_c4 <- ce_prep_canada(gdp_data_c3)
+inst_canada <- ce_prep_canada(gdp_data_c2)
 
 # further cleaning :
-gdp_data_c5 <- standardize_institution_names(gdp_data_c4, replacements = c(
+gdp_data_c3 <- standardize_institution_names(gdp_data_c2, replacements = c(
   "KOF Swiss Econ Inst" = "KOF/ETH",
   "KOF Swiss Econ. Inst." = "KOF/ETH",
   "KOF/ETH Zentrum" = "KOF/ETH",
@@ -127,10 +133,10 @@ gdp_data_c5 <- standardize_institution_names(gdp_data_c4, replacements = c(
 
 
 # SWITZERLAND:
-gdp_data_c6 <- ce_prep_switzerland(gdp_data_c5)
+inst_switzerland <- ce_prep_switzerland(gdp_data_c3)
 
 # further cleaning :
-gdp_data_c7 <- standardize_institution_names(gdp_data_c6, replacements = c(
+gdp_data_c4 <- standardize_institution_names(gdp_data_c3, replacements = c(
     "KOF Swiss Econ Inst" = "KOF/ETH",
     "KOF Swiss Econ. Inst." = "KOF/ETH",
     "KOF/ETH Zentrum" = "KOF/ETH",
@@ -158,11 +164,11 @@ gdp_data_c7 <- standardize_institution_names(gdp_data_c6, replacements = c(
 )
 
 # SWEDEN
-gdp_data_c8 <- ce_prep_sweden(gdp_data_c7)
+inst_sweden <- ce_prep_sweden(gdp_data_c4)
 
 
 # further cleaning :
-gdp_data_c9 <- standardize_institution_names(gdp_data_c8, replacements = c(
+gdp_data_c5 <- standardize_institution_names(gdp_data_c4, replacements = c(
   "Bank of Tokyo" = "Bank of Tokyo-Mitsubishi UFJ",
   "Bank of Tokyo - London" = "Bank of Tokyo-Mitsubishi UFJ",
   "Bank of Tokyo Mitsubishi" = "Bank of Tokyo-Mitsubishi UFJ",
@@ -227,11 +233,11 @@ gdp_data_c9 <- standardize_institution_names(gdp_data_c8, replacements = c(
 )
 
 # JAPAN
-gdp_data_c10 <- ce_prep_japan(gdp_data_c9)
+inst_japan <- ce_prep_japan(gdp_data_c5)
 
 
 # further cleaning
-gdp_data_c11 <- standardize_institution_names(gdp_data_c10, replacements = c(
+gdp_data_c6 <- standardize_institution_names(gdp_data_c5, replacements = c(
   "Banamex-Citi" = "Banamex",
   "Banamex" = "Banamex",
   "Bancomer" = "BBVA Bancomer",
@@ -268,10 +274,10 @@ gdp_data_c11 <- standardize_institution_names(gdp_data_c10, replacements = c(
 )
 
 # MEXICO:
-gdp_data_c12 <- ce_prep_mexico(gdp_data_c11)
+inst_mexico <- ce_prep_mexico(gdp_data_c6)
 
 # further cleaning :
-gdp_data_c13 <- standardize_institution_names(gdp_data_c12, replacements = c(
+gdp_data_c7 <- standardize_institution_names(gdp_data_c6, replacements = c(
   "BBV" = "BBV Latinvest",
   "BBV Securities" = "BBV Latinvest",
   "Credit Lyonnais -  Arg" = "Credit Lyonnais Argentina",
@@ -301,11 +307,11 @@ gdp_data_c13 <- standardize_institution_names(gdp_data_c12, replacements = c(
 
 
 # ARGENTINA
-gdp_data_c14 <- ce_prep_argentina(gdp_data_c13)
+inst_argentina <- ce_prep_argentina(gdp_data_c7)
 
 
 # further cleaning:
-gdp_data_c15 <- standardize_institution_names(gdp_data_c14, replacements = c(
+gdp_data_c8 <- standardize_institution_names(gdp_data_c7, replacements = c(
         "Banco da Bahia" = "Banco da Bahia Invest",
         "C Contador e Asocs" = "C Contador & Asocs",
         "Grupo Bursatil Mex" = "Grupo Bursatil Mexicano",
@@ -322,11 +328,11 @@ gdp_data_c15 <- standardize_institution_names(gdp_data_c14, replacements = c(
 
 
 # BRAZIL
-gdp_data_c16 <- ce_prep_brazil(gdp_data_c15)
+inst_brazil <- ce_prep_brazil(gdp_data_c8)
 
 
 # further cleaning:
-gdp_data_c17 <- standardize_institution_names(gdp_data_c16, replacements =c(
+gdp_data_c9 <- standardize_institution_names(gdp_data_c8, replacements =c(
     "Credit Suisse First Bstn" = "Credit Suisse First Boston",
     "G.K. Goh" = "G.K. Goh Securities",
     "GK Goh Securities" = "G.K. Goh Securities",
@@ -344,10 +350,10 @@ gdp_data_c17 <- standardize_institution_names(gdp_data_c16, replacements =c(
 
 
 # CHINA:
-gdp_data_c18 <- ce_prep_china(gdp_data_c17)
+inst_china <- ce_prep_china(gdp_data_c9)
 
 # further cleaning:
-gdp_data_c19 <- standardize_institution_names(gdp_data_c18, replacements =c(
+gdp_data_c10 <- standardize_institution_names(gdp_data_c9, replacements =c(
   "CMB Research" = "Chase Manhattan Rsrch",
   "Natl Cncil Apl Eco Rsrch" = "National Council of Applied Economic Research - India",
   "W.I.Carr" = "W.I.Carr"  # This is redundant (same before and after), but included as-is
@@ -355,6 +361,26 @@ gdp_data_c19 <- standardize_institution_names(gdp_data_c18, replacements =c(
 )
 
 # INDIA:
-gdp_data_c20 <- ce_prep_india(gdp_data_c19)
+inst_india <- ce_prep_india(gdp_data_c10)
+
+
+
+# list of institutions:
+list_inst <- list(inst_usa, inst_canada, inst_switzerland, inst_sweden,
+               inst_japan, inst_mexico, inst_argentina, inst_brazil,
+               inst_china, inst_india)
+
+
+gdp_stata <- ce_prep_gdp_stata(data = list(gdp_data_individual = gdp_data_c10,
+                                           gdp_data_sum = gdp_data$summary),
+                               institution_info = list_inst
+                               )
+
+
+cli::cli_alert_info("Writing GDP data...")
+# write
+write_gdp_data(data_input = gdp_stata)
+
+cli::cli_alert_success("Data written successfully.")
 
 
