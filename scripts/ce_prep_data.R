@@ -78,4 +78,3 @@ ce_write_data(data_input = cpi_stata_final,
 # ---------------------
 # end of code
 # ---------------------
-
