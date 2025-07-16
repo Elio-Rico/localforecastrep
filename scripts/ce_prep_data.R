@@ -29,18 +29,27 @@ list.of.months <- c("jan","feb","mar","apr","may","jun",
 # GDP
 # ---------------------
 
+# Try to read existing RDS file
+gdp_data <- tryCatch(
+  readRDS("inst/data/produced/ce/gdp_data.rds"),
+  error = function(e) {
+    cli::cli_alert_warning("RDS file not found or could not be read. Will create new GDP data.")
+    NULL
+  }
+)
 
-# load gdp data:
-gdp_data <- ce_read_gdp(path = path_ce(),
-                 lscountries = list_of_countries,
-                 fy = first.year,
-                 ly = last.year,
-                 months = list.of.months
-                 )
-
-
-saveRDS(gdp_data, file = "inst/data/produced/ce/gdp_data.rds")
-
+# otherwise, read in from raw excel files:
+if (is.null(gdp_data)) {
+  gdp_data <- ce_read_gdp(
+    path = path_ce(),
+    lscountries = list_of_countries,
+    fy = first.year,
+    ly = last.year,
+    months = list.of.months
+  )
+  saveRDS(gdp_data, file = "inst/data/produced/ce/gdp_data.rds")
+  cli::cli_alert_success("New GDP data created and saved.")
+}
 
 # prep and finalise data:
 gdp_stata_final <- ce_prep_macro_data(ce_data = gdp_data)
@@ -56,17 +65,28 @@ ce_write_data(data_input = gdp_stata_final,
 # Inflation
 # ---------------------
 
-# read in cpi data:
-cpi_data <- ce_read_cpi(path = path_ce(),
-                        lscountries = list_of_countries,
-                        fy = first.year,
-                        ly = last.year,
-                        months = list.of.months
+
+# Try to read existing RDS file
+cpi_data <- tryCatch(
+  readRDS("inst/data/produced/ce/cpi_data.rds"),
+  error = function(e) {
+    cli::cli_alert_warning("RDS file not found or could not be read. Will create new GDP data.")
+    NULL
+  }
 )
 
-
-
-saveRDS(cpi_data, file = "inst/data/produced/ce/cpi_data.rds")
+# otherwise, read in from raw excel files:
+if (is.null(cpi_data)) {
+  cpi_data <- ce_read_cpi(
+    path = path_ce(),
+    lscountries = list_of_countries,
+    fy = first.year,
+    ly = last.year,
+    months = list.of.months
+  )
+  saveRDS(cpi_data, file = "inst/data/produced/ce/cpi_data.rds")
+  cli::cli_alert_success("New CPI data created and saved.")
+}
 
 
 # prep and finalise data:
