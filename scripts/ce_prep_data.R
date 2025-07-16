@@ -43,10 +43,12 @@ saveRDS(gdp_data, file = "inst/data/produced/ce/gdp_data.rds")
 
 
 # prep and finalise data:
-gdp_stata_final <- ce_prep_gdp_data(gdp_data = gdp_data)
+gdp_stata_final <- ce_prep_macro_data(ce_data = gdp_data)
 
 # write gdp data
-write_gdp_data(data_input = gdp_stata_final)
+ce_write_data(data_input = gdp_stata_final,
+              indicator = "gdp")
+
 
 
 
@@ -54,11 +56,26 @@ write_gdp_data(data_input = gdp_stata_final)
 # Inflation
 # ---------------------
 
+cpi_data <- ce_prep_cpi(path = path_ce(),
+                        lscountries = list_of_countries,
+                        fy = first.year,
+                        ly = last.year,
+                        months = list.of.months
+)
 
 
 
+saveRDS(cpi_data, file = "inst/data/produced/ce/cpi_data.rds")
 
 
+# prep and finalise data:
+cpi_stata_final <- ce_prep_macro_data(ce_data = cpi_data)
 
+# write gdp data
+ce_write_data(data_input = cpi_stata_final,
+              indicator = "cpi")
 
+# ---------------------
+# end of code
+# ---------------------
 
