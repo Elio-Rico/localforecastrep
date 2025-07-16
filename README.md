@@ -8,9 +8,9 @@ Below, we provide an overview of the folders, the inputs required, and the scrip
 
 #### 2.1 scripts
 
-The folder scripts contains the main R-script which is needed to produce the initial data from consensus economics. It reads the excel files with the forecasts for GDP and inflation, does an initial cleaning of institution names, and writes the result as rds and stata data file.
+The folder [scripts](scripts/) contains the main R-script which is needed to produce the initial data from consensus economics. It reads the excel files with the forecasts for GDP and inflation, does an initial cleaning of institution names, and writes the result as rds and stata data file.
 
-Folder R contains all functions needed by the main script to read, prep/initial clean, and write the data to data/processed.
+Folder [R](R/) contains all functions needed by the main script to read, prep/initial clean, and write the data to data/processed.
 
 Inputs are stored in "inst/data/raw/ce/", which 4 different folders, named "Asia-Pacific", "Eastern-Europe", "G7-Europe", "Latin-America", and the corresponding excel files in them. This data corresponds to the raw files received from [consensus economics](https://www.consensuseconomics.com/).
 
