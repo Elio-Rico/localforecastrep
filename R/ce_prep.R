@@ -1,15 +1,19 @@
 get_country_group <- function(country) {
 
-  eastern.countries <- c("Bulgaria","Croatia","Czech Republic","Estonia","Hungary","Poland","Russia","Turkey","Latvia",
+  eastern.countries <- c("Bulgaria","Croatia","Czech Republic","Estonia","Hungary","Poland","Russia",
+                         "Turkey","Latvia",
                          "Lithuania","Romania","Slovakia","Slovenia","Ukraine")
 
   latinamerica.countries <- c("Argentina","Brazil","Chile","Mexico","Venezuela","Colombia","Peru")
 
-  asiapacific.countries <- c("Australia","China","India","Indonesia","Japan","Malaysia","New Zealand","Philippines",
+  asiapacific.countries <- c("Australia","China","India","Indonesia","Malaysia","New Zealand",
+                             "Philippines",
                              "South Korea","Thailand")
 
-  g7.countries <- c("USA","Japan","Germany","France","UK","Italy","Canada","Netherlands","Norway","Spain","Sweden",
-                    "Switzerland","Austria","Belgium","Denmark","Egypt","Finland","Greece","Ireland","Israel",
+  g7.countries <- c("USA","Japan","Germany","France","UK","Italy","Canada","Netherlands","Norway",
+                    "Spain","Sweden",
+                    "Switzerland","Austria","Belgium","Denmark","Egypt","Finland","Greece",
+                    "Ireland","Israel",
                     "Nigeria","Portugal","Saudi Arabia","South Africa")
 
 
@@ -199,11 +203,26 @@ parse_forecasts <- function(data, col_idx, year1, year2, date, country) {
 
 
 
-
 standardize_institution_names <- function(df, replacements) {
+  dfclean <- df
 
-  dfclean <- df %>%
-    mutate(Institution = recode(Institution, !!!replacements))
+  for (rule in replacements) {
+    if (is.character(rule)) next  # skip if somehow passed as just a character vector
+
+    old_name <- rule$old
+    new_name <- rule$new
+    country <- rule$country
+
+    if (is.null(country)) {
+      # Global replacement
+      dfclean <- dfclean %>%
+        mutate(Institution = if_else(Institution == old_name, new_name, Institution))
+    } else {
+      # Country-specific replacement
+      dfclean <- dfclean %>%
+        mutate(Institution = if_else(Institution == old_name & Country == country, new_name, Institution))
+    }
+  }
 
   return(dfclean)
 }
@@ -211,11 +230,10 @@ standardize_institution_names <- function(df, replacements) {
 
 
 
-
 prepare_institution_info <- function(df,
                                      country_name,
-                                     local_list,
-                                     multinational_list,
+                                     local_list = character(0),
+                                     multinational_list = character(0),
                                      foreign_list = character(0),
                                      source_notes = list(),
                                      headquarters_map = list()) {
@@ -1299,17 +1317,18 @@ ce_prep_gdp_stata <- function(data, institution_info){
     dplyr::full_join(all_inst,by=c("Institution","Country"))
 
   ind_f <- ind |>
-    mutate(Country = replace(Country, Country == "USA", "United States")) |>
+    mutate(Country = replace(Country, Country == "USA", "United States"),
+           Country = replace(Country, Country == "UK", "United Kingdom")) |>
     select(Country, Date, Institution, Year, current, local, local.2, source, headquarter) |>
     rename_with(tolower) |>
     mutate(local = as.factor(local),
            local.2 = as.factor(local.2),
            current = as.factor(current)
            ) |>
-    mutate(
-      local = labelled(local, labels = c("Foreign" = 0, "Local" = 1)),
-      local.2 = labelled(local.2, labels = c("Local" = 1, "Multinational" = 2, "Foreign" = 3))
-    ) |>
+  #   mutate(
+  #     local = labelled(local, labels = c("Foreign" = 0, "Local" = 1)),
+  #     local.2 = labelled(local.2, labels = c("Local" = 1, "Multinational" = 2, "Foreign" = 3))
+  #   ) |>
     rename(year_forecast = year)
 
   sum_f <- sum |>
@@ -1331,9 +1350,21 @@ write_gdp_data <- function(data_input) {
 
   cli::cli_alert_info("Writing GDP data...")
 
+  # Data for Stata:
   stata <- list()
+  # stata$df_gdp_stata <- data_input$df_gdp_stata |>
+  #   rename(local_2 = local.2)
+  #
   stata$df_gdp_stata <- data_input$df_gdp_stata |>
-    rename(local_2 = local.2)
+    select(-local, -local.2, -source, -headquarter)
+
+  stata$df_gdp_stata_sum <- data_input[["df_gdp_stata_sum"]]
+
+  # rds data:
+  rds_dat <- list()
+  rds_dat$df_gdp_stata_sum <- data_input[["df_gdp_stata_sum"]]
+  rds_dat$df_gdp_stata <- data_input[["df_gdp_stata"]] |>
+    select(-local, -local.2, -source, -headquarter)
 
   # Define a helper for safe writing
   safe_write <- function(expr, file_label) {
@@ -1347,12 +1378,13 @@ write_gdp_data <- function(data_input) {
     })
   }
 
+
   # Write files with error catching
   success <- c(
     safe_write(haven::write_dta(stata[["df_gdp_stata"]], path = "inst/data/produced/ce/df_gdp_stata.dta"), "Stata GDP data"),
-    safe_write(haven::write_dta(data_input[["df_gdp_stata_sum"]], path = "inst/data/produced/ce/df_gdp_stata_sum.dta"), "Stata GDP summary"),
-    safe_write(saveRDS(data_input[["df_gdp_stata"]], file = "inst/data/produced/ce/df_gdp_stata.rds"), "RDS GDP data"),
-    safe_write(saveRDS(data_input[["df_gdp_stata_sum"]], file = "inst/data/produced/ce/df_gdp_stata_sum.rds"), "RDS GDP summary")
+    safe_write(haven::write_dta(stata[["df_gdp_stata_sum"]], path = "inst/data/produced/ce/df_gdp_stata_sum.dta"), "Stata GDP summary"),
+    safe_write(saveRDS(rds_dat[["df_gdp_stata"]], file = "inst/data/produced/ce/df_gdp_stata.rds"), "RDS GDP data"),
+    safe_write(saveRDS(rds_dat[["df_gdp_stata_sum"]], file = "inst/data/produced/ce/df_gdp_stata_sum.rds"), "RDS GDP summary")
   )
 
   if (all(success)) {
@@ -1370,50 +1402,52 @@ ce_prep_gdp_data <- function(gdp_data){
 
 
   # some initial cleaning
-  gdp_data_c1 <- standardize_institution_names(gdp_data$individual,   # Define all alternative names mapping to standardized names
-                                               replacements = c(
-                                                 "American Int'l Group" = "American International Group",
-                                                 "American Intl Group" = "American International Group",
-                                                 "Amoco" = "Amoco Corporation",
-                                                 "Amoco Corp" = "Amoco Corporation",
-                                                 "BMO Financial Markets" = "BMO Capital Markets",
-                                                 "Brown Brothers" = "Brown Brothers Harriman",
-                                                 "Chase" = "Chase Manhatten Bank",
-                                                 "Chase Manhatten" = "Chase Manhatten Bank",
-                                                 "Chemical Bank" = "Chemical Banking",
-                                                 "Core States" = "CoreStates Financial Corporation",
-                                                 "CoreStates Fin Corp" = "CoreStates Financial Corporation",
-                                                 "CoreStates" = "CoreStates Financial Corporation",
-                                                 "CRT Govt Securities" = "CRT Govt. Securities",
-                                                 "CS First Boston" = "Credit Suisse First Boston",
-                                                 "FannieMae" = "Fannie Mae",
-                                                 "Ford Motor" = "Ford Motor Company",
-                                                 "Ford Motor Corp" = "Ford Motor Company",
-                                                 "Georgia State Uni." = "Georgia State University",
-                                                 "IHS Global Insight" = "IHS Markit",
-                                                 "IHS Economics" = "IHS Markit",
-                                                 "J P Morgan" = "JP Morgan",
-                                                 "Moody's Economy.com" = "Moody's Analytics",
-                                                 "Mortgage Bankers" = "Mortgage Bankers Association",
-                                                 "Mortgage Bankers Assoc" = "Mortgage Bankers Association",
-                                                 "Mortgage Bankers Assoc." = "Mortgage Bankers Association",
-                                                 "Nat Assn Manufacturers" = "Nat Assn of Manufacturers",
-                                                 "Nat Assn of Homebuilders" = "Nat Assn of Home Builders",
-                                                 "Nat. Ass. of Homebuilders" = "Nat Assn of Home Builders",
-                                                 "Natl Assoc of Home Builders" = "Nat Assn of Home Builders",
-                                                 "PNC Financial Services" = "PNC Bank",
-                                                 "Prudential Insurance" = "Prudential Financial",
-                                                 "Regional Financial Ass." = "Regional Financial Associates Inc",
-                                                 "Regional Financial Assocs" = "Regional Financial Associates Inc",
-                                                 "Sears Roebuck" = "Sears Roebuck & Co",
-                                                 "Smith Barney" = "Smith Barney Shearson",
-                                                 "Standard & Poors" = "Standard & Poor's",
-                                                 "U.S. Trust" = "United States Trust",
-                                                 "Wells Fargo Bank" = "Wells Fargo",
-                                                 "WEFA Group" = "Wharton Econometric Forecasting Associates",
-                                                 "The WEFA Group" = "Wharton Econometric Forecasting Associates",
-                                                 "Economy.com" = "Moody's Analytics",
-                                                 "Global Insight" = "IHS Markit")
+  gdp_data_c1 <- standardize_institution_names(
+    gdp_data$individual,
+    replacements = list(
+      list(old = "American Int'l Group", new = "American International Group"),
+      list(old = "American Intl Group", new = "American International Group"),
+      list(old = "Amoco", new = "Amoco Corporation"),
+      list(old = "Amoco Corp", new = "Amoco Corporation"),
+      list(old = "BMO Financial Markets", new = "BMO Capital Markets"),
+      list(old = "Brown Brothers", new = "Brown Brothers Harriman"),
+      list(old = "Chase", new = "Chase Manhatten Bank"),
+      list(old = "Chase Manhatten", new = "Chase Manhatten Bank"),
+      list(old = "Chemical Bank", new = "Chemical Banking"),
+      list(old = "Core States", new = "CoreStates Financial Corporation"),
+      list(old = "CoreStates Fin Corp", new = "CoreStates Financial Corporation"),
+      list(old = "CoreStates", new = "CoreStates Financial Corporation"),
+      list(old = "CRT Govt Securities", new = "CRT Govt. Securities"),
+      list(old = "CS First Boston", new = "Credit Suisse First Boston"),
+      list(old = "FannieMae", new = "Fannie Mae"),
+      list(old = "Ford Motor", new = "Ford Motor Company"),
+      list(old = "Ford Motor Corp", new = "Ford Motor Company"),
+      list(old = "Georgia State Uni.", new = "Georgia State University"),
+      list(old = "IHS Global Insight", new = "IHS Markit"),
+      list(old = "IHS Economics", new = "IHS Markit"),
+      list(old = "J P Morgan", new = "JP Morgan"),
+      list(old = "Moody's Economy.com", new = "Moody's Analytics"),
+      list(old = "Mortgage Bankers", new = "Mortgage Bankers Association"),
+      list(old = "Mortgage Bankers Assoc", new = "Mortgage Bankers Association"),
+      list(old = "Mortgage Bankers Assoc.", new = "Mortgage Bankers Association"),
+      list(old = "Nat Assn Manufacturers", new = "Nat Assn of Manufacturers"),
+      list(old = "Nat Assn of Homebuilders", new = "Nat Assn of Home Builders"),
+      list(old = "Nat. Ass. of Homebuilders", new = "Nat Assn of Home Builders"),
+      list(old = "Natl Assoc of Home Builders", new = "Nat Assn of Home Builders"),
+      list(old = "PNC Financial Services", new = "PNC Bank"),
+      list(old = "Prudential Insurance", new = "Prudential Financial"),
+      list(old = "Regional Financial Ass.", new = "Regional Financial Associates Inc"),
+      list(old = "Regional Financial Assocs", new = "Regional Financial Associates Inc"),
+      list(old = "Sears Roebuck", new = "Sears Roebuck & Co"),
+      list(old = "Smith Barney", new = "Smith Barney Shearson"),
+      list(old = "Standard & Poors", new = "Standard & Poor's"),
+      list(old = "U.S. Trust", new = "United States Trust"),
+      list(old = "Wells Fargo Bank", new = "Wells Fargo"),
+      list(old = "WEFA Group", new = "Wharton Econometric Forecasting Associates"),
+      list(old = "The WEFA Group", new = "Wharton Econometric Forecasting Associates"),
+      list(old = "Economy.com", new = "Moody's Analytics"),
+      list(old = "Global Insight", new = "IHS Markit")
+    )
   )
 
 
@@ -1422,138 +1456,148 @@ ce_prep_gdp_data <- function(gdp_data){
 
 
   # further cleaning :
-  gdp_data_c2 <- standardize_institution_names(gdp_data_c1,
-                                               replacements = c(
-                                                 "Caisse de depot" = "Caisse de Depot",
-                                                 "Caisse de Depots" = "Caisse de Depot",
-                                                 "Centre for Spatial Econ" = "Centre for Spatial Economics",
-                                                 "Centre for Spatial Econ." = "Centre for Spatial Economics",
-                                                 "DRI - Canada" = "DRI Canada",
-                                                 "DRI  Canada" = "DRI Canada",
-                                                 "Du Pont" = "DuPont Canada",
-                                                 "Merrill Lynch - Canada" = "Merrill Lynch Canada",
-                                                 "RBC Dominion Securities" = "RBC - Dominion Securities",
-                                                 "RBC Dominion" = "RBC - Dominion Securities",
-                                                 "Toronto Dominion" = "Toronto Dominion Bank",
-                                                 "Conference Board" = "Conf Board of Canada",
-                                                 "Royal Trust" = "Royal Trust (Canada)")
+  gdp_data_c2 <- standardize_institution_names(
+    gdp_data_c1,
+    replacements = list(
+      list(old = "Caisse de depot", new = "Caisse de Depot"),
+      list(old = "Caisse de Depots", new = "Caisse de Depot"),
+      list(old = "Centre for Spatial Econ", new = "Centre for Spatial Economics"),
+      list(old = "Centre for Spatial Econ.", new = "Centre for Spatial Economics"),
+      list(old = "DRI - Canada", new = "DRI Canada"),
+      list(old = "DRI  Canada", new = "DRI Canada"),
+      list(old = "Du Pont", new = "DuPont Canada"),
+      list(old = "Merrill Lynch - Canada", new = "Merrill Lynch Canada"),
+      list(old = "RBC Dominion Securities", new = "RBC - Dominion Securities"),
+      list(old = "RBC Dominion", new = "RBC - Dominion Securities"),
+      list(old = "Toronto Dominion", new = "Toronto Dominion Bank"),
+      list(old = "Conference Board", new = "Conf Board of Canada"),
+      list(old = "Royal Trust", new = "Royal Trust (Canada)")
+    )
   )
 
   # CANADA info:  - later on, we might source that out into stata file.
   inst_canada <- ce_prep_canada(gdp_data_c2)
 
   # further cleaning :
-  gdp_data_c3 <- standardize_institution_names(gdp_data_c2, replacements = c(
-    "KOF Swiss Econ Inst" = "KOF/ETH",
-    "KOF Swiss Econ. Inst." = "KOF/ETH",
-    "KOF/ETH Zentrum" = "KOF/ETH",
-    "Zurcher Kantonalbank" = "Zürcher Kantonalbank",
-    "IHS Global Insight" = "IHS Markit",
-    "IHS Economics" = "IHS Markit",
-    "Global Insight" = "IHS Markit",
-    "Oxford - BAK" = "Oxford - BAK Basel"
+  gdp_data_c3 <- standardize_institution_names(
+    gdp_data_c2,
+    replacements = list(
+      list(old = "KOF Swiss Econ Inst", new = "KOF/ETH"),
+      list(old = "KOF Swiss Econ. Inst.", new = "KOF/ETH"),
+      list(old = "KOF/ETH Zentrum", new = "KOF/ETH"),
+      list(old = "Zurcher Kantonalbank", new = "Zürcher Kantonalbank"),
+      list(old = "IHS Global Insight", new = "IHS Markit"),
+      list(old = "IHS Economics", new = "IHS Markit"),
+      list(old = "Global Insight", new = "IHS Markit"),
+      list(old = "Oxford - BAK", new = "Oxford - BAK Basel")
+    )
   )
-  )
+
 
 
   # SWITZERLAND:
   inst_switzerland <- ce_prep_switzerland(gdp_data_c3)
 
   # further cleaning :
-  gdp_data_c4 <- standardize_institution_names(gdp_data_c3, replacements = c(
-    "KOF Swiss Econ Inst" = "KOF/ETH",
-    "KOF Swiss Econ. Inst." = "KOF/ETH",
-    "KOF/ETH Zentrum" = "KOF/ETH",
-    "Zurcher Kantonalbank" = "Zürcher Kantonalbank",
-    "IHS Global Insight" = "IHS Markit",
-    "IHS Economics" = "IHS Markit",
-    "Global Insight" = "IHS Markit",
-    "Oxford - BAK" = "Oxford - BAK Basel",
-    "Erik Penser FK" = "Erik Penser Bank",
-    "Hagglof - SBC Warburg" = "Hagglof - SG Warburg",
-    "Hagstromer & Qviberg" = "Hagströmer & Qviberg",
-    "SBAB" = "SBAB Bank",
-    "Volvo Group Finance" = "Volvo",
-    "HQ Bank" = "Hagströmer & Qviberg Bank",
-    "Hagströmer & Qviberg" = "Hagströmer & Qviberg Bank",
-    "Matteus FK" = "Matteus Fondkommission",
-    "Matteus Bank" = "Matteus Fondkommission",
-    "Ohman" = "Öhman Mutual Funds and Asset Management",
-    "Öhman" = "Öhman Mutual Funds and Asset Management",
-    "Aragon" = "Aragon Fondkommission",
-    "Finanskonsult" = "Ficope Finanskonsult",
-    "ITEM Club" = "EY Item Club",
-    "SE Banken" = "Skandinaviska Enskilda Banken"
+  gdp_data_c4 <- standardize_institution_names(
+    gdp_data_c3,
+    replacements = list(
+      list(old = "KOF Swiss Econ Inst", new = "KOF/ETH"),
+      list(old = "KOF Swiss Econ. Inst.", new = "KOF/ETH"),
+      list(old = "KOF/ETH Zentrum", new = "KOF/ETH"),
+      list(old = "Zurcher Kantonalbank", new = "Zürcher Kantonalbank"),
+      list(old = "IHS Global Insight", new = "IHS Markit"),
+      list(old = "IHS Economics", new = "IHS Markit"),
+      list(old = "Global Insight", new = "IHS Markit"),
+      list(old = "Oxford - BAK", new = "Oxford - BAK Basel"),
+      list(old = "Erik Penser FK", new = "Erik Penser Bank"),
+      list(old = "Hagglof - SBC Warburg", new = "Hagglof - SG Warburg"),
+      list(old = "Hagstromer & Qviberg", new = "Hagströmer & Qviberg"),
+      list(old = "SBAB", new = "SBAB Bank"),
+      list(old = "Volvo Group Finance", new = "Volvo"),
+      list(old = "HQ Bank", new = "Hagströmer & Qviberg Bank"),
+      list(old = "Hagströmer & Qviberg", new = "Hagströmer & Qviberg Bank"),
+      list(old = "Matteus FK", new = "Matteus Fondkommission"),
+      list(old = "Matteus Bank", new = "Matteus Fondkommission"),
+      list(old = "Ohman", new = "Öhman Mutual Funds and Asset Management"),
+      list(old = "Öhman", new = "Öhman Mutual Funds and Asset Management"),
+      list(old = "Aragon", new = "Aragon Fondkommission"),
+      list(old = "Finanskonsult", new = "Ficope Finanskonsult"),
+      list(old = "ITEM Club", new = "EY Item Club"),
+      list(old = "SE Banken", new = "Skandinaviska Enskilda Banken")
+    )
   )
-  )
+
 
   # SWEDEN
   inst_sweden <- ce_prep_sweden(gdp_data_c4)
 
 
   # further cleaning :
-  gdp_data_c5 <- standardize_institution_names(gdp_data_c4, replacements = c(
-    "Bank of Tokyo" = "Bank of Tokyo-Mitsubishi UFJ",
-    "Bank of Tokyo - London" = "Bank of Tokyo-Mitsubishi UFJ",
-    "Bank of Tokyo Mitsubishi" = "Bank of Tokyo-Mitsubishi UFJ",
-    "Barclays" = "Barclays Capital Group",
-    "Barclays Capital" = "Barclays Capital Group",
-    "Citigroup Japan" = "Citigroup Global Mkts Japan",
-    "BDai-ichi Kangyo Bank" = "Dai-Ichi Kangyo Bank",
-    "Dai-Ichi Kangyo Rsrch Inst" = "Dai-Ichi Kangyo Bank",
-    "Dai-Ichi Kangyo Rsrch Institute" = "Dai-Ichi Kangyo Bank",
-    "Dai-Ichi Life Research" = "Dai-Ichi Kangyo Bank",
-    "Dai-ichi Kangyo Bank" = "Dai-Ichi Kangyo Bank",
-    "Daiwa Institute of Research" = "Daiwa Securities Research",
-    "Daiwa Institute of Rsrch" = "Daiwa Securities Research",
-    "Daiwa Securities Rsrch" = "Daiwa Securities Research",
-    "Deutsche Securities" = "Deutsche Bank (Asia)",
-    "Deutsche Bank  (Asia)" = "Deutsche Bank (Asia)",
-    "Dresdner Kleinwort Asia" = "Dresdner Kleinwort (Asia)",
-    "Dresdner Kleinwort Benson" = "Dresdner Kleinwort (Asia)",
-    "Jap Ctr for Econ Rsrch" = "Japan Ctr for Econ Research",
-    "Japan Ctr Economic Rsrch" = "Japan Ctr for Econ Research",
-    "Kokumin Keizai Research Inst" = "Kokumin Keizai Research Inst.",
-    "Mitsubishi Research" = "Mitsubishi Research Institute",
-    "Mitsubishi Research Inst" = "Mitsubishi Research Institute",
-    "Mitsubishi Research Institute" = "Mitsubishi Research Institute",
-    "Mitsubishi Rsrch" = "Mitsubishi Research Institute",
-    "Nikko Citigroup" = "Nikko Salomon Smith Barney",
-    "Nippon Steel Rsch Inst Corp" = "Nippon Steel Research Institute",
-    "Nippon Steel & Sumikin Res Inst" = "Nippon Steel Research Institute",
-    "Nippon Steel & Sumikin Rsrch" = "Nippon Steel Research Institute",
-    "Nomura Rsrch Center" = "Nomura Research Institute",
-    "Nomura Securities" = "Nomura Research Institute",
-    "S G Warburg - Japan" = "SG Warburg - Japan",
-    "S G Warburg - Tokyo" = "SG Warburg - Japan",
-    "SG Warburg - Japan" = "SG Warburg - Japan",
-    "SBC Warburg - Japan" = "SG Warburg - Japan",
-    "Salomon Smith Barney" = "Salomon Smith Barney Asia (Citigroup)",
-    "Salomon Smith Barney Asia" = "Salomon Smith Barney Asia (Citigroup)",
-    "Salomon Brothers Asia" = "Salomon Brothers Asia Ltd.",
-    "Sumitomo Bank" = "Sumitomo Life Research Institute",
-    "Sumitomo Life Rsrch Institute" = "Sumitomo Life Research Institute",
-    "Sanwa Research Institute" = "Sanwa Research Institute Corp.",
-    "Schroder Securities" = "Schroders - Japan",
-    "Schroders" = "Schroders - Japan",
-    "UBS - Phillips & Drew" = "UBS Phillips & Drew (Securities) Tokyo",
-    "UBS - Phillips & Drew - Tokyo" = "UBS Phillips & Drew (Securities) Tokyo",
-    "UBS  Phillips & Drew - Tokyo" = "UBS Phillips & Drew (Securities) Tokyo",
-    "UBS  Securities- Tokyo" = "UBS Phillips & Drew (Securities) Tokyo",
-    "UBS  Securities - Tokyo" = "UBS Phillips & Drew (Securities) Tokyo",
-    "UBS Securities - Japan" = "UBS Phillips & Drew (Securities) Tokyo",
-    "UBS Phillips & Drew" = "UBS Phillips & Drew (Securities) Tokyo",
-    "Yamaichi Rsrch Institute" = "Yamaichi Research Institute",
-    "Smith Barney - Japan" = "Smith Barney (Shearson) Tokyo",
-    "Smith Barney - Tokyo" = "Smith Barney (Shearson) Tokyo",
-    "Smith Barney Shearson - Tokyo" = "Smith Barney (Shearson) Tokyo",
-    "Smith Barney Shersn - Tokyo" = "Smith Barney (Shearson) Tokyo",
-    "Jardine Fleming" = "Jardine Fleming - Tokyo",
-    "Long Term Credit Bank" = "Long Term Credit Bank Japan",
-    "LTCB" = "Long Term Credit Bank Japan",
-    "NCB Research Institute" = "Nippon Credit Bank",
-    "Nikko Rsrch Center" = "Nikko Research Center"
-  )
+  gdp_data_c5 <- standardize_institution_names(
+    gdp_data_c4,
+    replacements = list(
+      list(old = "Bank of Tokyo", new = "Bank of Tokyo-Mitsubishi UFJ"),
+      list(old = "Bank of Tokyo - London", new = "Bank of Tokyo-Mitsubishi UFJ"),
+      list(old = "Bank of Tokyo Mitsubishi", new = "Bank of Tokyo-Mitsubishi UFJ"),
+      list(old = "Barclays", new = "Barclays Capital Group", country = "Japan"),
+      list(old = "Barclays Capital", new = "Barclays Capital Group", country = "Japan"),
+      list(old = "Citigroup Japan", new = "Citigroup Global Mkts Japan"),
+      list(old = "BDai-ichi Kangyo Bank", new = "Dai-Ichi Kangyo Bank"),
+      list(old = "Dai-Ichi Kangyo Rsrch Inst", new = "Dai-Ichi Kangyo Bank"),
+      list(old = "Dai-Ichi Kangyo Rsrch Institute", new = "Dai-Ichi Kangyo Bank"),
+      list(old = "Dai-Ichi Life Research", new = "Dai-Ichi Kangyo Bank"),
+      list(old = "Dai-ichi Kangyo Bank", new = "Dai-Ichi Kangyo Bank"),
+      list(old = "Daiwa Institute of Research", new = "Daiwa Securities Research"),
+      list(old = "Daiwa Institute of Rsrch", new = "Daiwa Securities Research"),
+      list(old = "Daiwa Securities Rsrch", new = "Daiwa Securities Research"),
+      list(old = "Deutsche Securities", new = "Deutsche Bank (Asia)"),
+      list(old = "Deutsche Bank  (Asia)", new = "Deutsche Bank (Asia)"),
+      list(old = "Dresdner Kleinwort Asia", new = "Dresdner Kleinwort (Asia)"),
+      list(old = "Dresdner Kleinwort Benson", new = "Dresdner Kleinwort (Asia)"),
+      list(old = "Jap Ctr for Econ Rsrch", new = "Japan Ctr for Econ Research"),
+      list(old = "Japan Ctr Economic Rsrch", new = "Japan Ctr for Econ Research"),
+      list(old = "Kokumin Keizai Research Inst", new = "Kokumin Keizai Research Inst."),
+      list(old = "Mitsubishi Research", new = "Mitsubishi Research Institute"),
+      list(old = "Mitsubishi Research Inst", new = "Mitsubishi Research Institute"),
+      list(old = "Mitsubishi Research Institute", new = "Mitsubishi Research Institute"),
+      list(old = "Mitsubishi Rsrch", new = "Mitsubishi Research Institute"),
+      list(old = "Nikko Citigroup", new = "Nikko Salomon Smith Barney"),
+      list(old = "Nippon Steel Rsch Inst Corp", new = "Nippon Steel Research Institute"),
+      list(old = "Nippon Steel & Sumikin Res Inst", new = "Nippon Steel Research Institute"),
+      list(old = "Nippon Steel & Sumikin Rsrch", new = "Nippon Steel Research Institute"),
+      list(old = "Nomura Rsrch Center", new = "Nomura Research Institute"),
+      list(old = "Nomura Securities", new = "Nomura Research Institute"),
+      list(old = "S G Warburg - Japan", new = "SG Warburg - Japan"),
+      list(old = "S G Warburg - Tokyo", new = "SG Warburg - Japan"),
+      list(old = "SG Warburg - Japan", new = "SG Warburg - Japan"),
+      list(old = "SBC Warburg - Japan", new = "SG Warburg - Japan"),
+      list(old = "Salomon Smith Barney", new = "Salomon Smith Barney Asia (Citigroup)"),
+      list(old = "Salomon Smith Barney Asia", new = "Salomon Smith Barney Asia (Citigroup)"),
+      list(old = "Salomon Brothers Asia", new = "Salomon Brothers Asia Ltd."),
+      list(old = "Sumitomo Bank", new = "Sumitomo Life Research Institute"),
+      list(old = "Sumitomo Life Rsrch Institute", new = "Sumitomo Life Research Institute"),
+      list(old = "Sanwa Research Institute", new = "Sanwa Research Institute Corp."),
+      list(old = "Schroder Securities", new = "Schroders - Japan"),
+      list(old = "Schroders", new = "Schroders - Japan"),
+      list(old = "UBS - Phillips & Drew", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "UBS - Phillips & Drew - Tokyo", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "UBS  Phillips & Drew - Tokyo", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "UBS  Securities- Tokyo", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "UBS  Securities - Tokyo", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "UBS Securities - Japan", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "UBS Phillips & Drew", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "Yamaichi Rsrch Institute", new = "Yamaichi Research Institute"),
+      list(old = "Smith Barney - Japan", new = "Smith Barney (Shearson) Tokyo"),
+      list(old = "Smith Barney - Tokyo", new = "Smith Barney (Shearson) Tokyo"),
+      list(old = "Smith Barney Shearson - Tokyo", new = "Smith Barney (Shearson) Tokyo"),
+      list(old = "Smith Barney Shersn - Tokyo", new = "Smith Barney (Shearson) Tokyo"),
+      list(old = "Jardine Fleming", new = "Jardine Fleming - Tokyo"),
+      list(old = "Long Term Credit Bank", new = "Long Term Credit Bank Japan"),
+      list(old = "LTCB", new = "Long Term Credit Bank Japan"),
+      list(old = "NCB Research Institute", new = "Nippon Credit Bank"),
+      list(old = "Nikko Rsrch Center", new = "Nikko Research Center")
+    )
   )
 
   # JAPAN
@@ -1561,94 +1605,108 @@ ce_prep_gdp_data <- function(gdp_data){
 
 
   # further cleaning
-  gdp_data_c6 <- standardize_institution_names(gdp_data_c5, replacements = c(
-    "Banamex-Citi" = "Banamex",
-    "Banamex" = "Banamex",
-    "Bancomer" = "BBVA Bancomer",
-    "Bancomer Centro" = "BBVA Bancomer",
-    "BBVA" = "BBVA Bancomer",  # make sure to filter by country if needed
-    "BofAML" = "Bank of America Merrill Lynch",
-    "BPI" = "Banco BPI",
-    "CEESP" = "Commission on Environmental, Economic and Social Policy (CEESP)",
-    "Center Klein F'casting" = "Center Klein Forecasting",
-    "CKF-Forecasting" = "Center Klein Forecasting",
-    "Deutsche Bank Rsrch" = "Deutschebank Research",
-    "ESANE" = "ESANE Consultores SC",
-    "ESANE Consultores" = "ESANE Consultores SC",
-    "Grupo Bursatil" = "Grupo Bursatil Mexicano",
-    "Grupo Financ Inverlat" = "Grupo Financiero Inverlat",
-    "Heath & Associates" = "Heath and Associates",
-    "Heath y Associates" = "Heath and Associates",
-    "JP Morgan Chase Mex" = "JP Morgan Mexico",
-    "RGE" = "RGE Monitor",
-    "Scotia Inverlat" = "Scotiabank Inverlat",
-    "American Chamber Mex" = "American Chamber Of Commerce Of México A.C.",
-    "CAPEM" = "Grupo CAPEM",
-    "Casa de Bolsa Inverlat" = "Grupo Financiero Scotiabank",
-    "Scotiabank" = "Grupo Financiero Scotiabank",
-    "Scotiabank Inverlat" = "Grupo Financiero Scotiabank",
-    "Grupo Financiero Inverlat" = "Grupo Financiero Scotiabank",
-    "Consultores Econ" = "Consultores Economicos",
-    "EIU" = "Econ Intelligence Unit",
-    "Interacciones" = "Banco Interacciones, SA",
-    "Heath and Associates" = "Jonathan Heath & Assoc",
-    "Prognosis" = "Prognosis Economia Finanzas e Inversiones, S.C.",
-    "RGE Monitor" = "Roubini Global Econ"
+  gdp_data_c6 <- standardize_institution_names(
+    gdp_data_c5,
+    replacements = list(
+      list(old = "Banamex-Citi", new = "Banamex"),
+      list(old = "Banamex", new = "Banamex"),
+      list(old = "Bancomer", new = "BBVA Bancomer"),
+      list(old = "Bancomer Centro", new = "BBVA Bancomer"),
+      list(old = "BBVA", new = "BBVA Bancomer", country = "Mexico"),
+      list(old = "BofAML", new = "Bank of America Merrill Lynch"),
+      list(old = "BPI", new = "Banco BPI"),
+      list(old = "CEESP", new = "Commission on Environmental, Economic and Social Policy (CEESP)"),
+      list(old = "Center Klein F'casting", new = "Center Klein Forecasting"),
+      list(old = "CKF-Forecasting", new = "Center Klein Forecasting"),
+      list(old = "Deutsche Bank Rsrch", new = "Deutschebank Research"),
+      list(old = "ESANE", new = "ESANE Consultores SC"),
+      list(old = "ESANE Consultores", new = "ESANE Consultores SC"),
+      list(old = "Grupo Bursatil", new = "Grupo Bursatil Mexicano"),
+      list(old = "Grupo Financ Inverlat", new = "Grupo Financiero Inverlat"),
+      list(old = "Heath & Associates", new = "Heath and Associates"),
+      list(old = "Heath y Associates", new = "Heath and Associates"),
+      list(old = "JP Morgan Chase Mex", new = "JP Morgan Mexico"),
+      list(old = "RGE", new = "RGE Monitor"),
+      list(old = "Scotia Inverlat", new = "Scotiabank Inverlat"),
+      list(old = "American Chamber Mex", new = "American Chamber Of Commerce Of México A.C."),
+      list(old = "CAPEM", new = "Grupo CAPEM"),
+      list(old = "Casa de Bolsa Inverlat", new = "Grupo Financiero Scotiabank"),
+      list(old = "Scotiabank", new = "Grupo Financiero Scotiabank"),
+      list(old = "Scotiabank Inverlat", new = "Grupo Financiero Scotiabank"),
+      list(old = "Grupo Financiero Inverlat", new = "Grupo Financiero Scotiabank"),
+      list(old = "Consultores Econ", new = "Consultores Economicos"),
+      list(old = "EIU", new = "Econ Intelligence Unit"),
+      list(old = "Interacciones", new = "Banco Interacciones, SA"),
+      list(old = "Heath and Associates", new = "Jonathan Heath & Assoc"),
+      list(old = "Prognosis", new = "Prognosis Economia Finanzas e Inversiones, S.C."),
+      list(old = "RGE Monitor", new = "Roubini Global Econ")
+    )
   )
-  )
+
 
   # MEXICO:
   inst_mexico <- ce_prep_mexico(gdp_data_c6)
 
   # further cleaning :
-  gdp_data_c7 <- standardize_institution_names(gdp_data_c6, replacements = c(
-    "BBV" = "BBV Latinvest",
-    "BBV Securities" = "BBV Latinvest",
-    "Credit Lyonnais -  Arg" = "Credit Lyonnais Argentina",
-    "Credit Lyonnais Arg" = "Credit Lyonnais Argentina",
-    "Jorge Avila y Asociades" = "Jorge Avila y Asociados",
-    "M A Broda y Asociades" = "M A Broda & Asociados",
-    "M A Broda y Asociados" = "M A Broda & Asociados",
-    "MVA Macroeconomia" = "MVAS Macroeconomia",
-    "ACM" = "ACM Research",
-    "Delphos" = "Delphos Investment",
-    "Econometrica" = "Econométrica S.A. - Novedades",
-    "EXANTE" = "Exante Consultora",
-    "Exante" = "Exante Consultora",
-    "FIEL" = "Fundación de Investigaciones Económicas Latinoamericanas (FIEL)",
-    "FASEL" = "Fundación para el Análisis Socioeconómico de Latinoamérica (FASEL)",
-    "Fundacion Mediterranea" = "IERAL Fundacion Mediterranea",
-    "IERAL Fund" = "IERAL Fundacion Mediterranea",
-    "IERAL Fund Mediterranea" = "IERAL Fundacion Mediterranea",
-    "LCG Consultora" = "LCG. Consultora Labour Capital & Growth",
-    "M A Broda & Asociados" = "Macro Fundamentals - Estudio Broda y Asociados",
-    "Macroeconomica" = "MVAS Macroeconomia",
-    "Orlando Ferreres" = "Orlando Ferreres & Asoc",
-    "Puente" = "Puente Hnos",
-    "West Merchant Bank" = "West Merchant Bank Ltd"
-  )
+  gdp_data_c7 <- standardize_institution_names(
+    gdp_data_c6,
+    replacements = list(
+      list(old = "BBV", new = "BBV Latinvest"),
+      list(old = "BBV Securities", new = "BBV Latinvest"),
+      list(old = "Credit Lyonnais -  Arg", new = "Credit Lyonnais Argentina"),
+      list(old = "Credit Lyonnais Arg", new = "Credit Lyonnais Argentina"),
+      list(old = "Jorge Avila y Asociades", new = "Jorge Avila y Asociados"),
+      list(old = "M A Broda y Asociades", new = "M A Broda & Asociados"),
+      list(old = "M A Broda y Asociados", new = "M A Broda & Asociados"),
+      list(old = "MVA Macroeconomia", new = "MVAS Macroeconomia"),
+      list(old = "ACM", new = "ACM Research"),
+      list(old = "Delphos", new = "Delphos Investment"),
+      list(old = "Econometrica", new = "Econométrica S.A. - Novedades"),
+      list(old = "EXANTE", new = "Exante Consultora"),
+      list(old = "Exante", new = "Exante Consultora"),
+      list(old = "FIEL", new = "Fundación de Investigaciones Económicas Latinoamericanas (FIEL)"),
+      list(old = "FASEL", new = "Fundación para el Análisis Socioeconómico de Latinoamérica (FASEL)"),
+      list(old = "Fundacion Mediterranea", new = "IERAL Fundacion Mediterranea"),
+      list(old = "IERAL Fund", new = "IERAL Fundacion Mediterranea"),
+      list(old = "IERAL Fund Mediterranea", new = "IERAL Fundacion Mediterranea"),
+      list(old = "LCG Consultora", new = "LCG. Consultora Labour Capital & Growth"),
+      list(old = "M A Broda & Asociados", new = "Macro Fundamentals - Estudio Broda y Asociados"),
+      list(old = "Macroeconomica", new = "MVAS Macroeconomia"),
+      list(old = "Orlando Ferreres", new = "Orlando Ferreres & Asoc"),
+      list(old = "Puente", new = "Puente Hnos"),
+      list(old = "West Merchant Bank", new = "West Merchant Bank Ltd")
+    )
   )
 
+  gdp_data_c7 <- standardize_institution_names(
+    gdp_data_c7,
+    replacements = list(
+      list(old = "M A Broda & Asociados", new = "Macro Fundamentals - Estudio Broda y Asociados")
+    )
+  )
 
   # ARGENTINA
   inst_argentina <- ce_prep_argentina(gdp_data_c7)
 
 
   # further cleaning:
-  gdp_data_c8 <- standardize_institution_names(gdp_data_c7, replacements = c(
-    "Banco da Bahia" = "Banco da Bahia Invest",
-    "C Contador e Asocs" = "C Contador & Asocs",
-    "Grupo Bursatil Mex" = "Grupo Bursatil Mexicano",
-    "J.P. Morgan" = "JP Morgan",
-    "M B Asociados" = "M B Associadosn",
-    "MB Associados" = "M B Associadosn",
-    "IPEA" = "IPEA - Instituto de Pesquisa Econômica Aplicada",
-    "Rosenberg" = "Rosenberg Consultoria",
-    "UFRJ" = "UFRJ Universidade Federal do Rio de Janeiro",
-    "Univ. Federal do RJ" = "UFRJ Universidade Federal do Rio de Janeiro",
-    "Unibanco" = "Itau Unibanco"
+  gdp_data_c8 <- standardize_institution_names(
+    gdp_data_c7,
+    replacements = list(
+      list(old = "Banco da Bahia", new = "Banco da Bahia Invest"),
+      list(old = "C Contador e Asocs", new = "C Contador & Asocs"),
+      list(old = "Grupo Bursatil Mex", new = "Grupo Bursatil Mexicano"),
+      list(old = "J.P. Morgan", new = "JP Morgan"),
+      list(old = "M B Asociados", new = "M B Associadosn"),
+      list(old = "MB Associados", new = "M B Associadosn"),
+      list(old = "IPEA", new = "IPEA - Instituto de Pesquisa Econômica Aplicada"),
+      list(old = "Rosenberg", new = "Rosenberg Consultoria"),
+      list(old = "UFRJ", new = "UFRJ Universidade Federal do Rio de Janeiro"),
+      list(old = "Univ. Federal do RJ", new = "UFRJ Universidade Federal do Rio de Janeiro"),
+      list(old = "Unibanco", new = "Itau Unibanco")
+    )
   )
-  )
+
 
 
   # BRAZIL
@@ -1656,20 +1714,22 @@ ce_prep_gdp_data <- function(gdp_data){
 
 
   # further cleaning:
-  gdp_data_c9 <- standardize_institution_names(gdp_data_c8, replacements =c(
-    "Credit Suisse First Bstn" = "Credit Suisse First Boston",
-    "G.K. Goh" = "G.K. Goh Securities",
-    "GK Goh Securities" = "G.K. Goh Securities",
-    "Mizuho Research Inst" = "Mizuho Research Institute",
-    "Oxford Econ Forecast" = "Oxford Economics",
-    "Oxford Econ Forecasting" = "Oxford Economics",
-    "SSB/Citibank" = "Salomon Smith Barney Asia (Citigroup)",
-    "SSB Citibank" = "Salomon Smith Barney Asia (Citigroup)",
-    "Standard Chartered Bank" = "Standard Chartered",
-    "UOB Kayhian" = "UOB Kay Hian",
-    "UOB KayHian" = "UOB Kay Hian",
-    "WI Carr" = "W.I.Carr"
-  )
+  gdp_data_c9 <- standardize_institution_names(
+    gdp_data_c8,
+    replacements = list(
+      list(old = "Credit Suisse First Bstn", new = "Credit Suisse First Boston"),
+      list(old = "G.K. Goh", new = "G.K. Goh Securities"),
+      list(old = "GK Goh Securities", new = "G.K. Goh Securities"),
+      list(old = "Mizuho Research Inst", new = "Mizuho Research Institute"),
+      list(old = "Oxford Econ Forecast", new = "Oxford Economics"),
+      list(old = "Oxford Econ Forecasting", new = "Oxford Economics"),
+      list(old = "SSB/Citibank", new = "Salomon Smith Barney Asia (Citigroup)"),
+      list(old = "SSB Citibank", new = "Salomon Smith Barney Asia (Citigroup)"),
+      list(old = "Standard Chartered Bank", new = "Standard Chartered"),
+      list(old = "UOB Kayhian", new = "UOB Kay Hian"),
+      list(old = "UOB KayHian", new = "UOB Kay Hian"),
+      list(old = "WI Carr", new = "W.I.Carr")
+    )
   )
 
 
@@ -1677,12 +1737,15 @@ ce_prep_gdp_data <- function(gdp_data){
   inst_china <- ce_prep_china(gdp_data_c9)
 
   # further cleaning:
-  gdp_data_c10 <- standardize_institution_names(gdp_data_c9, replacements =c(
-    "CMB Research" = "Chase Manhattan Rsrch",
-    "Natl Cncil Apl Eco Rsrch" = "National Council of Applied Economic Research - India",
-    "W.I.Carr" = "W.I.Carr"  # This is redundant (same before and after), but included as-is
+  gdp_data_c10 <- standardize_institution_names(
+    gdp_data_c9,
+    replacements = list(
+      list(old = "CMB Research", new = "Chase Manhattan Rsrch"),
+      list(old = "Natl Cncil Apl Eco Rsrch", new = "National Council of Applied Economic Research - India"),
+      list(old = "W.I.Carr", new = "W.I.Carr")  # redundant but kept as is
+    )
   )
-  )
+
 
   # INDIA:
   inst_india <- ce_prep_india(gdp_data_c10)
@@ -1706,4 +1769,603 @@ ce_prep_gdp_data <- function(gdp_data){
 
 }
 
+
+
+ce_prep_cpi <- function(path, lscountries, fy, ly, months) {
+
+  cli::cli_alert_info("Loading CPI data...")
+
+  df.cpi.sum <- df.cpi <- data.frame()
+
+  for (country in lscountries) {
+    for (year in fy:ly) {
+      for (month in months) {
+
+        print(country)
+        print(year)
+        print(month)
+        print("cpi data")
+
+        grp <- get_country_group(country)
+        if (is.null(grp)) next
+        file <- build_file_path(path, grp[1], grp[2], month, year)
+        if (!file.exists(file)) next
+        data <- read_forecast_data(file, country)
+        if (is.null(data)) next
+
+        # GDP column
+        col_cpi <- get_cpi_column(data, country)
+        if (is.null(col_cpi)) next
+
+        # Survey date
+        exact.date.survey <- extract_date(data)
+        # Forecast years
+        y1y2 <- extract_forecast_years(data, country, year, month, col_cpi)
+        if (is.null(y1y2)) next
+
+        # Extract data
+        parsed <- parse_forecasts(data, col_cpi, y1y2[[1]], y1y2[[2]], exact.date.survey, country)
+        df.cpi.sum <- rbind(df.cpi.sum, parsed$summary)
+        df.cpi     <- rbind(df.cpi, parsed$individual)
+      }
+    }
+  }
+
+  df.cpi$Value <- as.numeric(df.cpi$Value)
+  df.cpi.sum$Value <- as.numeric(df.cpi.sum$Value)
+
+  # Clean
+  # remove rows where no institution and value is present:
+  df.cpi <- dplyr::anti_join(df.cpi, dplyr::filter(df.cpi, is.na(Value) & is.na(Institution)),
+                             by = c("Institution", "Date", "Value"))
+
+  # remove rows in case there is a row of number of forecasts in the final datafrmae:
+  df.cpi <- dplyr::anti_join(df.cpi, dplyr::filter(df.cpi, Institution == "Number of Forecasts"),
+                             by = c("Institution", "Date", "Value"))
+
+  return(list(summary = df.cpi.sum, individual = df.cpi))
+
+}
+
+get_cpi_column <- function(data, country) {
+  cpi_variants <- switch(
+    country,
+    "UK" = c("Retail Prices (Headline Rate)", "Retail Prices (RPIX)"),
+    "Germany" = c("Consumer Prices", "Harmonised Index of Consumer Prices"),
+    c("Consumer Prices")
+  )
+
+  for (cpi_name in cpi_variants) {
+    idx <- which(paste(data[2,], data[3,]) == cpi_name)
+    if (length(idx) > 0) return(idx)
+  }
+
+  return(NULL)
+}
+
+
+
+write_cpi_data <- function(data_input) {
+
+  cli::cli_alert_info("Writing CPI data...")
+
+  # Data for Stata:
+  stata <- list()
+  stata$df_cpi_stata <- data_input$df_cpi_stata |>
+    select(-local, -local.2, -source, -headquarter)
+
+  stata$df_cpi_stata_sum <- data_input[["df_cpi_stata_sum"]]
+
+  # rds data:
+  rds_dat <- list()
+  rds_dat$df_cpi_stata_sum <- data_input[["df_cpi_stata_sum"]]
+  rds_dat$df_cpi_stata <- data_input[["df_cpi_stata"]] |>
+    select(-local, -local.2, -source, -headquarter)
+
+  # Define a helper for safe writing
+  safe_write <- function(expr, file_label) {
+    tryCatch({
+      expr
+      cli::cli_alert_success("{file_label} written successfully.")
+      TRUE
+    }, error = function(e) {
+      cli::cli_alert_danger("Failed to write {file_label}: {e$message}")
+      FALSE
+    })
+  }
+
+  # Write files with error catching
+  success <- c(
+    safe_write(haven::write_dta(stata[["df_cpi_stata"]], path = "inst/data/produced/ce/df_cpi_stata.dta"), "Stata CPI data"),
+    safe_write(haven::write_dta(stata[["df_cpi_stata_sum"]], path = "inst/data/produced/ce/df_cpi_stata_sum.dta"), "Stata CPI summary"),
+    safe_write(saveRDS(rds_dat[["df_cpi_stata"]], file = "inst/data/produced/ce/df_cpi_stata.rds"), "RDS CPI data"),
+    safe_write(saveRDS(rds_dat[["df_cpi_stata_sum"]], file = "inst/data/produced/ce/df_cpi_stata_sum.rds"), "RDS CPI summary")
+  )
+
+  if (all(success)) {
+    cli::cli_alert_success("All data written successfully.")
+  } else {
+    cli::cli_alert_warning("Some files failed to write.")
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ce_prep_macro_data <- function(ce_data){
+
+  cli::cli_alert_info("Cleaning and preparing data...")
+
+
+  # some initial cleaning
+  macro_data_c1 <- standardize_institution_names(
+    ce_data$individual,
+    replacements = list(
+      list(old = "American Int'l Group", new = "American International Group"),
+      list(old = "American Intl Group", new = "American International Group"),
+      list(old = "Amoco", new = "Amoco Corporation"),
+      list(old = "Amoco Corp", new = "Amoco Corporation"),
+      list(old = "BMO Financial Markets", new = "BMO Capital Markets"),
+      list(old = "Brown Brothers", new = "Brown Brothers Harriman"),
+      list(old = "Chase", new = "Chase Manhatten Bank"),
+      list(old = "Chase Manhatten", new = "Chase Manhatten Bank"),
+      list(old = "Chemical Bank", new = "Chemical Banking"),
+      list(old = "Core States", new = "CoreStates Financial Corporation"),
+      list(old = "CoreStates Fin Corp", new = "CoreStates Financial Corporation"),
+      list(old = "CoreStates", new = "CoreStates Financial Corporation"),
+      list(old = "CRT Govt Securities", new = "CRT Govt. Securities"),
+      list(old = "CS First Boston", new = "Credit Suisse First Boston"),
+      list(old = "FannieMae", new = "Fannie Mae"),
+      list(old = "Ford Motor", new = "Ford Motor Company"),
+      list(old = "Ford Motor Corp", new = "Ford Motor Company"),
+      list(old = "Georgia State Uni.", new = "Georgia State University"),
+      list(old = "IHS Global Insight", new = "IHS Markit"),
+      list(old = "IHS Economics", new = "IHS Markit"),
+      list(old = "J P Morgan", new = "JP Morgan"),
+      list(old = "Moody's Economy.com", new = "Moody's Analytics"),
+      list(old = "Mortgage Bankers", new = "Mortgage Bankers Association"),
+      list(old = "Mortgage Bankers Assoc", new = "Mortgage Bankers Association"),
+      list(old = "Mortgage Bankers Assoc.", new = "Mortgage Bankers Association"),
+      list(old = "Nat Assn Manufacturers", new = "Nat Assn of Manufacturers"),
+      list(old = "Nat Assn of Homebuilders", new = "Nat Assn of Home Builders"),
+      list(old = "Nat. Ass. of Homebuilders", new = "Nat Assn of Home Builders"),
+      list(old = "Natl Assoc of Home Builders", new = "Nat Assn of Home Builders"),
+      list(old = "PNC Financial Services", new = "PNC Bank"),
+      list(old = "Prudential Insurance", new = "Prudential Financial"),
+      list(old = "Regional Financial Ass.", new = "Regional Financial Associates Inc"),
+      list(old = "Regional Financial Assocs", new = "Regional Financial Associates Inc"),
+      list(old = "Sears Roebuck", new = "Sears Roebuck & Co"),
+      list(old = "Smith Barney", new = "Smith Barney Shearson"),
+      list(old = "Standard & Poors", new = "Standard & Poor's"),
+      list(old = "U.S. Trust", new = "United States Trust"),
+      list(old = "Wells Fargo Bank", new = "Wells Fargo"),
+      list(old = "WEFA Group", new = "Wharton Econometric Forecasting Associates"),
+      list(old = "The WEFA Group", new = "Wharton Econometric Forecasting Associates"),
+      list(old = "Economy.com", new = "Moody's Analytics"),
+      list(old = "Global Insight", new = "IHS Markit")
+    )
+  )
+
+
+  # USA info:  - later on, we might source that out into stata file.
+  inst_usa <- ce_prep_usa(macro_data_c1)
+
+
+  # further cleaning :
+  macro_data_c2 <- standardize_institution_names(
+    macro_data_c1,
+    replacements = list(
+      list(old = "Caisse de depot", new = "Caisse de Depot"),
+      list(old = "Caisse de Depots", new = "Caisse de Depot"),
+      list(old = "Centre for Spatial Econ", new = "Centre for Spatial Economics"),
+      list(old = "Centre for Spatial Econ.", new = "Centre for Spatial Economics"),
+      list(old = "DRI - Canada", new = "DRI Canada"),
+      list(old = "DRI  Canada", new = "DRI Canada"),
+      list(old = "Du Pont", new = "DuPont Canada"),
+      list(old = "Merrill Lynch - Canada", new = "Merrill Lynch Canada"),
+      list(old = "RBC Dominion Securities", new = "RBC - Dominion Securities"),
+      list(old = "RBC Dominion", new = "RBC - Dominion Securities"),
+      list(old = "Toronto Dominion", new = "Toronto Dominion Bank"),
+      list(old = "Conference Board", new = "Conf Board of Canada"),
+      list(old = "Royal Trust", new = "Royal Trust (Canada)")
+    )
+  )
+
+  # CANADA info:  - later on, we might source that out into stata file.
+  inst_canada <- ce_prep_canada(macro_data_c2)
+
+  # further cleaning :
+  macro_data_c3 <- standardize_institution_names(
+    macro_data_c2,
+    replacements = list(
+      list(old = "KOF Swiss Econ Inst", new = "KOF/ETH"),
+      list(old = "KOF Swiss Econ. Inst.", new = "KOF/ETH"),
+      list(old = "KOF/ETH Zentrum", new = "KOF/ETH"),
+      list(old = "Zurcher Kantonalbank", new = "Zürcher Kantonalbank"),
+      list(old = "IHS Global Insight", new = "IHS Markit"),
+      list(old = "IHS Economics", new = "IHS Markit"),
+      list(old = "Global Insight", new = "IHS Markit"),
+      list(old = "Oxford - BAK", new = "Oxford - BAK Basel")
+    )
+  )
+
+
+
+  # SWITZERLAND:
+  inst_switzerland <- ce_prep_switzerland(macro_data_c3)
+
+  # further cleaning :
+  macro_data_c4 <- standardize_institution_names(
+    macro_data_c3,
+    replacements = list(
+      list(old = "KOF Swiss Econ Inst", new = "KOF/ETH"),
+      list(old = "KOF Swiss Econ. Inst.", new = "KOF/ETH"),
+      list(old = "KOF/ETH Zentrum", new = "KOF/ETH"),
+      list(old = "Zurcher Kantonalbank", new = "Zürcher Kantonalbank"),
+      list(old = "IHS Global Insight", new = "IHS Markit"),
+      list(old = "IHS Economics", new = "IHS Markit"),
+      list(old = "Global Insight", new = "IHS Markit"),
+      list(old = "Oxford - BAK", new = "Oxford - BAK Basel"),
+      list(old = "Erik Penser FK", new = "Erik Penser Bank"),
+      list(old = "Hagglof - SBC Warburg", new = "Hagglof - SG Warburg"),
+      list(old = "Hagstromer & Qviberg", new = "Hagströmer & Qviberg"),
+      list(old = "SBAB", new = "SBAB Bank"),
+      list(old = "Volvo Group Finance", new = "Volvo"),
+      list(old = "HQ Bank", new = "Hagströmer & Qviberg Bank"),
+      list(old = "Hagströmer & Qviberg", new = "Hagströmer & Qviberg Bank"),
+      list(old = "Matteus FK", new = "Matteus Fondkommission"),
+      list(old = "Matteus Bank", new = "Matteus Fondkommission"),
+      list(old = "Ohman", new = "Öhman Mutual Funds and Asset Management"),
+      list(old = "Öhman", new = "Öhman Mutual Funds and Asset Management"),
+      list(old = "Aragon", new = "Aragon Fondkommission"),
+      list(old = "Finanskonsult", new = "Ficope Finanskonsult"),
+      list(old = "ITEM Club", new = "EY Item Club"),
+      list(old = "SE Banken", new = "Skandinaviska Enskilda Banken")
+    )
+  )
+
+
+  # SWEDEN
+  inst_sweden <- ce_prep_sweden(macro_data_c4)
+
+
+  # further cleaning :
+  macro_data_c5 <- standardize_institution_names(
+    macro_data_c4,
+    replacements = list(
+      list(old = "Bank of Tokyo", new = "Bank of Tokyo-Mitsubishi UFJ"),
+      list(old = "Bank of Tokyo - London", new = "Bank of Tokyo-Mitsubishi UFJ"),
+      list(old = "Bank of Tokyo Mitsubishi", new = "Bank of Tokyo-Mitsubishi UFJ"),
+      list(old = "Barclays", new = "Barclays Capital Group", country = "Japan"),
+      list(old = "Barclays Capital", new = "Barclays Capital Group", country = "Japan"),
+      list(old = "Citigroup Japan", new = "Citigroup Global Mkts Japan"),
+      list(old = "BDai-ichi Kangyo Bank", new = "Dai-Ichi Kangyo Bank"),
+      list(old = "Dai-Ichi Kangyo Rsrch Inst", new = "Dai-Ichi Kangyo Bank"),
+      list(old = "Dai-Ichi Kangyo Rsrch Institute", new = "Dai-Ichi Kangyo Bank"),
+      list(old = "Dai-Ichi Life Research", new = "Dai-Ichi Kangyo Bank"),
+      list(old = "Dai-ichi Kangyo Bank", new = "Dai-Ichi Kangyo Bank"),
+      list(old = "Daiwa Institute of Research", new = "Daiwa Securities Research"),
+      list(old = "Daiwa Institute of Rsrch", new = "Daiwa Securities Research"),
+      list(old = "Daiwa Securities Rsrch", new = "Daiwa Securities Research"),
+      list(old = "Deutsche Securities", new = "Deutsche Bank (Asia)"),
+      list(old = "Deutsche Bank  (Asia)", new = "Deutsche Bank (Asia)"),
+      list(old = "Dresdner Kleinwort Asia", new = "Dresdner Kleinwort (Asia)"),
+      list(old = "Dresdner Kleinwort Benson", new = "Dresdner Kleinwort (Asia)"),
+      list(old = "Jap Ctr for Econ Rsrch", new = "Japan Ctr for Econ Research"),
+      list(old = "Japan Ctr Economic Rsrch", new = "Japan Ctr for Econ Research"),
+      list(old = "Kokumin Keizai Research Inst", new = "Kokumin Keizai Research Inst."),
+      list(old = "Mitsubishi Research", new = "Mitsubishi Research Institute"),
+      list(old = "Mitsubishi Research Inst", new = "Mitsubishi Research Institute"),
+      list(old = "Mitsubishi Research Institute", new = "Mitsubishi Research Institute"),
+      list(old = "Mitsubishi Rsrch", new = "Mitsubishi Research Institute"),
+      list(old = "Nikko Citigroup", new = "Nikko Salomon Smith Barney"),
+      list(old = "Nippon Steel Rsch Inst Corp", new = "Nippon Steel Research Institute"),
+      list(old = "Nippon Steel & Sumikin Res Inst", new = "Nippon Steel Research Institute"),
+      list(old = "Nippon Steel & Sumikin Rsrch", new = "Nippon Steel Research Institute"),
+      list(old = "Nomura Rsrch Center", new = "Nomura Research Institute"),
+      list(old = "Nomura Securities", new = "Nomura Research Institute"),
+      list(old = "S G Warburg - Japan", new = "SG Warburg - Japan"),
+      list(old = "S G Warburg - Tokyo", new = "SG Warburg - Japan"),
+      list(old = "SG Warburg - Japan", new = "SG Warburg - Japan"),
+      list(old = "SBC Warburg - Japan", new = "SG Warburg - Japan"),
+      list(old = "Salomon Smith Barney", new = "Salomon Smith Barney Asia (Citigroup)"),
+      list(old = "Salomon Smith Barney Asia", new = "Salomon Smith Barney Asia (Citigroup)"),
+      list(old = "Salomon Brothers Asia", new = "Salomon Brothers Asia Ltd."),
+      list(old = "Sumitomo Bank", new = "Sumitomo Life Research Institute"),
+      list(old = "Sumitomo Life Rsrch Institute", new = "Sumitomo Life Research Institute"),
+      list(old = "Sanwa Research Institute", new = "Sanwa Research Institute Corp."),
+      list(old = "Schroder Securities", new = "Schroders - Japan"),
+      list(old = "Schroders", new = "Schroders - Japan"),
+      list(old = "UBS - Phillips & Drew", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "UBS - Phillips & Drew - Tokyo", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "UBS  Phillips & Drew - Tokyo", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "UBS  Securities- Tokyo", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "UBS  Securities - Tokyo", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "UBS Securities - Japan", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "UBS Phillips & Drew", new = "UBS Phillips & Drew (Securities) Tokyo"),
+      list(old = "Yamaichi Rsrch Institute", new = "Yamaichi Research Institute"),
+      list(old = "Smith Barney - Japan", new = "Smith Barney (Shearson) Tokyo"),
+      list(old = "Smith Barney - Tokyo", new = "Smith Barney (Shearson) Tokyo"),
+      list(old = "Smith Barney Shearson - Tokyo", new = "Smith Barney (Shearson) Tokyo"),
+      list(old = "Smith Barney Shersn - Tokyo", new = "Smith Barney (Shearson) Tokyo"),
+      list(old = "Jardine Fleming", new = "Jardine Fleming - Tokyo"),
+      list(old = "Long Term Credit Bank", new = "Long Term Credit Bank Japan"),
+      list(old = "LTCB", new = "Long Term Credit Bank Japan"),
+      list(old = "NCB Research Institute", new = "Nippon Credit Bank"),
+      list(old = "Nikko Rsrch Center", new = "Nikko Research Center")
+    )
+  )
+
+  # JAPAN
+  inst_japan <- ce_prep_japan(macro_data_c5)
+
+
+  # further cleaning
+  macro_data_c6 <- standardize_institution_names(
+    macro_data_c5,
+    replacements = list(
+      list(old = "Banamex-Citi", new = "Banamex"),
+      list(old = "Banamex", new = "Banamex"),
+      list(old = "Bancomer", new = "BBVA Bancomer"),
+      list(old = "Bancomer Centro", new = "BBVA Bancomer"),
+      list(old = "BBVA", new = "BBVA Bancomer", country = "Mexico"),
+      list(old = "BofAML", new = "Bank of America Merrill Lynch"),
+      list(old = "BPI", new = "Banco BPI"),
+      list(old = "CEESP", new = "Commission on Environmental, Economic and Social Policy (CEESP)"),
+      list(old = "Center Klein F'casting", new = "Center Klein Forecasting"),
+      list(old = "CKF-Forecasting", new = "Center Klein Forecasting"),
+      list(old = "Deutsche Bank Rsrch", new = "Deutschebank Research"),
+      list(old = "ESANE", new = "ESANE Consultores SC"),
+      list(old = "ESANE Consultores", new = "ESANE Consultores SC"),
+      list(old = "Grupo Bursatil", new = "Grupo Bursatil Mexicano"),
+      list(old = "Grupo Financ Inverlat", new = "Grupo Financiero Inverlat"),
+      list(old = "Heath & Associates", new = "Heath and Associates"),
+      list(old = "Heath y Associates", new = "Heath and Associates"),
+      list(old = "JP Morgan Chase Mex", new = "JP Morgan Mexico"),
+      list(old = "RGE", new = "RGE Monitor"),
+      list(old = "Scotia Inverlat", new = "Scotiabank Inverlat"),
+      list(old = "American Chamber Mex", new = "American Chamber Of Commerce Of México A.C."),
+      list(old = "CAPEM", new = "Grupo CAPEM"),
+      list(old = "Casa de Bolsa Inverlat", new = "Grupo Financiero Scotiabank"),
+      list(old = "Scotiabank", new = "Grupo Financiero Scotiabank"),
+      list(old = "Scotiabank Inverlat", new = "Grupo Financiero Scotiabank"),
+      list(old = "Grupo Financiero Inverlat", new = "Grupo Financiero Scotiabank"),
+      list(old = "Consultores Econ", new = "Consultores Economicos"),
+      list(old = "EIU", new = "Econ Intelligence Unit"),
+      list(old = "Interacciones", new = "Banco Interacciones, SA"),
+      list(old = "Heath and Associates", new = "Jonathan Heath & Assoc"),
+      list(old = "Prognosis", new = "Prognosis Economia Finanzas e Inversiones, S.C."),
+      list(old = "RGE Monitor", new = "Roubini Global Econ")
+    )
+  )
+
+
+  # MEXICO:
+  inst_mexico <- ce_prep_mexico(macro_data_c6)
+
+  # further cleaning :
+  macro_data_c7 <- standardize_institution_names(
+    macro_data_c6,
+    replacements = list(
+      list(old = "BBV", new = "BBV Latinvest"),
+      list(old = "BBV Securities", new = "BBV Latinvest"),
+      list(old = "Credit Lyonnais -  Arg", new = "Credit Lyonnais Argentina"),
+      list(old = "Credit Lyonnais Arg", new = "Credit Lyonnais Argentina"),
+      list(old = "Jorge Avila y Asociades", new = "Jorge Avila y Asociados"),
+      list(old = "M A Broda y Asociades", new = "M A Broda & Asociados"),
+      list(old = "M A Broda y Asociados", new = "M A Broda & Asociados"),
+      list(old = "MVA Macroeconomia", new = "MVAS Macroeconomia"),
+      list(old = "ACM", new = "ACM Research"),
+      list(old = "Delphos", new = "Delphos Investment"),
+      list(old = "Econometrica", new = "Econométrica S.A. - Novedades"),
+      list(old = "EXANTE", new = "Exante Consultora"),
+      list(old = "Exante", new = "Exante Consultora"),
+      list(old = "FIEL", new = "Fundación de Investigaciones Económicas Latinoamericanas (FIEL)"),
+      list(old = "FASEL", new = "Fundación para el Análisis Socioeconómico de Latinoamérica (FASEL)"),
+      list(old = "Fundacion Mediterranea", new = "IERAL Fundacion Mediterranea"),
+      list(old = "IERAL Fund", new = "IERAL Fundacion Mediterranea"),
+      list(old = "IERAL Fund Mediterranea", new = "IERAL Fundacion Mediterranea"),
+      list(old = "LCG Consultora", new = "LCG. Consultora Labour Capital & Growth"),
+      list(old = "M A Broda & Asociados", new = "Macro Fundamentals - Estudio Broda y Asociados"),
+      list(old = "Macroeconomica", new = "MVAS Macroeconomia"),
+      list(old = "Orlando Ferreres", new = "Orlando Ferreres & Asoc"),
+      list(old = "Puente", new = "Puente Hnos"),
+      list(old = "West Merchant Bank", new = "West Merchant Bank Ltd")
+    )
+  )
+
+  macro_data_c7 <- standardize_institution_names(
+    macro_data_c7,
+    replacements = list(
+      list(old = "M A Broda & Asociados", new = "Macro Fundamentals - Estudio Broda y Asociados")
+    )
+  )
+
+  # ARGENTINA
+  inst_argentina <- ce_prep_argentina(macro_data_c7)
+
+
+  # further cleaning:
+  macro_data_c8 <- standardize_institution_names(
+    macro_data_c7,
+    replacements = list(
+      list(old = "Banco da Bahia", new = "Banco da Bahia Invest"),
+      list(old = "C Contador e Asocs", new = "C Contador & Asocs"),
+      list(old = "Grupo Bursatil Mex", new = "Grupo Bursatil Mexicano"),
+      list(old = "J.P. Morgan", new = "JP Morgan"),
+      list(old = "M B Asociados", new = "M B Associadosn"),
+      list(old = "MB Associados", new = "M B Associadosn"),
+      list(old = "IPEA", new = "IPEA - Instituto de Pesquisa Econômica Aplicada"),
+      list(old = "Rosenberg", new = "Rosenberg Consultoria"),
+      list(old = "UFRJ", new = "UFRJ Universidade Federal do Rio de Janeiro"),
+      list(old = "Univ. Federal do RJ", new = "UFRJ Universidade Federal do Rio de Janeiro"),
+      list(old = "Unibanco", new = "Itau Unibanco")
+    )
+  )
+
+
+
+  # BRAZIL
+  inst_brazil <- ce_prep_brazil(macro_data_c8)
+
+
+  # further cleaning:
+  macro_data_c9 <- standardize_institution_names(
+    macro_data_c8,
+    replacements = list(
+      list(old = "Credit Suisse First Bstn", new = "Credit Suisse First Boston"),
+      list(old = "G.K. Goh", new = "G.K. Goh Securities"),
+      list(old = "GK Goh Securities", new = "G.K. Goh Securities"),
+      list(old = "Mizuho Research Inst", new = "Mizuho Research Institute"),
+      list(old = "Oxford Econ Forecast", new = "Oxford Economics"),
+      list(old = "Oxford Econ Forecasting", new = "Oxford Economics"),
+      list(old = "SSB/Citibank", new = "Salomon Smith Barney Asia (Citigroup)"),
+      list(old = "SSB Citibank", new = "Salomon Smith Barney Asia (Citigroup)"),
+      list(old = "Standard Chartered Bank", new = "Standard Chartered"),
+      list(old = "UOB Kayhian", new = "UOB Kay Hian"),
+      list(old = "UOB KayHian", new = "UOB Kay Hian"),
+      list(old = "WI Carr", new = "W.I.Carr")
+    )
+  )
+
+
+  # CHINA:
+  inst_china <- ce_prep_china(macro_data_c9)
+
+  # further cleaning:
+  macro_data_c10 <- standardize_institution_names(
+    macro_data_c9,
+    replacements = list(
+      list(old = "CMB Research", new = "Chase Manhattan Rsrch"),
+      list(old = "Natl Cncil Apl Eco Rsrch", new = "National Council of Applied Economic Research - India"),
+      list(old = "W.I.Carr", new = "W.I.Carr")  # redundant but kept as is
+    )
+  )
+
+
+  # INDIA:
+  inst_india <- ce_prep_india(macro_data_c10)
+
+
+
+  # list of institutions:
+  list_inst <- list(inst_usa, inst_canada, inst_switzerland, inst_sweden,
+                    inst_japan, inst_mexico, inst_argentina, inst_brazil,
+                    inst_china, inst_india)
+
+
+
+  ce_stata <- ce_prep_data_stata(data = list(data_individual = macro_data_c10,
+                                             data_sum = ce_data$summary),
+                                 institution_info = list_inst
+  )
+
+
+  return(ce_stata)
+
+
+}
+
+
+
+
+
+ce_prep_data_stata <- function(data, institution_info){
+
+  ind <- data$data_individual
+  sum <- data$data_sum
+
+
+  all_inst <- bind_rows(institution_info)
+
+  ind <- ind %>%
+    dplyr::full_join(all_inst,by=c("Institution","Country"))
+
+  ind_f <- ind |>
+    mutate(Country = replace(Country, Country == "USA", "United States"),
+           Country = replace(Country, Country == "UK", "United Kingdom")) |>
+    select(Country, Date, Institution, Year, current, local, local.2, source, headquarter) |>
+    rename_with(tolower) |>
+    mutate(local = as.factor(local),
+           local.2 = as.factor(local.2),
+           current = as.factor(current)
+    ) |>
+    #   mutate(
+    #     local = labelled(local, labels = c("Foreign" = 0, "Local" = 1)),
+    #     local.2 = labelled(local.2, labels = c("Local" = 1, "Multinational" = 2, "Foreign" = 3))
+    #   ) |>
+    rename(year_forecast = year)
+
+  sum_f <- sum |>
+    mutate(Country = replace(Country, Country == "USA", "United States")) |>
+    select(Country, Date, Measure, Year, current) |>
+    rename_with(tolower) |>
+    rename(year_forecast = year)
+
+
+  return(list(df_stata = ind_f,
+              df_stata_sum = sum_f)
+  )
+
+
+}
+
+
+
+ce_write_data <- function(data_input, indicator = "gdp") {
+  cli::cli_alert_info("Writing {toupper(indicator)} data...")
+
+  # Remove columns from main data
+  clean_data <- data_input[["df_stata"]] |>
+    dplyr::select(-local, -local.2, -source, -headquarter)
+
+  clean_summary <- data_input[["df_stata_sum"]]
+
+  # Prepare for Stata and RDS
+  stata <- list()
+  stata[[paste0("df_", indicator, "_stata")]] <- clean_data
+  stata[[paste0("df_", indicator, "_stata_sum")]] <- clean_summary
+
+  # Safe writing helper
+  safe_write <- function(expr, file_label) {
+    tryCatch({
+      expr
+      cli::cli_alert_success("{file_label} written successfully.")
+      TRUE
+    }, error = function(e) {
+      cli::cli_alert_danger("Failed to write {file_label}: {e$message}")
+      FALSE
+    })
+  }
+
+  # Write files to disk
+  success <- c(
+    safe_write(haven::write_dta(clean_data, path = glue::glue("inst/data/produced/ce/df_{indicator}_stata.dta")), paste("Stata", toupper(indicator), "data")),
+    safe_write(haven::write_dta(clean_summary, path = glue::glue("inst/data/produced/ce/df_{indicator}_stata_sum.dta")), paste("Stata", toupper(indicator), "summary")),
+    safe_write(saveRDS(clean_data, file = glue::glue("inst/data/produced/ce/df_{indicator}_stata.rds")), paste("RDS", toupper(indicator), "data")),
+    safe_write(saveRDS(clean_summary, file = glue::glue("inst/data/produced/ce/df_{indicator}_stata_sum.rds")), paste("RDS", toupper(indicator), "summary"))
+  )
+
+  if (all(success)) {
+    cli::cli_alert_success("All {toupper(indicator)} data written successfully.")
+  } else {
+    cli::cli_alert_warning("Some files failed to write for {toupper(indicator)}.")
+  }
+}
 
