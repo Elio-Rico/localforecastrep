@@ -54,7 +54,7 @@ get_gdp_column <- function(data, country) {
 
 
 
-ce_prep_gdp <- function(path, lscountries, fy, ly, months) {
+ce_read_gdp <- function(path, lscountries, fy, ly, months) {
 
   cli::cli_alert_info("Loading GDP data...")
 
@@ -1307,7 +1307,7 @@ ce_prep_india <- function(data){
 
 
 
-ce_prep_cpi <- function(path, lscountries, fy, ly, months) {
+ce_read_cpi <- function(path, lscountries, fy, ly, months) {
 
   cli::cli_alert_info("Loading CPI data...")
 

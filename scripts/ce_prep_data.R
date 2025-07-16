@@ -31,7 +31,7 @@ list.of.months <- c("jan","feb","mar","apr","may","jun",
 
 
 # load gdp data:
-gdp_data <- ce_prep_gdp(path = path_ce(),
+gdp_data <- ce_read_gdp(path = path_ce(),
                  lscountries = list_of_countries,
                  fy = first.year,
                  ly = last.year,
@@ -56,7 +56,8 @@ ce_write_data(data_input = gdp_stata_final,
 # Inflation
 # ---------------------
 
-cpi_data <- ce_prep_cpi(path = path_ce(),
+# read in cpi data:
+cpi_data <- ce_read_cpi(path = path_ce(),
                         lscountries = list_of_countries,
                         fy = first.year,
                         ly = last.year,
