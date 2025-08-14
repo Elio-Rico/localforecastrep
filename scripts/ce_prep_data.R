@@ -14,8 +14,7 @@ list_of_countries <- c("Austria","Argentina", "Brazil","Belgium","Bulgaria","Can
                        "Philippines","Poland","Portugal","Romania",
                        "Russia", "Saudi Arabia","South Africa","South Korea","Spain","Sweden","Slovakia","Slovenia",
                        "Switzerland",
-                       "Thailand","Turkey",
-                       "Ukraine","UK","USA","Venezuela")
+                       "Thailand","Turkey","UK","USA","Venezuela")
 
 first.year <- 1989
 last.year  <- 2021

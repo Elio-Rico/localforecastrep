@@ -360,6 +360,9 @@ ce_prep_usa <- function(data){
   )
 
 
+  data_out <- data_out %>%
+    mutate(local = if_else(headquarter != "USA", 0, local))
+
   return(data_out)
 
 }
@@ -1788,7 +1791,7 @@ ce_prep_data_stata <- function(data, institution_info){
   ind_f <- ind |>
     mutate(Country = replace(Country, Country == "USA", "United States"),
            Country = replace(Country, Country == "UK", "United Kingdom")) |>
-    select(Country, Date, Institution, Year, current, local, local.2, source, headquarter) |>
+    select(Country, Date, Institution, Year, Value, current, local, local.2, source, headquarter) |>
     rename_with(tolower) |>
     mutate(local = as.factor(local),
            local.2 = as.factor(local.2),
@@ -1798,13 +1801,25 @@ ce_prep_data_stata <- function(data, institution_info){
     #     local = labelled(local, labels = c("Foreign" = 0, "Local" = 1)),
     #     local.2 = labelled(local.2, labels = c("Local" = 1, "Multinational" = 2, "Foreign" = 3))
     #   ) |>
-    rename(year_forecast = year)
+    rename(year_forecast = year) |>
+    mutate(headquarter = replace(headquarter, headquarter == "Argentina", "ARG"),
+           headquarter = replace(headquarter, headquarter == "Japan", "JPN"),
+           headquarter = replace(headquarter, headquarter == "China", "CHN"),
+           headquarter = replace(headquarter, headquarter == "Sweden", "SWE"),
+           headquarter = replace(headquarter, headquarter == "Switzerland", "CHE"),
+           headquarter = replace(headquarter, headquarter == "Mexico", "MEX"),
+           headquarter = replace(headquarter, headquarter == "Canada", "CAN"),
+           headquarter = replace(headquarter, headquarter == "India", "IND"),
+           headquarter = replace(headquarter, headquarter == "Brazil", "BRA")
+           ) |>
+    filter(!is.na(date))
 
   sum_f <- sum |>
     mutate(Country = replace(Country, Country == "USA", "United States")) |>
-    select(Country, Date, Measure, Year, current) |>
+    select(Country, Date, Measure, Year, Value, current) |>
     rename_with(tolower) |>
-    rename(year_forecast = year)
+    rename(year_forecast = year) |>
+    filter(!is.na(date))
 
 
   return(list(df_stata = ind_f,
@@ -1821,7 +1836,9 @@ ce_write_data <- function(data_input, indicator = "gdp") {
 
   # Remove columns from main data
   clean_data <- data_input[["df_stata"]] |>
-    dplyr::select(-local, -local.2, -source, -headquarter)
+     dplyr::rename(local_2 = local.2)
+  # # |>
+  #   dplyr::select(-local, -local.2, -source, -headquarter)
 
   clean_summary <- data_input[["df_stata_sum"]]
 
