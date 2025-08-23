@@ -44,7 +44,7 @@ This folder contains the company tree structure, directly downloaded from Eikon.
 
 #### 5.4 [inst/data/raw/crises](inst/data/raw/crises/)
 
-This folder contains data for crises periods. Data stems from [Broner et al., 2013](https://www.sciencedirect.com/science/article/abs/pii/S0304393212001675)
+This folder contains data for crises periods. Data stems from [Harvard Global Crises Data by Country](https://www.hbs.edu/behavioral-finance-and-financial-stability/data/Pages/global.aspx).
 
 
 
