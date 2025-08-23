@@ -35,7 +35,7 @@ This folder contains all the raw and produced data. Several of the folders are e
 This folder contains the original excel files from [consensus economics](https://www.consensuseconomics.com/). Content is already described in section [scripts](#scripts).
 
 #### 5.2 [inst/data/raw/imf](inst/data/raw/imf/)
-This folder contains the vintage series from the world economic outlook of the IMF, accessible [here](https://www.imf.org/en/Publications/WEO). We downloaded all the vintage data, arranged it and saved the resulting data in this folder. The raw stata input file is called "vintages.dta".
+This folder contains the vintage series from the world economic outlook of the IMF, accessible [here](https://www.imf.org/en/Publications/WEO). We downloaded all the vintage data, arranged it and saved the resulting data in the folder [inst/data/produced/imf](inst/data/produced/imf/) under "vintages.dta".
 
 
 #### 5.3 [inst/data/raw/eikon](inst/data/raw/eikon/)
