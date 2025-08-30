@@ -2,6 +2,10 @@
 .Rhistory
 .Rapp.history
 
+*~
+*.swp
+*.stswp
+
 # Session Data files
 .RData
 .RDataTmp
@@ -57,7 +61,30 @@ rsconnect/
 
 # Consensus Economics Data (Confidential)
 inst/data/raw/ce/
-inst/data/produced/ce/
+inst/data/raw/gravity/
+inst/data/raw/crises/
 inst/data/raw/eikon/
+inst/data/raw/epu/
+inst/data/raw/icrg/
+inst/data/raw/bis/
+inst/data/raw/indprod/
+inst/data/raw/msci/
+inst/data/raw/recession/
+inst/data/raw/stock_market/
+inst/data/raw/vix/
 inst/data/produced/eikon/
+inst/data/produced/ce/
 inst/data/produced/ce_imf/
+inst/data/produced/bis/
+inst/data/produced/epu/
+inst/data/produced/icrg/
+inst/data/produced/indprod/
+inst/data/produced/stock_market/
+inst/data/produced/gravity/
+inst/data/produced/msci/
+inst/data/produced/vix/
+inst/data/produced/worldbank/
+inst/data/produced/recession/
+output/figures/
+output/tables/
+output/regressions/

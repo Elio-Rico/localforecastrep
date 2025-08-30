@@ -2,7 +2,7 @@ get_country_group <- function(country) {
 
   eastern.countries <- c("Bulgaria","Croatia","Czech Republic","Estonia","Hungary","Poland","Russia",
                          "Turkey","Latvia",
-                         "Lithuania","Romania","Slovakia","Slovenia","Ukraine")
+                         "Lithuania","Romania","Slovakia","Slovenia")
 
   latinamerica.countries <- c("Argentina","Brazil","Chile","Mexico","Venezuela","Colombia","Peru")
 

@@ -48,6 +48,16 @@ This folder contains data for crises periods. Data stems from [Harvard Global Cr
 
 
 
+#### 5.5 [inst/data/raw/bis](inst/data/raw/bis/)
+The is data from the [Bank for International Settlements Locational Banking Statistics](https://data.bis.org/topics/LBS). We downloaded this data for the countries in our data sample.
+
+
+#### 5.6 [inst/data/raw/epu](inst/data/raw/epu/)
+The is data about the [economic policy uncertainty](https://www.policyuncertainty.com/all_country_data.html), from Baker et al.
+
+
+#### 5.7 [inst/data/raw/gravity](inst/data/raw/gravity/)
+The is contains a gravity dataset from Conte et al., (2022). We use this data to merge variables that provide various measures of distances and trade connections to the headquarter but also the nearest subsidiary of the forecaster. The dataset is available [here](https://www.cepii.fr/CEPII/en/bdd_modele/bdd_modele_item.asp?id=8) - it was not uploaded to our package due to its size.
 
 
 
