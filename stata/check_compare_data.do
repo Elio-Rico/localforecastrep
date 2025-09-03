@@ -2,23 +2,295 @@
 * check and compare data:
 use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_3.dta", clear
 
-keep country country_num institution id date datem  month gdp_current gdp_future  cpi_current cpi_future year_forecast_current_gdp year_forecast_future_gdp year_forecast_current_cpi year_forecast_future_cpi Foreign ForeignHQ ForeignSubsidiary Local Foreign idci
+keep country country_num institution id date datem  month gdp_current gdp_future  cpi_current cpi_future year_forecast_current_gdp year_forecast_future_gdp year_forecast_current_cpi year_forecast_future_cpi Foreign ForeignHQ ForeignSubsidiary Local Foreign idci 
 
 sort idci datem
 save "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta", replace
 
 use "/Users/ebollige/Dropbox/1_1_replication_forecasters/localforecastrep/inst/data/produced/ce_imf/data_final_newVintage_3.dta", clear
 
-keep country country_num institution id date datem  month gdp_current gdp_future  cpi_current cpi_future  year_forecast_current_gdp year_forecast_future_gdp year_forecast_current_cpi year_forecast_future_cpi Foreign ForeignHQ ForeignSubsidiary Local Foreign idci
+keep country country_num institution id date datem  month gdp_current gdp_future  cpi_current cpi_future  year_forecast_current_gdp year_forecast_future_gdp year_forecast_current_cpi year_forecast_future_cpi Foreign ForeignHQ ForeignSubsidiary Local Foreign idci 
 
 
 sort idci datem
 
 
-merge 1:1 country country_num institution id date datem  month gdp_current gdp_future  cpi_current cpi_future  year_forecast_current_gdp year_forecast_future_gdp year_forecast_current_cpi year_forecast_future_cpi Foreign ForeignHQ ForeignSubsidiary Local Foreign using "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta"
+merge 1:1 country country_num institution id date datem  month gdp_current gdp_future  cpi_current cpi_future  year_forecast_current_gdp year_forecast_future_gdp year_forecast_current_cpi year_forecast_future_cpi Foreign ForeignHQ ForeignSubsidiary Local Foreign  using "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta"
 
 */
 
+
+* it looks as if data_final_newVintage_2_toMergeGravity_ is exactly the same as our newly produced data_final_newVintage_2_toMergeGravity
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_2_toMergeGravity_.dta", clear
+merge 1:1 * using "$datace_imf/data_final_newVintage_2_toMergeGravity.dta"
+
+
+* let's check gravity_temp2:
+use "$gravityf/gravity_temp2.dta" , clear
+
+merge 1:1 country institution  datem dateq closest_ctry_dist closest_ctry_distw closest_ctry_distcap closest_ctry_distwces using "/Users/ebollige/Dropbox/4Foreign vs local expectations/Data/Gravity Data/gravity_temp2.dta"
+* gravity_temp2 is exactly the same as gravity_temp2 created in our new dataset.
+
+* same for gravity distw
+use "$gravityf/gravity_to_merge_distw.dta", clear
+merge 1:1 * using "/Users/ebollige/Dropbox/4Foreign vs local expectations/Data/Gravity Data/gravity_to_merge_distw.dta"
+
+* same
+use "$gravityf/gravity_to_merge_dist.dta", clear
+merge 1:1 * using "/Users/ebollige/Dropbox/4Foreign vs local expectations/Data/Gravity Data/gravity_to_merge_dist.dta"
+
+
+* is exactly the same data
+use $bisf/BIS_all_1_dist.dta, clear
+merge 1:1 dateq country closest_ctry_dist totalliabilities1_dist totalclaims1_dist using "/Users/ebollige/Dropbox/4Foreign vs local expectations/Data/data_input/bis_temp/BIS_all_1_dist.dta"
+
+* exactly same data
+use $bisf/BIS_all_2_dist.dta, clear
+merge 1:1  * using "/Users/ebollige/Dropbox/4Foreign vs local expectations/Data/data_input/bis_temp/BIS_all_2_dist.dta"
+
+
+
+
+
+use "$output/baseline.dta", clear
+keep country institution  datem dateq closest_ctry_dist closest_ctry_distw closest_ctry_distcap 
+save "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta", replace
+
+
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_3.dta", clear
+keep country institution  datem dateq closest_ctry_dist closest_ctry_distw closest_ctry_distcap 
+
+merge 1:1 * using "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta"
+
+
+
+
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/EmpiricalResults/Kenza/TempE.dta", clear
+keep country institution  datem dateq closest_ctry_dist closest_ctry_distw closest_ctry_distcap 
+
+merge 1:1 * using "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta"
+
+
+
+* there is an issue with the _dist, etc variables
+
+use "$output/baseline.dta", clear
+keep country institution  datem dateq closest_ctry_dist
+save "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta", replace
+
+
+
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_3.dta", clear
+keep country institution  datem dateq closest_ctry_dist
+
+merge 1:1 * using "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta"
+
+
+
+
+
+
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_4.dta", clear
+
+keep country institution  datem  dist distw distcap distwces dist_source closest_ctry_dist closest_ctry_distw closest_ctry_distcap closest_ctry_distwces
+save "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta", replace
+
+
+
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_3.dta", clear
+keep country institution  datem   dist distw distcap distwces dist_source closest_ctry_dist closest_ctry_distw closest_ctry_distcap closest_ctry_distwces
+
+merge 1:1 * using "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta"
+
+
+
+
+********************************************************************************
+********************************************************************************
+
+* let's start from scratch:
+
+* PROBLEM:
+
+use "/Users/ebollige/Dropbox/1_1_replication_forecasters/localforecastrep/inst/data/produced/ce_imf/data_final_newVintage_3.dta", clear
+keep country institution  datem  dist distw distcap distwces dist_source closest_ctry_dist closest_ctry_distw closest_ctry_distcap closest_ctry_distwces
+save "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta", replace
+
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_3.dta", clear 
+keep country institution  datem  dist distw distcap distwces dist_source closest_ctry_dist closest_ctry_distw closest_ctry_distcap closest_ctry_distwces
+
+merge 1:1 country institution  datem  dist distw distcap distwces dist_source closest_ctry_dist closest_ctry_distw closest_ctry_distcap closest_ctry_distwces using "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta",
+
+* so, we see, closest_ctry_dist whatever differs from our database. now, below we go trhough step by step why this could be the case.
+
+
+* 1:
+******
+
+* our newly create database looks essentially similar to the used one:
+use "/Users/ebollige/Dropbox/1_1_replication_forecasters/localforecastrep/inst/data/produced/ce_imf/data_final_newVintage_3.dta", clear
+keep country country_num institution id year date dateq datem month subsidiary* Headquarters ForeignSubsidiary
+save "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta", replace
+
+
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_3.dta", clear
+keep country country_num institution id year date dateq datem month subsidiary* Headquarters ForeignSubsidiary
+merge 1:1 * using "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta"
+
+* all subsidiaries and all headquarters are exactly the same. this is good.
+
+* 2:
+******
+
+* let's check gravity to merge
+use "$gravityf/gravity_to_merge.dta", clear
+merge 1:1 * using "/Users/ebollige/Dropbox/4Foreign vs local expectations/Data/Gravity Data/gravity_to_merge.dta"
+* exactly the same data!
+
+
+* 3:
+******
+
+* let's check data_final_newVintage_2_toMergeGravity
+* it looks as if data_final_newVintage_2_toMergeGravity_ is exactly the same as our newly produced data_final_newVintage_2_toMergeGravity
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_2_toMergeGravity_.dta", clear
+merge 1:1 * using "$datace_imf/data_final_newVintage_2_toMergeGravity.dta"
+* exactly the same data!
+
+
+* 4:
+******
+
+* let's check gravity_temp:
+use "$gravityf/gravity_temp.dta" , clear
+drop country_num id date month
+merge 1:1 * using "/Users/ebollige/Dropbox/4Foreign vs local expectations/Data/Gravity Data/gravity_temp.dta"
+* gravity_temp is exactly the same as gravity_temp created in our new dataset.
+
+
+* 5:
+******
+
+* let's check gravity_temp2:
+use "$gravityf/gravity_temp2.dta" , clear
+
+merge 1:1 country institution  datem dateq closest_ctry_dist closest_ctry_distw closest_ctry_distcap closest_ctry_distwces using "/Users/ebollige/Dropbox/4Foreign vs local expectations/Data/Gravity Data/gravity_temp2.dta"
+* gravity_temp2 is exactly the same as gravity_temp2 created in our new dataset.
+
+
+* 6:
+******
+* BIS data:
+* is exactly the same data
+use $bisf/BIS_all_1_dist.dta, clear
+merge 1:1 dateq country closest_ctry_dist totalliabilities1_dist totalclaims1_dist using "/Users/ebollige/Dropbox/4Foreign vs local expectations/Data/data_input/bis_temp/BIS_all_1_dist.dta"
+
+* exactly same data
+use $bisf/BIS_all_2_dist.dta, clear
+merge 1:1  * using "/Users/ebollige/Dropbox/4Foreign vs local expectations/Data/data_input/bis_temp/BIS_all_2_dist.dta"
+
+
+* 7:
+******
+* there is this code closest_ctry.do - they create gravity_temp3, which should be the same as gravity_temp.
+* let's check it out!
+
+
+* let's check gravity_temp2:
+use "$gravityf/gravity_temp.dta" , clear
+drop country_num id date month
+
+merge 1:1 * using "/Users/ebollige/Dropbox/4Foreign vs local expectations/Data/Gravity Data/gravity_temp3.dta"
+* is exactly the same...
+
+
+* 8:
+******
+use "$gravityf/gravity_to_merge_distw.dta", clear
+merge 1:1 * using "/Users/ebollige/Dropbox/4Foreign vs local expectations/Data/Gravity Data/gravity_to_merge_distw.dta"
+* weird - this is EXACTLY THE SAME data
+
+
+* HOWEVER! I THINK ITS OK. the thing is that in vintage3, in the old way we created the data, there was a mistake in the matching.
+* finger's crossed this does not lead to issues.
+
+
+
+
+
+
+
+
+
+
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_3.dta", clear
+
+keep country country_num institution idci date datem  month gdp_current gdp_future totalliabilities1_dist
+
+
+sort idci datem
+save "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta", replace
+
+
+
+use "/Users/ebollige/Dropbox/1_1_replication_forecasters/localforecastrep/inst/data/produced/ce_imf/data_final_newVintage_3.dta", clear
+
+keep country country_num institution idci date datem  month gdp_current gdp_future totalliabilities1_dist
+
+sort idci datem
+
+
+merge 1:1 country country_num institution idci date datem  month gdp_current gdp_future totalliabilities1_dist using "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta"
+
+save "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta", replace
+
+
+
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_3.dta", clear
+
+keep country country_num institution idci date datem  month gdp_current gdp_future totalliabilities1_dist
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+use "/Users/ebollige/Dropbox/1_1_replication_forecasters/localforecastrep/inst/data/produced/ce_imf/data_final_newVintage_3.dta", clear
 
 
 

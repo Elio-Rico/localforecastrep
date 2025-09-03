@@ -76,6 +76,11 @@ local target = "`parent'/inst/data/raw/msci"
 global msci "`target'"
 local target = "`parent'/inst/data/produced/msci"
 global mscif "`target'"
+local target = "`parent'/data"
+global output "`target'"
+local target = "`parent'/inst/data/produced/temp"
+global temp "`target'"
+
 
 
 * switch to data directory:
@@ -2981,13 +2986,13 @@ order country country_num institution id date datem month
 
 save "$datace_imf/data_final_newVintage_2.dta", replace
 
+
+
+
 use "$datace_imf/data_final_newVintage_2.dta", clear
-
-
 cap drop dateq
 g dateq = qofd(date)
 format dateq %tq
-
 
 * we should also merge the information to the nearest subsidiary! 
 * First step: merge the information about the distance variables to all subsidiaries: (we have 121 subsidiaries)
@@ -2997,6 +3002,10 @@ keep subsidiaryCountry* year country country_num date datem dateq month institut
 gen subsidiaryCountry0 = Headquarters
 
 save "$datace_imf/data_final_newVintage_2_toMergeGravity.dta" , replace
+
+
+
+
 
 forval x = 0(1)121{
 	
@@ -3750,6 +3759,1847 @@ label var dy "DIVIDEND  YIELD"
 
 
 save "$datace_imf/data_final_newVintage_3.dta", replace
+
+
+* FINAL BASELINE DATA:
+********************************************************************************
+
+use "$datace_imf/data_final_newVintage_3.dta", clear
+
+sort idci datem
+xtset idci datem
+
+drop if year < 1998
+drop if year > 2019
+
+local varlist gdp cpi
+local horlist current future
+foreach var in `varlist' {
+	foreach hor in `horlist' {
+		if "`hor'"=="current" {
+		    rename vintage_`var'_current_aprtp1 `var'_current_a1
+			}
+		if "`hor'"=="future" {
+		    rename vintage_`var'_future_aprtp2 `var'_future_a1
+			}
+		
+		* vintage untrimmed
+		gen `var'_`hor'_a1_ut = `var'_`hor'_a1
+		* forecasts untrimmed
+		gen `var'_`hor'_ut = `var'_`hor'
+		* quantiles over emerging countries
+		egen `var'_`hor'_p25 = pctile(`var'_`hor'), p(25) by(Emerging)
+		egen `var'_`hor'_p75 = pctile(`var'_`hor'), p(75) by(Emerging)
+		egen `var'_`hor'_p50 = pctile(`var'_`hor'), p(50) by(Emerging)
+		* quantiles over country and datem
+		egen `var'_`hor'_cd_p25 = pctile(`var'_`hor'), p(25) by(country datem)
+		egen `var'_`hor'_cd_p75 = pctile(`var'_`hor'), p(75) by(country datem)
+		egen `var'_`hor'_cd_p50 = pctile(`var'_`hor'), p(50) by(country datem)
+		
+		* remove if forecasts are further away than 5*IQR calculated over emerging countries and by country datem.
+		replace `var'_`hor' = . if (`var'_`hor'>`var'_`hor'_p50 + 5*(`var'_`hor'_p75-`var'_`hor'_p25) | `var'_`hor'<`var'_`hor'_p50 - 5*(`var'_`hor'_p75-`var'_`hor'_p25)) | (`var'_`hor'>`var'_`hor'_cd_p50 + 5*(`var'_`hor'_cd_p75-`var'_`hor'_cd_p25) | `var'_`hor'<`var'_`hor'_cd_p50 - 5*(`var'_`hor'_cd_p75-`var'_`hor'_cd_p25))
+		egen `var'_`hor'_a1_p25 = pctile(`var'_`hor'_a1), p(25) by(Emerging)
+		egen `var'_`hor'_a1_p75 = pctile(`var'_`hor'_a1), p(75) by(Emerging)
+		egen `var'_`hor'_a1_p50 = pctile(`var'_`hor'_a1), p(50) by(Emerging)
+		replace `var'_`hor'_a1 = . if (`var'_`hor'_a1>`var'_`hor'_a1_p50 + 5*(`var'_`hor'_a1_p75-`var'_`hor'_a1_p25) | `var'_`hor'_a1<`var'_`hor'_a1_p50 - 5*(`var'_`hor'_a1_p75-`var'_`hor'_a1_p25))
+		replace `var'_`hor'=. if `var'_`hor'_a1==.
+		}
+}
+
+
+
+*** loss due to trimming:
+
+* - 3.7
+su cpi_current
+su cpi_current_ut
+
+* - 1.2
+su gdp_current
+su gdp_current_ut
+
+* -9.7
+su cpi_future
+su cpi_future_ut
+
+* - 7.15
+su gdp_future
+su gdp_future_ut
+****
+
+
+
+
+* Revisions
+local varlist gdp cpi
+local horlist current future
+foreach var in `varlist' {
+	replace FR_`var' = `var'_current - l12.`var'_future
+	label var FR_`var' "Revision Y-o-Y"
+	replace FR_`var'_current = `var'_current - l1.`var'_current if month!=1
+	replace FR_`var'_current = `var'_current - l1.`var'_future if month==1
+	label var FR_`var'_current  "Revision current `var' M-o-M"
+	replace FR_`var'_future = `var'_future - l1.`var'_future if month!=1
+	label var FR_`var'_future  "Revision future `var' M-o-M"
+	foreach hor in `horlist' {
+		replace FE_`var'_`hor'_a1 = `var'_`hor'_a1 - `var'_`hor'
+		replace labs_FE_`var'_`hor'_a1 = log(abs(FE_`var'_`hor'_a1))
+		replace labs_FE_`var'_`hor'_a1 = max(-6.9,labs_FE_`var'_`hor'_a1) if labs_FE_`var'_`hor'_a1!=.
+		replace labs_FE_`var'_`hor'_a1 = -6.9 if FE_`var'_`hor'_a1==0
+	}
+}
+
+
+
+foreach var in gdp cpi {
+	egen FR_`var'_jt = mean(FR_`var'), by(country datem)
+	label var FR_`var'_jt "Mean Revision by country-date"
+	
+	egen FR_`var'_local = mean(FR_`var') if Foreign==0, by(country datem)
+	label var FR_`var'_local "Mean Revision by country-date if Local"
+	
+	egen FR_`var'_local2 = max(FR_`var'_local), by(country datem)
+	label var FR_`var'_local2 "Maximum Revision by country-date if Local"
+	
+	gen dFR_`var'_local = FR_`var'_local2 - FR_`var'_jt
+	label var dFR_`var'_local "Maximum Revision by country-date and if local minus mean revision by country-date"
+	
+	egen FR_`var'_foreign = mean(FR_`var') if Foreign==1, by(country datem)
+	label var FR_`var'_foreign  "Mean Revision by country-date if Foreign"
+	
+	egen FR_`var'_foreign2 = max(FR_`var'_foreign), by(country datem)
+	label var FR_`var'_foreign2 "Maximum Revision by country-date if Local"
+	
+	gen dFR_`var'_foreign = FR_`var'_foreign2 - FR_`var'_jt
+	label var dFR_`var'_local "Maximum Revision by country-date and if foreign minus mean revision by country-date"
+	
+	gen dFR_`var'_locfor = FR_`var'_local2 - FR_`var'_foreign2
+	label var dFR_`var'_local "Difference of max forecast revision by country-date locals minus those of foreigns"
+	
+	egen `var'_local = mean(`var'_current) if Foreign==0, by(country datem)
+	label var `var'_local "Mean of `var'_current by locals, country date"
+	
+	egen `var'_local2 = max(`var'_local), by(country datem)
+	label var `var'_local2  "Maximum of mean of `var' current by locals, country date"
+	
+	egen `var'_foreign = mean(`var'_current) if Foreign==1, by(country datem)
+	label var `var'_local "Mean of `var'_current by foreigns, country date"
+	
+	egen `var'_foreign2 = max(`var'_foreign), by(country datem)
+	label var `var'_foreign2  "Maximum of mean of `var' current by foreigns, country date"
+	
+	gen d`var'_locfor = `var'_local2 - `var'_foreign2
+	label var `var'_foreign2  "Difference of max of mean of `var'_current between local and foreigns, by countyr-date"
+	
+	
+	
+}
+
+sort institution
+by institution: egen Loc = max(Local)
+by institution: egen For = max(Foreign)
+gen LocFor = Loc*For
+
+gen LocalHQ = 1-ForeignHQ
+sort institution
+by institution: egen LocHQ = max(LocalHQ)
+by institution: egen ForHQ = max(ForeignHQ)
+gen LocForHQ = LocHQ*ForHQ
+
+
+
+save "$output/baseline.dta", replace
+********************************************************************************
+
+
+* extended data:
+use "$output/baseline.dta", clear
+
+local varlist gdp cpi
+		
+* Run individual regressions ans save results (rho, R2, RMSE)
+foreach var in `varlist' {
+	preserve
+	collapse `var'_current_a1, by(country_num country year)
+	sort country_num year
+	format year %ty
+	drop if country_num==.
+	xtset country_num year
+	gen rho_`var' = .
+	gen rmse_`var' = .
+	gen r2_`var' = .
+	gen N_`var' = .
+	gen country_num2 = .
+	forval i = 1(1)51 {
+			 qui reg `var'_current_a1 l.`var'_current_a1 if country_num==`i'
+			 replace rho_`var' = _b[l.`var'_current_a1]    if country_num==`i'
+			 replace rmse_`var' = e(rmse)	         if country_num==`i'
+			 replace r2_`var'   = e(r2)	         if country_num==`i'
+			 replace N_`var' = e(N)	         if country_num==`i'
+			 replace country_num2 = `i' 			 if country_num==`i'
+	}
+	keep rho_`var' rmse_`var' r2_`var' N_`var' country_num2 year
+	sort country_num2
+	rename country_num2 country_num
+	keep if rho_`var' != .
+	save "$temp/rho_`var'.dta", replace
+	restore
+}
+
+* Put results in single dataset 
+local varlist gdp cpi
+local var1: word 1 of `varlist'
+
+foreach var in `varlist' {
+		if "`var'" ==  "`var1'" {
+			use "$temp/rho_`var'.dta", clear
+		}
+		else {
+			merge 1:1 country_num year using "$temp/rho_`var'.dta", nogen
+		}
+	}
+save "$temp/rho.dta", replace
+
+use "$output/baseline.dta", clear
+sort country_num year
+merge m:1 country_num year using "$temp/rho.dta", nogen
+
+
+pca ICRG_GovStab-ICRG_Bureau
+predict ICRG_Pol, score
+pca ICRG_ForDebt-ICRG_IntLiq
+predict ICRG_Fin, score
+pca ICRG_*
+predict ICRG, score
+pca cc_est-va_est
+predict WDI_institutions, score
+
+
+gen lpop_o = log(pop_o)
+gen lpop_d = log(pop_d)
+gen lgdp_ppp_o = log(gdp_ppp_o)
+gen lgdp_ppp_d = log(gdp_ppp_d)
+gen lgdp_cap_ppp_o = lgdp_ppp_o - lpop_o
+gen lgdp_cap_ppp_d = lgdp_ppp_d - lpop_d
+gen ldist = log(dist)
+gen ldistw = log(distw)
+gen ldistcap = log(distcap)
+gen lTotalRevenue = log(TotalRevenue)
+gen lEmployees = log(Employees)
+gen lprod = lTotalRevenue - lEmployees
+gen lMarketCap = log(MarketCap)
+gen Finance = (Industry7==2) + (Industry7==3)
+gen trade_link = (tradeflow_comtrade_o+tradeflow_comtrade_d)/(gdp_o+gdp_d)
+gen fin_link = (totalclaims2 + totalliabilities2)/(gdp_o+gdp_d)
+
+sort idci year
+by idci year: egen N_month = count(labs_FE_gdp_current_a1)
+gen w_month = 1/N_month
+
+
+egen N_FE_cpi_current = count(FE_cpi_current_a1), by(idci month)
+egen N_FE_cpi_future = count(FE_cpi_future_a1), by(idci month)
+egen N_FE_gdp_current = count(FE_gdp_current_a1), by(idci month)
+egen N_FE_gdp_future = count(FE_gdp_future_a1), by(idci month)
+egen N_FE_sir_current = count(FE_sir_current), by(idci month)
+egen N_FE_sir_future = count(FE_sir_future), by(idci month)
+egen N_FE_lir_current = count(FE_lir_current), by(idci month)
+egen N_FE_lir_future = count(FE_lir_future), by(idci month)
+
+gen sir_current_a1 = vintage_sir_current
+gen sir_future_a1 = vintage_sir_future
+gen lir_current_a1 = vintage_lir_current
+gen lir_future_a1 = vintage_lir_future
+
+sort datem
+by datem: egen x = mean(GEPU_ppp) 
+replace GEPU_ppp = x
+drop x
+by datem: egen x = mean(GEPU_current) 
+replace GEPU_current = x
+drop x
+
+save "$output/extended.dta", replace
+
+* more gravity data
+
+use "$output/extended.dta", clear
+drop dist* closest*
+sort country id datem
+
+merge m:1 country Head year using "$gravityf/gravity_to_merge.dta"
+drop if _merge==2
+drop _merge
+merge 1:1 country id datem using "$gravityf/gravity_temp2.dta", nogen
+
+gen dist_ = closest_ctry_dist
+gen distw_ = closest_ctry_distw
+
+save "$output/extended.dta", replace
+
+**
+
+local varlist dist_ distw_
+local Varlist distcap comleg_pretrans sever_year gdp_ppp_o eu_o entry_tp_d iso3_o distwces comleg_posttrans sib_conflict gdp_ppp_d eu_d tradeflow_comtrade_o iso3_d dist_source transition_legalchange pop_o gdpcap_ppp_o rta tradeflow_comtrade_d iso3num_o comlang_off heg_o pop_d gdpcap_ppp_d rta_coverage tradeflow_baci iso3num_d comlang_ethno heg_d gdp_o pop_pwt_o rta_type manuf_tradeflow_baci country_exists_o comcol col_dep_ever gdp_d pop_pwt_d entry_cost_o tradeflow_imf_o country_exists_d comrelig col_dep gdpcap_o gdp_ppp_pwt_o entry_cost_d tradeflow_imf_d gmt_offset_2020_o col45 col_dep_end_year gdpcap_d gdp_ppp_pwt_d entry_proc_o gmt_offset_2020_d legal_old_o col_dep_end_conflict pop_source_o gatt_o entry_proc_d contig legal_old_d empire pop_source_d gatt_d entry_time_o dist legal_new_o sibling_ever gdp_source_o wto_o entry_time_d distw legal_new_d sibling gdp_source_d wto_d entry_tp_o
+
+foreach var in `varlist'{
+	
+	use "$gravityf/gravity_to_merge.dta", clear
+
+	rename Head `var'
+	
+	foreach Var in `Varlist' {
+
+
+		rename `Var' `var'`Var'
+	}
+
+	keep country `var' year `var'iso3_o-`var'tradeflow_imf_d
+
+	sort country `var' year
+
+	save "$gravityf/gravity.dta", replace
+
+	use "$output/extended.dta", clear
+
+	sort country `var' year
+
+	merge m:1 country `var' year using "$gravityf/gravity.dta"
+	drop if _merge==2
+	drop _merge
+
+	save "$output/extended.dta", replace
+}
+
+***
+
+
+
+
+use "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\Gravity Data\cultdist", clear
+
+replace country_1 = "United States" if country_1=="U.S.A"
+replace country_1 = "South Korea" if country_1=="Korea"
+replace country_1 = "Russia" if country_1=="Russian Federation"
+replace country_2 = "United States" if country_2=="U.S.A"
+replace country_2 = "South Korea" if country_2=="Korea"
+replace country_2 = "Russia" if country_2=="Russian Federation"
+
+rename country_1 country
+rename country_2 Headquarters
+
+rename total cultural_distance
+rename lingdist_dom lingdist_dominant
+rename lingdist_wei lingdist_weighted
+rename reldist_dominant_formula reldist_dominant
+rename reldist_weighted_formula reldist_weighted
+
+keep country Headquarters cultural_distance lingdist_dominant lingdist_weighted reldist_dominant reldist_weighted
+
+save cultdist, replace
+
+rename Headquarters country1
+rename country Headquarters
+rename country1 country
+
+append using cultdist
+
+sort country Headquarters
+drop if Headquarters=="" | country==""
+
+save cultdist2, replace
+
+use TempE2, clear
+
+sort country Headquarters
+
+merge m:1 country Headquarters using cultdist2
+drop if _merge == 2
+drop _merge
+
+local varlist lingdist_dominant lingdist_weighted reldist_dominant reldist_weighted
+foreach VAR in `varlist' {
+	replace `VAR' = 0 if country==Headquarters
+}
+
+replace cultural_distance = -87 if country==Headquarters
+
+save TempE2, replace
+
+
+local varlist dist_ distw_
+
+foreach var in `varlist'{
+
+	use "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\Gravity Data\cultdist", clear
+
+	replace country_1 = "United States" if country_1=="U.S.A"
+	replace country_1 = "South Korea" if country_1=="Korea"
+	replace country_1 = "Russia" if country_1=="Russian Federation"
+	replace country_2 = "United States" if country_2=="U.S.A"
+	replace country_2 = "South Korea" if country_2=="Korea"
+	replace country_2 = "Russia" if country_2=="Russian Federation"
+
+	rename country_1 country
+	rename country_2 `var'
+
+	rename total `var'cultural_distance
+	rename lingdist_dom `var'lingdist_dominant
+	rename lingdist_wei `var'lingdist_weighted
+	rename reldist_dominant_formula `var'reldist_dominant
+	rename reldist_weighted_formula `var'reldist_weighted
+
+	keep country `var' `var'cultural_distance `var'lingdist_dominant `var'lingdist_weighted `var'reldist_dominant `var'reldist_weighted
+
+	save cultdist, replace
+
+	rename `var' country1
+	rename country `var'
+	rename country1 country
+
+	append using cultdist
+
+	sort country `var'
+
+	save cultdist2, replace
+
+	use TempE2, clear
+
+	sort country `var'
+
+	merge m:1 country `var' using cultdist2
+	drop if _merge == 2
+	drop _merge
+	
+	local Varlist `var'lingdist_dominant `var'lingdist_weighted `var'reldist_dominant `var'reldist_weighted
+	foreach VAR in `Varlist' {
+		replace `VAR' = 0 if country==`var'
+	}
+
+	replace `var'cultural_distance = -87 if country==`var'
+
+	save TempE2, replace
+}
+
+
+
+***
+
+import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\P_Data_Extract_From_Global_Bilateral_Migration.xlsx", sheet("Data") firstrow clear
+
+drop Migration* CountryOriginCode CountryDestCode G H I J
+rename K Migration_2000
+rename CountryOriginName country
+rename CountryDestName Headquarters
+
+replace country = "South Korea" if country=="Korea, Rep."
+replace country = "Russia" if country=="Russian Federation"
+replace country = "Slovakia" if country == "Slovak Republic"
+replace country = "Venezuela" if country=="Venezuela, RB"
+replace country = "Egypt" if country=="Egypt, Arab Rep."
+replace country = "Iran" if country=="Iran, Islamic Rep."
+replace country = "Taiwan" if country=="Taiwan, China"
+replace country = "Hong Kong" if country=="Hong Kong SAR, China"
+
+replace Headquarters = "South Korea" if Headquarters=="Korea, Rep."
+replace Headquarters = "Russia" if Headquarters=="Russian Federation"
+replace Headquarters = "Slovakia" if Headquarters == "Slovak Republic"
+replace Headquarters = "Venezuela" if Headquarters=="Venezuela, RB"
+replace Headquarters = "Egypt" if Headquarters=="Egypt, Arab Rep."
+replace Headquarters = "Iran" if Headquarters=="Iran, Islamic Rep."
+replace Headquarters = "Taiwan" if Headquarters=="Taiwan, China"
+replace Headquarters = "Hong Kong" if Headquarters=="Hong Kong SAR, China"
+
+keep country Headquarters Migration_2000
+drop if country==""
+drop if Headquarters==""
+
+save migration, replace
+
+collapse (sum) Migration_2000, by(Headquarters)
+rename Migration_2000 Migration_2000_total
+save migration_total, replace
+
+use TempE2, clear
+
+sort country Headquarters
+
+merge m:1 country Headquarters using migration
+drop if _merge == 2
+drop _merge
+merge m:1 Headquarters using migration_total
+drop if _merge == 2
+drop _merge
+
+save TempE2, replace
+
+
+local varlist dist_ distw_
+
+foreach var in `varlist'{
+
+	import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\P_Data_Extract_From_Global_Bilateral_Migration.xlsx", sheet("Data") firstrow clear
+
+	drop Migration* CountryOriginCode CountryDestCode G H I J
+	rename K Migration_2000
+	rename CountryOriginName country
+	rename CountryDestName `var'
+
+	replace country = "South Korea" if country=="Korea, Rep."
+	replace country = "Russia" if country=="Russian Federation"
+	replace country = "Slovakia" if country == "Slovak Republic"
+	replace country = "Venezuela" if country=="Venezuela, RB"
+	replace country = "Egypt" if country=="Egypt, Arab Rep."
+	replace country = "Iran" if country=="Iran, Islamic Rep."
+	replace country = "Taiwan" if country=="Taiwan, China"
+	replace country = "Hong Kong" if country=="Hong Kong SAR, China"
+
+	replace `var' = "South Korea" if `var'=="Korea, Rep."
+	replace `var' = "Russia" if `var'=="Russian Federation"
+	replace `var' = "Slovakia" if `var' == "Slovak Republic"
+	replace `var' = "Venezuela" if `var'=="Venezuela, RB"
+	replace `var' = "Egypt" if `var'=="Egypt, Arab Rep."
+	replace `var' = "Iran" if `var'=="Iran, Islamic Rep."
+	replace `var' = "Taiwan" if `var'=="Taiwan, China"
+	replace `var' = "Hong Kong" if `var'=="Hong Kong SAR, China"
+
+	rename Migration_2000 `var'Migration_2000
+	keep country `var' `var'Migration_2000
+	drop if country==""
+	drop if `var'==""
+	save migration, replace
+
+	collapse (sum) `var'Migration_2000, by(`var')
+	rename `var'Migration_2000 `var'Migration_2000_total
+	save migration_total, replace
+	
+	use TempE2, clear
+
+	sort country `var'
+
+	merge m:1 country `var' using migration
+	drop if _merge == 2
+	drop _merge
+	merge m:1 `var' using migration_total
+	drop if _merge == 2
+	drop _merge
+	
+	save TempE2, replace
+}
+
+**
+
+**
+
+local varlist dist_ distw_
+
+foreach var in `varlist'{
+
+	use TempE, clear
+
+	collapse totalclaims1 totalclaims2 totalliabilities1 totalliabilities2, by(country Head datem)
+
+	rename Head `var'
+
+	rename totalclaims1 `var'totalclaims1
+	rename totalclaims2 `var'totalclaims2
+	rename totalliabilities1 `var'totalliabilities1
+	rename totalliabilities2 `var'totalliabilities2
+
+	keep country `var'* datem
+	sort country `var' datem
+
+	save bis, replace
+
+	use TempE2, clear
+
+	sort country `var' datem
+
+	merge m:1 country `var' datem using bis, nogen
+
+	save TempE2, replace
+}
+
+drop totalclaims1_* totalclaims2_* totalliabilities1_* totalliabilities2_*
+save TempE2, replace
+
+********* more gravity
+
+***** De jure regimes
+
+use "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Bilateral_DeJure_Regimes_neu.dta", clear
+
+replace country1 = "South Korea" if country1=="Korea"
+replace country1 = "Slovakia" if country1=="Slovak Republic"
+replace country1 = "Iran" if country1=="Islamic Republic of Iran"
+replace country1 = "Hong Kong" if country1=="Hong Kong SAR"
+replace country2 = "South Korea" if country2=="Korea"
+replace country2 = "Slovakia" if country2=="Slovak Republic"
+replace country2 = "Iran" if country2=="Islamic Republic of Iran"
+replace country2 = "Hong Kong" if country2=="Hong Kong SAR"
+
+rename country1 country
+rename country2 Headquarters
+
+keep country Headquarters year direct_link indirect_link cu_dummy other_nslt jf_1
+sort country Headquarters year
+
+save bilateral_regimes, replace
+
+
+use TempE2, clear
+
+sort country Headquarters year
+merge m:1 country Headquarters year using bilateral_regimes
+drop if _merge == 2
+drop _merge
+
+replace direct_link = 1 if country==Headquarters
+replace indirect_link = 0 if country==Headquarters
+
+save TempE2, replace
+
+local varlist dist_ distw_
+
+foreach var in `varlist'{
+
+	use "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Bilateral_DeJure_Regimes_neu.dta", clear
+
+	replace country1 = "South Korea" if country1=="Korea"
+	replace country1 = "Slovakia" if country1=="Slovak Republic"
+	replace country1 = "Iran" if country1=="Islamic Republic of Iran"
+	replace country1 = "Hong Kong" if country1=="Hong Kong SAR"
+	replace country2 = "South Korea" if country2=="Korea"
+	replace country2 = "Slovakia" if country2=="Slovak Republic"
+	replace country2 = "Iran" if country2=="Islamic Republic of Iran"
+	replace country2 = "Hong Kong" if country2=="Hong Kong SAR"
+
+	rename country1 country
+	rename country2 `var'
+
+	rename direct_link `var'direct_link
+	rename indirect_link `var'indirect_link
+	rename cu_dummy `var'cu_dummy
+	rename other_nslt `var'other_nslt
+	rename jf_1 `var'jf_1
+
+	keep country `var' year `var'direct_link `var'indirect_link `var'cu_dummy `var'other_nslt `var'jf_1
+	sort country `var' year
+
+	save bilateral_regimes, replace
+
+	use TempE2, clear
+
+	sort country `var' year
+	merge m:1 country `var' year using bilateral_regimes
+	drop if _merge == 2
+	drop _merge
+
+	replace `var'direct_link = 1 if country==`var'
+	replace `var'indirect_link = 0 if country==`var'
+
+	save TempE2, replace
+}
+
+**** Imports and exports *****
+
+import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Exports_and_Imports_by_Areas_and_Co.xlsx", sheet("Exports, FOB") cellrange(B7:AA247) firstrow clear
+
+reshape long year, i(country)
+rename year exports
+rename _j year
+drop if country==""
+encode country, gen(id)
+*keep if inlist(id,11,15,16,23,32,34,40,43,46,47,53,57,60,74,83,84,89,92,103,105,106,109,110,111,113,118,124,129,133,141,157,159,162,164,172,173,174,175,177,178,182,190,191,194,196,205,206,212,220,225,226,230)
+
+replace country = "China" if id == 46
+replace country = "Croatia" if id == 53
+replace country = "Czech Republic" if id == 57
+replace country = "Estonia" if id == 74
+replace country = "South Korea" if id == 118
+replace country = "Netherlands" if id ==157
+replace country = "Poland" if id ==174
+replace country = "Russia" if id ==178
+replace country = "Slovakia" if id ==190
+replace country = "Slovenia" if id ==191
+replace country = "Turkey" if id ==220
+replace country = "Venezuela" if id ==230
+replace country = "Bahrain" if id ==19
+replace country = "Barbados" if id ==21
+replace country = "Belarus" if id ==22
+replace country = "Egypt" if id ==65
+replace country = "Iran" if id ==107
+replace country = "Lesotho" if id ==126
+replace country = "Taiwan" if id ==209
+replace country = "Hong Kong" if id ==44
+
+drop id
+label var exports "Exports in million of USD"
+sort country year
+
+save exports, replace
+
+import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Exports_and_Imports_by_Areas_and_Co.xlsx", sheet("Imports, CIF") cellrange(B7:AA247) firstrow clear
+
+reshape long year, i(country)
+rename year imports
+rename _j year
+drop if country==""
+encode country, gen(id)
+*keep if inlist(id,11,15,16,23,32,34,40,43,46,47,53,57,60,74,83,84,89,92,103,105,106,109,110,111,113,118,124,129,133,141,157,159,162,164,172,173,174,175,177,178,182,190,191,194,196,205,206,212,220,225,226,230)
+
+replace country = "China" if id == 46
+replace country = "Croatia" if id == 53
+replace country = "Czech Republic" if id == 57
+replace country = "Estonia" if id == 74
+replace country = "South Korea" if id == 118
+replace country = "Netherlands" if id ==157
+replace country = "Poland" if id ==174
+replace country = "Russia" if id ==178
+replace country = "Slovakia" if id ==190
+replace country = "Slovenia" if id ==191
+replace country = "Turkey" if id ==220
+replace country = "Venezuela" if id ==230
+replace country = "Bahrain" if id ==19
+replace country = "Barbados" if id ==21
+replace country = "Belarus" if id ==22
+replace country = "Egypt" if id ==65
+replace country = "Iran" if id ==107
+replace country = "Lesotho" if id ==126
+replace country = "Taiwan" if id ==209
+replace country = "Hong Kong" if id ==44
+
+drop id
+label var imports "Imports in million of USD"
+sort country year
+
+save imports, replace
+
+use TempE2, clear 
+
+sort country year
+
+merge m:1 country year using exports
+drop if _merge==2
+drop _merge
+merge m:1 country year using imports
+drop if _merge==2
+drop _merge
+
+save TempE2, replace
+
+
+**** Tariffs *****
+
+import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\WtoData_20240527134544.xlsx", sheet("Report") cellrange(A3:T170) firstrow clear
+
+drop B
+
+rename ReportingEconomy country
+reshape long tarriff, i(country) j(year)
+
+replace country = "South Korea" if country=="Korea, Republic of"
+replace country = "Russia" if country=="Russian Federation"
+replace country = "Turkey" if country=="Türkiye"
+replace country = "Venezuela" if country=="Venezuela, Bolivarian Republic of"
+replace country = "Bahrain" if country=="Bahrain, Kingdom of"
+replace country = "Taiwan" if country=="Chinese Taipei"
+replace country = "Hong Kong" if country=="Hong Kong, China"
+
+merge 1:m country year using "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\EU.dta"
+sort country country2 year
+replace country=country2 if country=="European Union"
+drop country2 _merge
+drop if tarriff == .
+
+/*
+encode country, gen(country_num)
+tsset country_num year
+tsfill
+
+mipolate tarriff year, gen(tariff)
+drop tarriff
+
+preserve
+collapse tariff if country!="", by(country country_num)
+drop tariff
+save countries, replace
+restore
+drop country
+merge m:1 country_num using countries, nogen
+drop country_num
+*/
+rename tarriff tariff
+
+save tariffs, replace
+
+use TempE2, clear 
+
+sort country year
+
+merge m:1 country year using tariffs
+drop if _merge==2
+drop _merge
+
+save TempE2, replace
+
+
+import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\WtoData_20240527134709.xlsx", sheet("Report") cellrange(A3:T162) firstrow clear
+
+drop B
+
+rename ReportingEconomy country
+reshape long tarriff, i(country) j(year)
+
+replace country = "South Korea" if country=="Korea, Republic of"
+replace country = "Russia" if country=="Russian Federation"
+replace country = "Turkey" if country=="Türkiye"
+replace country = "Venezuela" if country=="Venezuela, Bolivarian Republic of"
+replace country = "Bahrain" if country=="Bahrain, Kingdom of"
+replace country = "Taiwan" if country=="Chinese Taipei"
+replace country = "Hong Kong" if country=="Hong Kong, China"
+
+merge 1:m country year using "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\EU.dta"
+sort country country2 year
+replace country=country2 if country=="European Union"
+drop country2 _merge
+drop if tarriff == .
+
+rename tarriff tariff_weighted
+
+/*
+encode country, gen(country_num)
+tsset country_num year
+tsfill
+
+mipolate tarriff_weighted year, gen(tariff_weighted)
+drop tarriff_weighted
+
+preserve
+collapse tariff if country!="", by(country country_num)
+drop tariff
+save countries, replace
+restore
+drop country
+merge m:1 country_num using countries, nogen
+drop country_num
+*/
+
+save tariffs_weighted, replace
+
+use TempE2, clear 
+
+sort country year
+
+merge m:1 country year using tariffs_weighted
+drop if _merge==2
+drop _merge
+
+save TempE2, replace
+
+
+********* BC and inflation comovement
+
+import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Inflation_GDP_growth_World_Development_Indicators.xlsx", sheet("Data") firstrow clear
+
+keep if SeriesName == "GDP growth (annual %)"
+reshape long YR, i(CountryName)
+
+rename CountryName country
+rename _j year
+rename YR gdp_wdi
+
+keep country year gdp_wdi
+drop if year<1990
+
+replace country = "South Korea" if country=="Korea, Rep."
+replace country = "Russia" if country=="Russian Federation"
+replace country = "Venezuela" if country=="Venezuela, RB"
+replace country = "Slovakia" if country=="Slovak Republic"
+replace country = "Turkey" if country=="Turkiye"
+replace country = "Czech Republic" if country=="Czechia"
+replace country = "Egypt" if country=="Egypt, Arab Rep."
+replace country = "Hong Kong" if country=="Hong Kong SAR, China"
+replace country = "Iran" if country=="Iran, Islamic Rep."
+
+sort country year
+
+save gdp_wdi, replace
+
+*
+import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Inflation_GDP_growth_World_Development_Indicators.xlsx", sheet("Data") firstrow clear
+
+drop if CountryName == "Venezuela, RB" & SeriesName == "Inflation, consumer prices (annual %)"
+drop if CountryName == "Argentina" & SeriesName == "Inflation, consumer prices (annual %)"
+drop if CountryName == "United Arab Emirates" & SeriesName == "Inflation, consumer prices (annual %)"
+drop if CountryName == "Puerto Rico" & SeriesName == "Inflation, consumer prices (annual %)"
+drop if CountryName == "Liechtenstein" & SeriesName == "Inflation, consumer prices (annual %)"
+drop if CountryName == "Bosnia and Herzegovina" & SeriesName == "Inflation, consumer prices (annual %)"
+
+replace SeriesName = "Inflation, consumer prices (annual %)" if SeriesName == "Inflation, GDP deflator (annual %)" & (CountryName == "Venezuela, RB" | CountryName == "Argentina" | CountryName == "United Arab Emirates" | CountryName == "Puerto Rico" | CountryName == "Liechtenstein" | CountryName == "Bosnia and Herzegovina")
+
+keep if SeriesName == "Inflation, consumer prices (annual %)"
+reshape long YR, i(CountryName)
+
+rename CountryName country
+rename _j year
+rename YR cpi_wdi
+
+keep country year cpi_wdi
+drop if year<1990
+replace country = "South Korea" if country=="Korea, Rep."
+replace country = "Russia" if country=="Russian Federation"
+replace country = "Venezuela" if country=="Venezuela, RB"
+replace country = "Slovakia" if country=="Slovak Republic"
+replace country = "Turkey" if country=="Turkiye"
+replace country = "Czech Republic" if country=="Czechia"
+replace country = "Egypt" if country=="Egypt, Arab Rep."
+replace country = "Hong Kong" if country=="Hong Kong SAR, China"
+replace country = "Iran" if country=="Iran, Islamic Rep."
+
+sort country year
+
+save cpi_wdi, replace
+
+*
+
+use TempE2, clear 
+
+keep gdp_current cpi_current Headquarters country
+collapse gdp_current cpi_current, by(Headquarters country)
+drop if Headquarters == ""
+drop if gdp_current==. & cpi_current==.
+drop gdp_current cpi_current
+encode country, gen(country_num)
+encode Headquarters, gen(Headquarters_num)
+
+sort country
+
+gen n=43
+expand n
+replace n = 1
+bys country Headquarters: gen year = sum(n)
+replace year = year + 1989
+
+merge m:1 country year using gdp_wdi
+drop if _merge==2
+drop _merge
+
+rename gdp_wdi gdp_wdi_o
+rename country country1
+rename Headquarters country
+
+merge m:1 country year using gdp_wdi
+drop if _merge==2
+drop _merge
+
+rename country Headquarters
+rename country1 country
+rename gdp_wdi gdp_wdi_d
+drop n
+drop if Headquarters==""
+drop if country==""
+
+sort country Headquarters year
+
+by country Headquarters: egen mgdp_wdi_d = mean(gdp_wdi_d)
+by country Headquarters: egen mgdp_wdi_o = mean(gdp_wdi_o)
+gen COV_gdp_wdi = (gdp_wdi_d-mgdp_wdi_d)*(gdp_wdi_o-mgdp_wdi_o)
+by country Headquarters: egen cov_gdp_wdi = mean(COV_gdp_wdi)
+by country Headquarters: egen sd_gdp_wdi_d = sd(gdp_wdi_d)
+by country Headquarters: egen sd_gdp_wdi_o = sd(gdp_wdi_o)
+gen corr_gdp_wdi = cov_gdp_wdi/(sd_gdp_wdi_d*sd_gdp_wdi_o)
+
+by country Headquarters: egen N_d_o = count(COV_gdp_wdi)
+drop if N_d_o<20
+
+egen idch = group(country Headquarters)
+sort idch year
+xtset idch year
+
+by idch: gen roll_mgdp_wdi_d = (l.gdp_wdi_d+l2.gdp_wdi_d+l3.gdp_wdi_d+l4.gdp_wdi_d+l5.gdp_wdi_d)/5
+by idch: gen roll_mgdp_wdi_o = (l.gdp_wdi_o+l2.gdp_wdi_o+l3.gdp_wdi_o+l4.gdp_wdi_o+l5.gdp_wdi_o)/5
+by idch: gen roll_cov_gdp_wdi = ((l.gdp_wdi_d-roll_mgdp_wdi_d)*(l.gdp_wdi_o-roll_mgdp_wdi_o)+(l2.gdp_wdi_d-roll_mgdp_wdi_d)*(l2.gdp_wdi_o-roll_mgdp_wdi_o)+(l3.gdp_wdi_d-roll_mgdp_wdi_d)*(l3.gdp_wdi_o-roll_mgdp_wdi_o)+(l4.gdp_wdi_d-roll_mgdp_wdi_d)*(l4.gdp_wdi_o-roll_mgdp_wdi_o)+(l5.gdp_wdi_d-roll_mgdp_wdi_d)*(l5.gdp_wdi_o-roll_mgdp_wdi_o))/5
+by idch: gen roll_sd_gdp_wdi_d = (((l.gdp_wdi_d-roll_mgdp_wdi_d)^2+(l2.gdp_wdi_d-roll_mgdp_wdi_d)^2+(l3.gdp_wdi_d-roll_mgdp_wdi_d)^2+(l4.gdp_wdi_d-roll_mgdp_wdi_d)^2+(l5.gdp_wdi_d-roll_mgdp_wdi_d)^2)/5)^0.5
+by idch: gen roll_sd_gdp_wdi_o = (((l.gdp_wdi_o-roll_mgdp_wdi_o)^2+(l2.gdp_wdi_o-roll_mgdp_wdi_o)^2+(l3.gdp_wdi_o-roll_mgdp_wdi_o)^2+(l4.gdp_wdi_o-roll_mgdp_wdi_o)^2+(l5.gdp_wdi_o-roll_mgdp_wdi_o)^2)/5)^0.5
+gen roll_corr_gdp_wdi = roll_cov_gdp_wdi/(roll_sd_gdp_wdi_d*roll_sd_gdp_wdi_o)
+
+xtreg gdp_wdi_d i.country_num#c.l.gdp_wdi_d
+predict gdp_wdi_d_res
+replace gdp_wdi_d_res = gdp_wdi_d - gdp_wdi_d_res
+xtreg gdp_wdi_o i.Headquarters_num#c.l.gdp_wdi_o
+predict gdp_wdi_o_res
+replace gdp_wdi_o_res = gdp_wdi_o - gdp_wdi_o_res
+
+by idch: egen mgdp_wdi_d_res = mean(gdp_wdi_d_res)
+by idch: egen mgdp_wdi_o_res = mean(gdp_wdi_o_res)
+gen COV_gdp_wdi_res = (gdp_wdi_d_res-mgdp_wdi_d_res)*(gdp_wdi_o_res-mgdp_wdi_o_res)
+by idch: egen cov_gdp_wdi_res = mean(COV_gdp_wdi_res)
+by idch: egen sd_gdp_wdi_d_res = sd(gdp_wdi_d_res)
+by idch: egen sd_gdp_wdi_o_res = sd(gdp_wdi_o_res)
+gen corr_gdp_wdi_res = cov_gdp_wdi_res/(sd_gdp_wdi_d_res*sd_gdp_wdi_o_res)
+
+keep country Headquarters year corr_gdp_wdi roll_corr_gdp_wdi corr_gdp_wdi_res cov_gdp_wdi sd_gdp_wdi_o_res sd_gdp_wdi_o sd_gdp_wdi_d_res sd_gdp_wdi_d
+
+save corr_gdp_wdi, replace
+
+*
+use TempE2, clear 
+
+keep gdp_current cpi_current Headquarters country
+collapse gdp_current cpi_current, by(Headquarters country)
+drop if Headquarters == ""
+drop if gdp_current==. & cpi_current==.
+drop gdp_current cpi_current
+encode country, gen(country_num)
+encode Headquarters, gen(Headquarters_num)
+
+sort country
+
+gen n=43
+expand n
+replace n = 1
+bys country Headquarters: gen year = sum(n)
+replace year = year + 1989
+
+merge m:1 country year using cpi_wdi
+drop if _merge==2
+drop _merge
+
+rename cpi_wdi cpi_wdi_o
+rename country country1
+rename Headquarters country
+
+merge m:1 country year using cpi_wdi
+drop if _merge==2
+drop _merge
+
+rename country Headquarters
+rename country1 country
+rename cpi_wdi cpi_wdi_d
+drop n
+drop if Headquarters==""
+drop if country==""
+
+sort country Headquarters year
+
+by country Headquarters: egen mcpi_wdi_d = mean(cpi_wdi_d)
+by country Headquarters: egen mcpi_wdi_o = mean(cpi_wdi_o)
+gen COV_cpi_wdi = (cpi_wdi_d-mcpi_wdi_d)*(cpi_wdi_o-mcpi_wdi_o)
+by country Headquarters: egen cov_cpi_wdi = mean(COV_cpi_wdi)
+by country Headquarters: egen sd_cpi_wdi_d = sd(cpi_wdi_d)
+by country Headquarters: egen sd_cpi_wdi_o = sd(cpi_wdi_o)
+gen corr_cpi_wdi = cov_cpi_wdi/(sd_cpi_wdi_d*sd_cpi_wdi_o)
+
+by country Headquarters: egen N_d_o = count(COV_cpi_wdi)
+drop if N_d_o<20
+
+egen idch = group(country Headquarters)
+sort idch year
+xtset idch year
+
+by idch: gen roll_mcpi_wdi_d = (l.cpi_wdi_d+l2.cpi_wdi_d+l3.cpi_wdi_d+l4.cpi_wdi_d+l5.cpi_wdi_d)/5
+by idch: gen roll_mcpi_wdi_o = (l.cpi_wdi_o+l2.cpi_wdi_o+l3.cpi_wdi_o+l4.cpi_wdi_o+l5.cpi_wdi_o)/5
+by idch: gen roll_cov_cpi_wdi = ((l.cpi_wdi_d-roll_mcpi_wdi_d)*(l.cpi_wdi_o-roll_mcpi_wdi_o)+(l2.cpi_wdi_d-roll_mcpi_wdi_d)*(l2.cpi_wdi_o-roll_mcpi_wdi_o)+(l3.cpi_wdi_d-roll_mcpi_wdi_d)*(l3.cpi_wdi_o-roll_mcpi_wdi_o)+(l4.cpi_wdi_d-roll_mcpi_wdi_d)*(l4.cpi_wdi_o-roll_mcpi_wdi_o)+(l5.cpi_wdi_d-roll_mcpi_wdi_d)*(l5.cpi_wdi_o-roll_mcpi_wdi_o))/5
+by idch: gen roll_sd_cpi_wdi_d = (((l.cpi_wdi_d-roll_mcpi_wdi_d)^2+(l2.cpi_wdi_d-roll_mcpi_wdi_d)^2+(l3.cpi_wdi_d-roll_mcpi_wdi_d)^2+(l4.cpi_wdi_d-roll_mcpi_wdi_d)^2+(l5.cpi_wdi_d-roll_mcpi_wdi_d)^2)/5)^0.5
+by idch: gen roll_sd_cpi_wdi_o = (((l.cpi_wdi_o-roll_mcpi_wdi_o)^2+(l2.cpi_wdi_o-roll_mcpi_wdi_o)^2+(l3.cpi_wdi_o-roll_mcpi_wdi_o)^2+(l4.cpi_wdi_o-roll_mcpi_wdi_o)^2+(l5.cpi_wdi_o-roll_mcpi_wdi_o)^2)/5)^0.5
+gen roll_corr_cpi_wdi = roll_cov_cpi_wdi/(roll_sd_cpi_wdi_d*roll_sd_cpi_wdi_o)
+
+xtreg cpi_wdi_d i.country_num#c.l.cpi_wdi_d
+predict cpi_wdi_d_res
+replace cpi_wdi_d_res = cpi_wdi_d - cpi_wdi_d_res
+xtreg cpi_wdi_o i.Headquarters_num#c.l.cpi_wdi_o
+predict cpi_wdi_o_res
+replace cpi_wdi_o_res = cpi_wdi_o - cpi_wdi_o_res
+
+by idch: egen mcpi_wdi_d_res = mean(cpi_wdi_d_res)
+by idch: egen mcpi_wdi_o_res = mean(cpi_wdi_o_res)
+gen COV_cpi_wdi_res = (cpi_wdi_d_res-mcpi_wdi_d_res)*(cpi_wdi_o_res-mcpi_wdi_o_res)
+by idch: egen cov_cpi_wdi_res = mean(COV_cpi_wdi_res)
+by idch: egen sd_cpi_wdi_d_res = sd(cpi_wdi_d_res)
+by idch: egen sd_cpi_wdi_o_res = sd(cpi_wdi_o_res)
+gen corr_cpi_wdi_res = cov_cpi_wdi_res/(sd_cpi_wdi_d_res*sd_cpi_wdi_o_res)
+
+keep country Headquarters year corr_cpi_wdi roll_corr_cpi_wdi corr_cpi_wdi_res cov_cpi_wdi sd_cpi_wdi_o_res sd_cpi_wdi_o sd_cpi_wdi_d_res sd_cpi_wdi_d
+
+save corr_cpi_wdi, replace
+
+*
+use TempE2, clear 
+
+merge m:1 country Headquarters year using corr_gdp_wdi
+drop if _merge==2
+drop _merge
+merge m:1 country Headquarters year using corr_cpi_wdi
+drop if _merge==2
+drop _merge
+
+save TempE2, replace
+*
+	
+local varlist dist_ distw_
+
+foreach var in `varlist'{
+	
+	use TempE2, clear 
+
+	keep gdp_current cpi_current `var' country
+	collapse gdp_current cpi_current, by(`var' country)
+	drop if `var' == ""
+	drop if gdp_current==. & cpi_current==.
+	drop gdp_current cpi_current
+	encode country, gen(country_num)
+	encode `var', gen(`var'_num)
+
+	sort country
+
+	gen n=43
+	expand n
+	replace n = 1
+	bys country `var': gen year = sum(n)
+	replace year = year + 1989
+
+	merge m:1 country year using gdp_wdi
+	drop if _merge==2
+	drop _merge
+
+	rename gdp_wdi gdp_wdi_o
+	rename country country1
+	rename `var' country
+
+	merge m:1 country year using gdp_wdi
+	drop if _merge==2
+	drop _merge
+	
+	rename country `var'
+	rename country1 country
+	rename gdp_wdi gdp_wdi_d
+	drop n
+	drop if `var'==""
+	drop if country==""
+
+	sort country `var' year
+
+	by country `var': egen mgdp_wdi_d = mean(gdp_wdi_d)
+	by country `var': egen mgdp_wdi_o = mean(gdp_wdi_o)
+	gen COV_gdp_wdi = (gdp_wdi_d-mgdp_wdi_d)*(gdp_wdi_o-mgdp_wdi_o)
+	by country `var': egen cov_gdp_wdi = mean(COV_gdp_wdi)
+	by country `var': egen `var'sd_gdp_wdi_d = sd(gdp_wdi_d)
+	by country `var': egen `var'sd_gdp_wdi_o = sd(gdp_wdi_o)
+	gen `var'corr_gdp_wdi = cov_gdp_wdi/(`var'sd_gdp_wdi_d*`var'sd_gdp_wdi_o)
+	gen `var'cov_gdp_wdi = cov_gdp_wdi
+
+	by country `var': egen N_d_o = count(COV_gdp_wdi)
+	drop if N_d_o<20
+	
+	egen idch = group(country `var')
+	sort idch year
+	xtset idch year
+
+	by idch: gen roll_mgdp_wdi_d = (l.gdp_wdi_d+l2.gdp_wdi_d+l3.gdp_wdi_d+l4.gdp_wdi_d+l5.gdp_wdi_d)/5
+	by idch: gen roll_mgdp_wdi_o = (l.gdp_wdi_o+l2.gdp_wdi_o+l3.gdp_wdi_o+l4.gdp_wdi_o+l5.gdp_wdi_o)/5
+	by idch: gen roll_cov_gdp_wdi = ((l.gdp_wdi_d-roll_mgdp_wdi_d)*(l.gdp_wdi_o-roll_mgdp_wdi_o)+(l2.gdp_wdi_d-roll_mgdp_wdi_d)*(l2.gdp_wdi_o-roll_mgdp_wdi_o)+(l3.gdp_wdi_d-roll_mgdp_wdi_d)*(l3.gdp_wdi_o-roll_mgdp_wdi_o)+(l4.gdp_wdi_d-roll_mgdp_wdi_d)*(l4.gdp_wdi_o-roll_mgdp_wdi_o)+(l5.gdp_wdi_d-roll_mgdp_wdi_d)*(l5.gdp_wdi_o-roll_mgdp_wdi_o))/5
+	by idch: gen roll_sd_gdp_wdi_d = (((l.gdp_wdi_d-roll_mgdp_wdi_d)^2+(l2.gdp_wdi_d-roll_mgdp_wdi_d)^2+(l3.gdp_wdi_d-roll_mgdp_wdi_d)^2+(l4.gdp_wdi_d-roll_mgdp_wdi_d)^2+(l5.gdp_wdi_d-roll_mgdp_wdi_d)^2)/5)^0.5
+	by idch: gen roll_sd_gdp_wdi_o = (((l.gdp_wdi_o-roll_mgdp_wdi_o)^2+(l2.gdp_wdi_o-roll_mgdp_wdi_o)^2+(l3.gdp_wdi_o-roll_mgdp_wdi_o)^2+(l4.gdp_wdi_o-roll_mgdp_wdi_o)^2+(l5.gdp_wdi_o-roll_mgdp_wdi_o)^2)/5)^0.5
+	gen `var'roll_corr_gdp_wdi = roll_cov_gdp_wdi/(roll_sd_gdp_wdi_d*roll_sd_gdp_wdi_o)
+	
+	
+	xtreg gdp_wdi_d i.country_num#c.l.gdp_wdi_d
+	predict gdp_wdi_d_res
+	replace gdp_wdi_d_res = gdp_wdi_d - gdp_wdi_d_res
+	xtreg gdp_wdi_o i.`var'_num#c.l.gdp_wdi_o
+	predict gdp_wdi_o_res
+	replace gdp_wdi_o_res = gdp_wdi_o - gdp_wdi_o_res
+
+	by idch: egen mgdp_wdi_d_res = mean(gdp_wdi_d_res)
+	by idch: egen mgdp_wdi_o_res = mean(gdp_wdi_o_res)
+	gen COV_gdp_wdi_res = (gdp_wdi_d_res-mgdp_wdi_d_res)*(gdp_wdi_o_res-mgdp_wdi_o_res)
+	by idch: egen cov_gdp_wdi_res = mean(COV_gdp_wdi_res)
+	by idch: egen `var'sd_gdp_wdi_d_res = sd(gdp_wdi_d_res)
+	by idch: egen `var'sd_gdp_wdi_o_res = sd(gdp_wdi_o_res)
+	gen `var'corr_gdp_wdi_res = cov_gdp_wdi_res/(`var'sd_gdp_wdi_d_res*`var'sd_gdp_wdi_o_res)
+
+
+	keep country `var' year `var'corr_gdp_wdi `var'roll_corr_gdp_wdi `var'corr_gdp_wdi_res `var'cov_gdp_wdi `var'sd_gdp_wdi_o_res `var'sd_gdp_wdi_o `var'sd_gdp_wdi_d_res `var'sd_gdp_wdi_d
+
+	save corr_gdp_wdi, replace
+
+	*
+	use TempE2, clear 
+
+	keep gdp_current cpi_current `var' country
+	collapse gdp_current cpi_current, by(`var' country)
+	drop if `var' == ""
+	drop if gdp_current==. & cpi_current==.
+	drop gdp_current cpi_current
+	encode country, gen(country_num)
+	encode `var', gen(`var'_num)
+	
+	sort country
+
+	gen n=43
+	expand n
+	replace n = 1
+	bys country `var': gen year = sum(n)
+	replace year = year + 1989
+
+	merge m:1 country year using cpi_wdi
+	drop if _merge==2
+	drop _merge
+	
+	rename cpi_wdi cpi_wdi_o
+	rename country country1
+	rename `var' country
+
+	merge m:1 country year using cpi_wdi
+	drop if _merge==2
+	drop _merge
+	
+	rename country `var'
+	rename country1 country
+	rename cpi_wdi cpi_wdi_d
+	drop n
+	drop if `var'==""
+	drop if country==""
+
+	sort country `var' year
+
+	by country `var': egen mcpi_wdi_d = mean(cpi_wdi_d)
+	by country `var': egen mcpi_wdi_o = mean(cpi_wdi_o)
+	gen COV_cpi_wdi = (cpi_wdi_d-mcpi_wdi_d)*(cpi_wdi_o-mcpi_wdi_o)
+	by country `var': egen cov_cpi_wdi = mean(COV_cpi_wdi)
+	by country `var': egen sd_cpi_wdi_d = sd(cpi_wdi_d)
+	by country `var': egen `var'sd_cpi_wdi_o = sd(cpi_wdi_o)
+	gen `var'corr_cpi_wdi = cov_cpi_wdi/(sd_cpi_wdi_d*`var'sd_cpi_wdi_o)
+	gen `var'cov_cpi_wdi = cov_cpi_wdi
+
+	by country `var': egen N_d_o = count(COV_cpi_wdi)
+	drop if N_d_o<20
+	
+	egen idch = group(country `var')
+	sort idch year
+	xtset idch year
+
+	by idch: gen roll_mcpi_wdi_d = (l.cpi_wdi_d+l2.cpi_wdi_d+l3.cpi_wdi_d+l4.cpi_wdi_d+l5.cpi_wdi_d)/5
+	by idch: gen roll_mcpi_wdi_o = (l.cpi_wdi_o+l2.cpi_wdi_o+l3.cpi_wdi_o+l4.cpi_wdi_o+l5.cpi_wdi_o)/5
+	by idch: gen roll_cov_cpi_wdi = ((l.cpi_wdi_d-roll_mcpi_wdi_d)*(l.cpi_wdi_o-roll_mcpi_wdi_o)+(l2.cpi_wdi_d-roll_mcpi_wdi_d)*(l2.cpi_wdi_o-roll_mcpi_wdi_o)+(l3.cpi_wdi_d-roll_mcpi_wdi_d)*(l3.cpi_wdi_o-roll_mcpi_wdi_o)+(l4.cpi_wdi_d-roll_mcpi_wdi_d)*(l4.cpi_wdi_o-roll_mcpi_wdi_o)+(l5.cpi_wdi_d-roll_mcpi_wdi_d)*(l5.cpi_wdi_o-roll_mcpi_wdi_o))/5
+	by idch: gen roll_sd_cpi_wdi_d = (((l.cpi_wdi_d-roll_mcpi_wdi_d)^2+(l2.cpi_wdi_d-roll_mcpi_wdi_d)^2+(l3.cpi_wdi_d-roll_mcpi_wdi_d)^2+(l4.cpi_wdi_d-roll_mcpi_wdi_d)^2+(l5.cpi_wdi_d-roll_mcpi_wdi_d)^2)/5)^0.5
+	by idch: gen roll_sd_cpi_wdi_o = (((l.cpi_wdi_o-roll_mcpi_wdi_o)^2+(l2.cpi_wdi_o-roll_mcpi_wdi_o)^2+(l3.cpi_wdi_o-roll_mcpi_wdi_o)^2+(l4.cpi_wdi_o-roll_mcpi_wdi_o)^2+(l5.cpi_wdi_o-roll_mcpi_wdi_o)^2)/5)^0.5
+	gen `var'roll_corr_cpi_wdi = roll_cov_cpi_wdi/(roll_sd_cpi_wdi_d*roll_sd_cpi_wdi_o)
+	
+	xtreg cpi_wdi_d i.country_num#c.l.cpi_wdi_d
+	predict cpi_wdi_d_res
+	replace cpi_wdi_d_res = cpi_wdi_d - cpi_wdi_d_res
+	xtreg cpi_wdi_o i.`var'_num#c.l.cpi_wdi_o
+	predict cpi_wdi_o_res
+	replace cpi_wdi_o_res = cpi_wdi_o - cpi_wdi_o_res
+
+	by idch: egen mcpi_wdi_d_res = mean(cpi_wdi_d_res)
+	by idch: egen mcpi_wdi_o_res = mean(cpi_wdi_o_res)
+	gen COV_cpi_wdi_res = (cpi_wdi_d_res-mcpi_wdi_d_res)*(cpi_wdi_o_res-mcpi_wdi_o_res)
+	by idch: egen cov_cpi_wdi_res = mean(COV_cpi_wdi_res)
+	by idch: egen `var'sd_cpi_wdi_d_res = sd(cpi_wdi_d_res)
+	by idch: egen `var'sd_cpi_wdi_o_res = sd(cpi_wdi_o_res)
+	gen `var'corr_cpi_wdi_res = cov_cpi_wdi_res/(`var'sd_cpi_wdi_d_res*`var'sd_cpi_wdi_o_res)
+
+	drop if country=="Singapore" | country=="Hong Kong"
+	drop if `var'=="Singapore" | `var'=="Hong Kong"
+
+	keep country `var' year `var'corr_cpi_wdi `var'roll_corr_cpi_wdi `var'corr_cpi_wdi_res `var'cov_cpi_wdi `var'sd_cpi_wdi_o_res `var'sd_cpi_wdi_o `var'sd_cpi_wdi_d_res `var'sd_cpi_wdi_d
+
+	save corr_cpi_wdi, replace
+
+	*
+	use TempE2, clear 
+
+	merge m:1 country `var' year using corr_gdp_wdi
+	drop if _merge==2
+	drop _merge
+	merge m:1 country `var' year using corr_cpi_wdi
+	drop if _merge==2
+	drop _merge
+	
+	save TempE2, replace
+}
+
+
+********* Internet
+
+import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Internet_World_Development_Indicators.xlsx", sheet("Data") firstrow clear
+
+keep if SeriesName == "Individuals using the Internet (% of population)"
+reshape long YR, i(CountryName)
+
+rename CountryName country
+rename _j year
+rename YR internet_use
+
+keep country year internet_use
+drop if year<1998
+
+replace country = "South Korea" if country=="Korea, Rep."
+replace country = "Russia" if country=="Russian Federation"
+replace country = "Venezuela" if country=="Venezuela, RB"
+replace country = "Slovakia" if country=="Slovak Republic"
+replace country = "Turkey" if country=="Turkiye"
+replace country = "Czech Republic" if country=="Czechia"
+replace country = "Egypt" if country=="Egypt, Arab Rep."
+replace country = "Hong Kong" if country=="Hong Kong SAR, China"
+replace country = "Iran" if country=="Iran, Islamic Rep."
+
+sort country year
+
+save internet_use, replace
+
+*
+import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Internet_World_Development_Indicators.xlsx", sheet("Data") firstrow clear
+
+keep if SeriesName == "Secure Internet servers (per 1 million people)"
+reshape long YR, i(CountryName)
+
+rename CountryName country
+rename _j year
+rename YR servers
+
+keep country year servers
+drop if year<1998
+
+replace country = "South Korea" if country=="Korea, Rep."
+replace country = "Russia" if country=="Russian Federation"
+replace country = "Venezuela" if country=="Venezuela, RB"
+replace country = "Slovakia" if country=="Slovak Republic"
+replace country = "Turkey" if country=="Turkiye"
+replace country = "Czech Republic" if country=="Czechia"
+replace country = "Egypt" if country=="Egypt, Arab Rep."
+replace country = "Hong Kong" if country=="Hong Kong SAR, China"
+replace country = "Iran" if country=="Iran, Islamic Rep."
+
+sort country year
+
+save servers, replace
+
+*
+
+use TempE2, clear 
+
+keep gdp_current cpi_current Headquarters country year
+collapse gdp_current cpi_current, by(Headquarters country year)
+drop if Headquarters == ""
+drop if gdp_current==. & cpi_current==.
+drop gdp_current cpi_current
+
+merge m:1 country year using internet_use
+drop if _merge==2
+drop _merge
+
+rename internet_use internet_use_o
+rename country country1
+rename Headquarters country
+
+merge m:1 country year using internet_use
+drop if _merge==2
+drop _merge
+
+rename country Headquarters
+rename country1 country
+rename internet_use internet_use_d
+drop if Headquarters==""
+drop if country==""
+
+sort country Headquarters year
+
+keep country Headquarters year internet_use_o internet_use_d
+
+save hq_internet_use, replace
+
+*
+use TempE2, clear 
+
+keep gdp_current cpi_current Headquarters country year
+collapse gdp_current cpi_current, by(Headquarters country year)
+drop if Headquarters == ""
+drop if gdp_current==. & cpi_current==.
+drop gdp_current cpi_current
+
+merge m:1 country year using servers
+drop if _merge==2
+drop _merge
+
+rename servers servers_o
+rename country country1
+rename Headquarters country
+
+merge m:1 country year using servers
+drop if _merge==2
+drop _merge
+
+rename country Headquarters
+rename country1 country
+rename servers servers_d
+drop if Headquarters==""
+drop if country==""
+
+sort country Headquarters year
+
+keep country Headquarters year servers_o servers_d
+
+save hq_servers, replace
+
+*
+use TempE2, clear 
+
+merge m:1 country Headquarters year using hq_internet_use
+drop if _merge==2
+drop _merge
+merge m:1 country Headquarters year using hq_servers
+drop if _merge==2
+drop _merge
+
+save TempE2, replace
+*
+	
+local varlist dist_ distw_
+
+foreach var in `varlist'{
+	
+	use TempE2, clear 
+
+	keep gdp_current cpi_current `var' country year
+	collapse gdp_current cpi_current, by(`var' country year)
+	drop if `var' == ""
+	drop if gdp_current==. & cpi_current==.
+	drop gdp_current cpi_current
+
+	merge m:1 country year using internet_use
+	drop if _merge==2
+	drop _merge
+
+	rename internet_use `var'internet_use_o
+	rename country country1
+	rename `var' country
+
+	merge m:1 country year using internet_use
+	drop if _merge==2
+	drop _merge
+	
+	rename country `var'
+	rename country1 country
+	rename internet_use `var'internet_use_d
+	drop if `var'==""
+	drop if country==""
+
+	sort country `var' year
+
+	keep country `var' year `var'internet_use_o `var'internet_use_d
+
+	save `var'internet_use, replace
+
+	*
+	use TempE2, clear 
+
+	keep gdp_current cpi_current `var' country year
+	collapse gdp_current cpi_current, by(`var' country year)
+	drop if `var' == ""
+	drop if gdp_current==. & cpi_current==.
+	drop gdp_current cpi_current
+
+	merge m:1 country year using servers
+	drop if _merge==2
+	drop _merge
+	
+	rename servers `var'servers_o
+	rename country country1
+	rename `var' country
+
+	merge m:1 country year using servers
+	drop if _merge==2
+	drop _merge
+	
+	rename country `var'
+	rename country1 country
+	rename servers `var'servers_d
+	drop if `var'==""
+	drop if country==""
+
+	sort country `var' year
+
+	keep country `var' year `var'servers_o `var'servers_d
+
+	save `var'servers, replace
+
+	*
+	use TempE2, clear 
+
+	merge m:1 country `var' year using `var'internet_use
+	drop if _merge==2
+	drop _merge
+	merge m:1 country `var' year using `var'servers
+	drop if _merge==2
+	drop _merge
+	
+	save TempE2, replace
+}
+
+
+********* Capital controls
+
+use "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\2021-FKRSU-Update-12-08-2021.dta", clear
+
+gen eqi = (eq_plbn + eq_siar)/2
+gen eqo = (eq_siln + eq_pabr)/2
+gen eq = (eqi + eqo)/2
+gen boi = (bo_plbn + bo_siar)/2
+gen boo = (bo_siln + bo_pabr)/2
+gen bo = (boi + boo)/2
+gen mmi = (mm_plbn + mm_siar)/2
+gen mmo = (mm_siln + mm_pabr)/2
+gen mm = (mmi + mmo)/2
+gen cii = (ci_plbn + ci_siar)/2
+gen cio = (ci_siln + ci_pabr)/2
+gen ci = (cii + cio)/2
+gen dei = (de_plbn + de_siar)/2
+gen deo = (de_siln + de_pabr)/2
+gen de = (dei + deo)/2
+gen cc = (cci + cco)/2
+gen fc = (fci + fco)/2
+gen gs = (gsi + gso)/2
+gen di = (dii + dio)/2
+gen rei = re_plbn
+gen reo = (re_slbn + re_pabr)/2
+gen re = (rei + reo)/2
+gen kai = (eqi + boi + mmi + cii + dei + cci + fci + gsi + dii + rei)/10 if Year>1996
+replace kai = (eqi + mmi + cii + dei + cci + fci + gsi + dii + rei)/9 if Year<=1996
+gen kao = (eqo + boo + mmo + cio + deo + cco + fco + gso + dio + reo)/10 if Year>1996
+replace kao = (eqo + mmo + cio + deo + cco + fco + gso + dio + reo)/9 if Year<=1996
+gen ka = (kai + kao)/2
+
+keep Country Year eqi eqo boi boo mmi mmo cii cio dei deo cci cco fci fco gsi gso dii dio rei reo kai kao
+
+rename Country country 
+rename Year year
+
+replace country = "Hong Kong" if country=="Hong Kong SAR"
+replace country = "Iran" if country=="Islamic Republic of Iran"
+replace country = "South Korea" if country=="Korea"
+
+sort country year
+
+save ka, replace
+
+*
+
+use TempE2, clear 
+
+keep gdp_current cpi_current Headquarters country year
+collapse gdp_current cpi_current, by(Headquarters country year)
+drop if Headquarters == ""
+drop if gdp_current==. & cpi_current==.
+drop gdp_current cpi_current
+
+merge m:1 country year using ka
+drop if _merge==2
+drop _merge
+
+foreach VAR in eqi eqo boi boo mmi mmo cii cio dei deo cci cco fci fco gsi gso dii dio rei reo kai kao {
+	rename `VAR' `VAR'_o
+}
+rename country country1
+rename Headquarters country
+
+merge m:1 country year using ka
+drop if _merge==2
+drop _merge
+
+rename country Headquarters
+rename country1 country
+
+foreach VAR in eqi eqo boi boo mmi mmo cii cio dei deo cci cco fci fco gsi gso dii dio rei reo kai kao {
+	rename `VAR' `VAR'_d
+}
+drop if Headquarters==""
+drop if country==""
+
+sort country Headquarters year
+
+save hq_ka, replace
+
+*
+use TempE2, clear 
+
+merge m:1 country Headquarters year using hq_ka
+drop if _merge==2
+drop _merge
+
+save TempE2, replace
+
+*
+	
+local varlist dist_ distw_
+
+foreach var in `varlist'{
+	
+	use TempE2, clear 
+
+	keep gdp_current cpi_current `var' country year
+	collapse gdp_current cpi_current, by(`var' country year)
+	drop if `var' == ""
+	drop if gdp_current==. & cpi_current==.
+	drop gdp_current cpi_current
+
+	merge m:1 country year using ka
+	drop if _merge==2
+	drop _merge
+		
+	foreach VAR in eqi eqo boi boo mmi mmo cii cio dei deo cci cco fci fco gsi gso dii dio rei reo kai kao {
+		rename `VAR' `var'`VAR'_o
+	}
+	rename country country1
+	rename `var' country
+
+
+	merge m:1 country year using ka
+	drop if _merge==2
+	drop _merge
+
+	rename country `var'
+	rename country1 country
+
+	foreach VAR in eqi eqo boi boo mmi mmo cii cio dei deo cci cco fci fco gsi gso dii dio rei reo kai kao {
+		rename `VAR' `var'`VAR'_d
+	}
+	drop if `var'==""
+	drop if country==""
+
+	sort country `var' year
+
+	save `var'_ka, replace
+
+	*
+	use TempE2, clear 
+
+	merge m:1 country `var' year using `var'_ka
+	drop if _merge==2
+	drop _merge
+
+	save TempE2, replace
+}
+
+
+
+save "$output/extended.dta", replace
+
+
+* ----------------------
+*# Stack variables and horizons
+* ----------------------
+
+* extended STACKED
+
+use "$output/extended.dta", clear 
+
+gen ka_o = kai_o+kao_o
+
+preserve
+drop if country_num==.
+drop if Emerging==.
+collapse (mean) lgdp_ppp_o lgdp_cap_ppp_d ICRG WDI_institutions iq_spi_ovrl iq_sci_ovrl rho_gdp rho_cpi rmse_gdp rmse_cpi r2_gdp r2_cpi cc_est ICRG_Corrupt gdp_current_a1 cpi_current_a1 tariff ka_o, by(country_num year Emerging country)
+collapse (mean) lgdp_ppp_o lgdp_cap_ppp_d ICRG WDI_institutions iq_spi_ovrl iq_sci_ovrl rho_gdp rho_cpi rmse_gdp rmse_cpi r2_gdp r2_cpi cc_est ICRG_Corrupt (sd) sd_gdp = gdp_current_a1 sd_cpi = cpi_current_a1, by(country_num Emerging country)
+save cty_cs, replace
+sort country_num	
+restore
+
+preserve
+collapse (mean) lTotalRevenue lEmployees lprod Finance Banks Multinational, by(idi)
+sort idi
+save inst_cs, replace
+restore
+
+
+sort country_num
+merge m:1 country_num using cty_cs, nogen
+sort idi
+merge m:1 idi using inst_cs, nogen
+sort country_num idi
+gen l_sd_gdp = log(sd_gdp)
+gen l_sd_cpi = log(sd_cpi)
+gen l_rmse_gdp = log(rmse_gdp)
+gen l_rmse_cpi = log(rmse_cpi)
+gen l_sdreturn = log(sdreturn)
+
+save $output/tempE4.dta, replace
+
+gen var = "gdp"
+gen hor = "current"
+append using $output/tempE4.dta
+replace var = "gdp" if var == ""
+replace hor = "future" if hor == ""
+append using $output/tempE4.dta
+replace var = "cpi" if var == ""
+replace hor = "current" if hor == ""
+append using $output/tempE4.dta
+replace var = "cpi" if var == ""
+replace hor = "future" if hor == ""
+
+gen l_sd = l_sd_gdp if var=="gdp"
+replace l_sd = l_sd_cpi if var=="cpi"
+gen l_rmse = l_rmse_gdp if var=="gdp"
+replace l_rmse = l_rmse_cpi if var=="cpi"
+
+gen GDP = (var=="gdp")
+replace GDP =. if var!="gdp" & var!="cpi"
+gen future = (hor=="future")
+replace future =. if hor!="future" & hor!="current"
+
+gen CPI = 1-GDP
+gen current = 1-future
+
+encode var, gen(Var)
+encode hor, gen(Hor)
+
+gen forecast = gdp_current if var=="gdp" & hor=="current"
+replace forecast = gdp_future if var=="gdp" & hor=="future"
+replace forecast = cpi_current if var=="cpi" & hor=="current"
+replace forecast = cpi_future if var=="cpi" & hor=="future"
+
+gen labs_FE_a1 = labs_FE_gdp_current_a1 if var=="gdp" & hor=="current"
+replace labs_FE_a1 = labs_FE_gdp_future_a1 if var=="gdp" & hor=="future"
+replace labs_FE_a1 = labs_FE_cpi_current_a1 if var=="cpi" & hor=="current"
+replace labs_FE_a1 = labs_FE_cpi_future_a1 if var=="cpi" & hor=="future"
+
+gen FE_a1 = FE_gdp_current_a1 if var=="gdp" & hor=="current"
+replace FE_a1 = FE_gdp_future_a1 if var=="gdp" & hor=="future"
+replace FE_a1 = FE_cpi_current_a1 if var=="cpi" & hor=="current"
+replace FE_a1 = FE_cpi_future_a1 if var=="cpi" & hor=="future"
+
+***** Important!!
+replace labs_FE_a1 = max(-6.9,labs_FE_a1) if labs_FE_a1!=.
+replace labs_FE_a1 = -6.9 if FE_a1==0
+*****
+
+gen pop_2000 = pop_d if year == 2000
+gen distw_pop_2000 = distw_pop_d if year == 2000
+bys Head: egen Pop_2000 = max(pop_2000)
+bys closest_ctry_distw: egen distw_Pop_2000 = max(distw_pop_2000)
+gen Natives_2000 = 1000*Pop_2000 - Migration_2000_total
+gen distw_Natives_2000 = 1000*distw_Pop_2000 - distw_Migration_2000_total
+gen migration_2000 = Migration_2000/(1000*Pop_2000)
+replace migration_2000 = Natives_2000/(1000*Pop_2000) if country==Head
+gen distw_migration_2000 = distw_Migration_2000/(1000*distw_Pop_2000)
+replace distw_migration_2000 = distw_Natives_2000/(1000*distw_Pop_2000) if country==closest_ctry_distw
+
+
+gen trade = (tradeflow_comtrade_o+tradeflow_comtrade_d)/(gdp_o+gdp_d)
+gen ltrade = log(trade)
+gen lgdp_o = log(gdp_ppp_o)
+gen lgdp_d = log(gdp_ppp_d)
+gen absorbtion = gdp_o-exports/1000
+gen trade_exports = (tradeflow_comtrade_d)/(gdp_o+gdp_d)
+replace trade_exports = (absorbtion)/(gdp_o+gdp_d) if country==Headquarter
+gen ltrade_exports = log(trade_exports)
+gen trade_imports = (tradeflow_comtrade_o)/(gdp_o+gdp_d)
+replace trade_imports = (absorbtion)/(gdp_o+gdp_d) if country==Headquarter
+gen ltrade_imports = log(trade_imports)
+gen finlink = totalclaims2/(gdp_o+gdp_d)
+gen lfinlink = log(finlink)
+gen cov_wdi = cov_gdp_wdi if Var == 2
+replace cov_wdi = cov_cpi_wdi if Var == 1
+gen sd_wdi_d = sd_gdp_wdi_d if Var == 2
+replace sd_wdi_d = sd_cpi_wdi_d if Var == 1
+gen corr_wdi = corr_gdp_wdi if Var == 2
+replace corr_wdi = corr_cpi_wdi if Var == 1
+gen corr_wdi_res = corr_gdp_wdi_res if Var == 2
+replace corr_wdi_res = corr_cpi_wdi_res if Var == 1
+gen time_overlap = max(0,10-abs(gmt_offset_2020_o-gmt_offset_2020_d))
+gen internet = min(internet_use_o,internet_use_d)
+gen servers = min(servers_o,servers_d)
+gen gatt = gatt_o*gatt_d
+gen bilateral_ka = max(kai_d,kao_o)
+gen bilateral_fc = max(fci_d,fco_o)
+gen link = indirect_link+direct_link
+gen beta =cov_wdi/sd_wdi_d^2
+
+gen distw_trade = (distw_tradeflow_comtrade_o+distw_tradeflow_comtrade_d)/(distw_gdp_o+distw_gdp_d)
+gen ldistw_trade = log(trade)
+gen ldistw_gdp_o = log(distw_gdp_ppp_o)
+gen ldistw_gdp_d = log(distw_gdp_ppp_d)
+gen distw_absorbtion = distw_gdp_o-exports/1000
+gen distw_trade_exports = (distw_tradeflow_comtrade_d)/(distw_gdp_o+distw_gdp_d)
+replace distw_trade_exports = (absorbtion)/(distw_gdp_o+distw_gdp_d) if country==closest_ctry_distw
+gen ldistw_trade_exports = log(trade_exports)
+gen distw_trade_imports = (distw_tradeflow_comtrade_o)/(distw_gdp_o+distw_gdp_d)
+replace distw_trade_imports = (absorbtion)/(distw_gdp_o+distw_gdp_d) if country==closest_ctry_distw
+gen ldistw_trade_imports = log(trade_imports)
+gen distw_finlink = distw_totalclaims2/(distw_gdp_o+distw_gdp_d)
+gen ldistw_finlink = log(distw_finlink)
+gen ldistw_distw = log(distw_distw)
+gen distw_cov_wdi = distw_cov_gdp_wdi if Var == 2
+replace distw_cov_wdi = distw_cov_cpi_wdi if Var == 1
+gen distw_sd_wdi_d = distw_sd_gdp_wdi_d if Var == 2
+replace distw_sd_wdi_d = distw_sd_cpi_wdi_d if Var == 1
+gen distw_corr_wdi = distw_corr_gdp_wdi if Var == 2
+replace distw_corr_wdi = distw_corr_cpi_wdi if Var == 1
+gen distw_corr_wdi_res = distw_corr_gdp_wdi_res if Var == 2
+replace distw_corr_wdi_res = distw_corr_cpi_wdi_res if Var == 1
+gen distw_time_overlap = max(0,10-abs(distw_gmt_offset_2020_o-distw_gmt_offset_2020_d))
+gen distw_internet = min(distw_internet_use_o,distw_internet_use_d)
+gen distw_servers = min(distw_servers_o,distw_servers_d)
+gen distw_gatt = distw_gatt_o*distw_gatt_d
+gen distw_bilateral_ka = max(distw_fci_d,distw_fco_o)
+gen distw_bilateral_fc = max(distw_fci_d,distw_fco_o)
+gen distw_beta =distw_cov_wdi/distw_sd_wdi_d^2
+
+
+egen id3 = group(country_num Headquarters)
+egen id4 = group(country_num closest_ctry_distw)
+
+gen rta_type1 = (rta_type==1)
+gen rta_type2 = (rta_type==2)
+gen rta_type3 = (rta_type==3)
+gen rta_type4 = (rta_type==4)
+gen rta_type5 = (rta_type==5)
+gen rta_type6 = (rta_type==6)
+gen rta_type7 = (rta_type==7)
+
+gen trade_open = (exports+imports)/gdp_o
+gen trade_open_exports = (exports)/gdp_o
+gen trade_open_imports = (imports)/gdp_o
+
+gen distw_ka_o = dist_kai_o+distw_kao_o
+
+gen distw_corr_wdi_res_abs = abs(distw_corr_wdi_res)
+
+gen t = year-2010
+
+gen CU = (rta_type==1) + (rta_type==2)
+gen FTA = (rta_type==4) + (rta_type==5)
+replace rta=1 if country==Headquarters
+replace CU = 1 if country==Headquarters
+gen lexports = log(exports)
+gen lexports_2017_ = lexports if year==2017
+bys country: egen lexports_2017 = max(lexports_2017_)
+
+gen r2 = corr_wdi^2
+gen distw_r2 = distw_corr_wdi^2
+
+egen WDI_bin = xtile(WDI), nq(2)
+egen lgdp_ppp_o_bin = xtile(lgdp_ppp_o), nq(2)
+egen l_sdreturn_bin = xtile(l_sdreturn), nq(2)
+egen vix_bin = xtile(vix), nq(2)
+
+replace rec = 0 if gdp_current_a1!=.
+replace rec=1 if gdp_current_a1<0 & gdp_current_a1!=.
+
+gen National =1-Multinational
+gen LocalSub = (ForeignHQ==1)*(Foreign==0)
+gen lN_cty2 = log(N_cty2)
+gen nonFinance = 1-Finance
+gen manyCtries = (N_cty2>9)
+gen fewCtries = (N_cty2<10)
+
+
+save "$output/extended_stacked.dta", replace
+
+erase $output/tempE4.dta
 
 
 

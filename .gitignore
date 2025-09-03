@@ -85,6 +85,6 @@ inst/data/produced/msci/
 inst/data/produced/vix/
 inst/data/produced/worldbank/
 inst/data/produced/recession/
-output/figures/
-output/tables/
+inst/data/produced/temp/
 output/regressions/
+data/
