@@ -1,0 +1,39 @@
+\begin{table}[H] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Forecast Errors, Updating, and the Location of the Forecaster}
+\label{tab:updating_errors_main}
+{\footnotesize
+\begin{tabularx}{\linewidth}{l l C C m{0.01\textwidth} C m{0.01\textwidth} C C C C}
+
+\toprule
+{}&{}&\multicolumn{2}{c}{$\ln(N_{ijt})$}&&{$\ln(\sigma^m_{\text{FE},i,j})$}&&\multicolumn{4}{c}{$\ln(|Error_{ijt,t}^m|)$} \tabularnewline \cline{3-4} \cline{6-6} \cline{8-11} \tabularnewline &&{(1)}&{(2)}&&{(3)}&&{(4)}&{(5)}&{(6)}&{(7)} \tabularnewline
+{Variable}&{Coefficient}&{}&{Distinct updates}&{}&{}&{}&{}&{}&{}&{Distinct updates}&{} \tabularnewline
+\midrule \addlinespace[0pt]
+\midrule $\text{CPI}_t$&Foreign&--0.12***&--0.12***&&0.12**&&0.09***&0.43***&0.08***&0.08***&0.08* \tabularnewline
+&&(0.04)&(0.04)&&(0.05)&&(0.02)&(0.11)&(0.02)&(0.03)&(0.04) \tabularnewline
+&Local Subsidiary&&&&&&&&&&0.00 \tabularnewline
+&&&&&&&&&&&(0.04) \tabularnewline
+&N&10,857&10,822&&6,662&&99,228&15,267&79,394&54,654&79,394 \tabularnewline
+&$ R^2 $&0.53&0.50&&0.80&&0.62&0.70&0.64&0.68&0.64 \tabularnewline
+$\text{GDP}_t$&Foreign&--0.10***&--0.10***&&0.09**&&0.06**&0.29**&0.03&0.06**&0.09** \tabularnewline
+&&(0.03)&(0.03)&&(0.04)&&(0.02)&(0.11)&(0.02)&(0.02)&(0.04) \tabularnewline
+&&&&&&&&&&&0.05 \tabularnewline
+&&&&&&&&&&&(0.03) \tabularnewline
+&N&11,240&11,238&&7,131&&103,866&15,822&83,497&58,157&83,497 \tabularnewline
+&$ R^2 $&0.54&0.52&&0.88&&0.66&0.74&0.67&0.72&0.67 \tabularnewline
+&N&10,464&10,464&&6,565&&95,508&13,591&77,328&51,379&77,328 \tabularnewline
+&$ R^2 $&0.53&0.52&&0.86&&0.72&0.79&0.73&0.76&0.73 \tabularnewline
+&Country, For., Month FE&&&&\checkmark&&&&&& \tabularnewline
+&Country $ \times $ Year FE&\checkmark&\checkmark&&&&&&&& \tabularnewline
+&Forecaster $ \times $ Year FE &\checkmark&\checkmark&&&&&&&& \tabularnewline
+&Country $ \times $ Date FE&&&&&&\checkmark&\checkmark&\checkmark&\checkmark&\checkmark \tabularnewline
+&Forecaster $ \times $ Date FE &&&&&&\checkmark&\checkmark&\checkmark&\checkmark&\checkmark \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\begin{flushleft}
+\footnotesize \begin{minipage}{1\linewidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} Columns (1) and (2) show the results of regression of the number of forecast updates within a year on the location of the forecaster. Column (3) shows the regression of the log standard deviation of the errors on the location of the forecaster. Columns (4) to (7) show the regression of the log absolute forecast error on the location of the forecaster. Standard errors are clustered at the country and forecaster level in columns (1) to (3), and at the country, forecaster and date level in columns (4) to (7). \end{tabnote} \end{minipage}  
+\end{flushleft}
+}
+\end{table}

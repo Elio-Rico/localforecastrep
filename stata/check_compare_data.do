@@ -20,6 +20,49 @@ merge 1:1 country country_num institution id date datem  month gdp_current gdp_f
 */
 
 
+
+
+use "/Users/ebollige/Dropbox/1_1_replication_forecasters/localforecastrep/inst/data/produced/ce_imf/data_final_newVintage_3.dta", clear
+keep country country_num institution id date datem  month gdp_current gdp_future  cpi_current cpi_future year_forecast_current_gdp year_forecast_future_gdp year_forecast_current_cpi year_forecast_future_cpi Foreign ForeignHQ ForeignSubsidiary Local Foreign idci  Multinational vintage_gdp_current_aprtp1 vintage_gdp_future_aprtp2 Emerging vintage_cpi_current_aprtp1 
+save "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta", replace
+
+
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_3.dta", clear
+keep country country_num institution id date datem  month gdp_current gdp_future  cpi_current cpi_future year_forecast_current_gdp year_forecast_future_gdp year_forecast_current_cpi year_forecast_future_cpi Foreign ForeignHQ ForeignSubsidiary Local Foreign idci  Multinational  vintage_gdp_current_aprtp1  vintage_gdp_future_aprtp2  Emerging vintage_cpi_current_aprtp1
+ 
+merge 1:1 * using "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta"
+
+
+
+
+
+use "/Users/ebollige/Dropbox/1_1_replication_forecasters/localforecastrep/data/baseline.dta", clear
+keep country country_num institution id date datem  month  idi Foreign month Emerging  LocFor Industry7
+save "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta", replace
+
+
+use "/Users/ebollige/Dropbox/4Foreign vs local expectations/EmpiricalResults/Kenza/TempE.dta", clear
+keep  country country_num institution id date datem  month  idi Foreign month Emerging  LocFor Industry7
+ 
+merge 1:1 * using "/Users/ebollige/Dropbox/1_1_replication_forecasters/compare_data_for_you_only/to_replicate.dta"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 * it looks as if data_final_newVintage_2_toMergeGravity_ is exactly the same as our newly produced data_final_newVintage_2_toMergeGravity
 use "/Users/ebollige/Dropbox/4Foreign vs local expectations/Navid's_File/Company_Trees/data_final_newVintage_2_toMergeGravity_.dta", clear
 merge 1:1 * using "$datace_imf/data_final_newVintage_2_toMergeGravity.dta"

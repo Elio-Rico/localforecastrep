@@ -1,0 +1,48 @@
+\begin{table}[H] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Test for differences in Variance of Forecast Error}
+\label{tab:error_sdtest}
+{\footnotesize
+\begin{tabularx}{\linewidth}{llCCCCCC}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)}&{(7)} \tabularnewline \midrule
+{Variable}&{Sample}&{ $ N $ Local}&{ $ N $ Foreign}&{ $ \sigma_\text{Local} $}&{ $\sigma_\text{Foreign} $}&{F-test}&{p-value} \tabularnewline
+\midrule \addlinespace[0pt]
+\midrule $ \text{CPI}_{t} $ &All sample&11,908&4,519&0.79&0.94&82.77&$< 0.001$ \tabularnewline
+&Advanced Economies&5,655&1,278&0.42&0.49&29.39&$< 0.001$ \tabularnewline
+&Emerging Economies&6,253&3,241&1.02&1.07&2.78&0.095 \tabularnewline
+&Multinatonal firms&8,435&2,320&0.77&0.95&77.45&$< 0.001$ \tabularnewline
+&National firms&3,473&2,199&0.86&0.93&12.74&$< 0.001$ \tabularnewline
+&Financial Sector&8,005&1,274&0.78&1.04&69.99&$< 0.001$ \tabularnewline
+&Non-Fincial Sector&1,828&2,158&0.74&0.83&19.10&$< 0.001$ \tabularnewline
+$ \text{GDP}_{t} $ &All sample&12,390&4,701&1.15&1.44&131.49&$< 0.001$ \tabularnewline
+&Advanced Economies&5,762&1,274&0.69&0.87&53.80&$< 0.001$ \tabularnewline
+&Emerging Economies&6,628&3,427&1.44&1.60&15.36&$< 0.001$ \tabularnewline
+&Multinatonal firms&8,690&2,424&1.11&1.51&148.38&$< 0.001$ \tabularnewline
+&National firms&3,700&2,277&1.25&1.36&8.83&0.003 \tabularnewline
+&Financial Sector&8,269&1,348&1.14&1.60&117.08&$< 0.001$ \tabularnewline
+&Non-Fincial Sector&1,858&2,217&0.99&1.32&58.50&$< 0.001$ \tabularnewline
+$ \text{CPI}_{t+1} $ &All sample&11,231&4,140&1.76&2.09&112.73&$< 0.001$ \tabularnewline
+&Advanced Economies&5,382&1,171&0.91&1.04&22.85&$< 0.001$ \tabularnewline
+&Emerging Economies&5,849&2,969&2.27&2.38&6.49&0.011 \tabularnewline
+&Multinatonal firms&7,971&2,151&1.79&2.07&57.65&$< 0.001$ \tabularnewline
+&National firms&3,260&1,989&1.68&2.10&60.22&$< 0.001$ \tabularnewline
+&Financial Sector&7,582&1,192&1.81&2.17&44.28&$< 0.001$ \tabularnewline
+&Non-Fincial Sector&1,711&1,964&1.66&2.00&45.50&$< 0.001$ \tabularnewline
+$ \text{GDP}_{t+1} $ &All sample&11,707&4,341&2.45&3.10&109.10&$< 0.001$ \tabularnewline
+&Advanced Economies&5,472&1,168&1.60&1.86&18.66&$< 0.001$ \tabularnewline
+&Emerging Economies&6,235&3,173&3.00&3.45&15.99&$< 0.001$ \tabularnewline
+&Multinatonal firms&8,206&2,275&2.36&3.24&123.84&$< 0.001$ \tabularnewline
+&National firms&3,501&2,066&2.64&2.94&5.81&0.016 \tabularnewline
+&Financial Sector&7,831&1,281&2.43&3.41&99.87&$< 0.001$ \tabularnewline
+&Non-Fincial Sector&1,737&2,023&1.95&2.82&53.02&$< 0.001$ \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\begin{flushleft}
+\footnotesize \begin{minipage}{1\textwidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} The table shows Levene's variance equality test applied to the forecast errors of local and foreign forecasters. The Null hypothesis posits that the variance of the forecast errors made by local forecasters is equal to the  variance of the forecast errors made by foreign forecasters. The alternative hypothesis is that the variances are not equal. In the rows we report the test statistics for different subsamples. \end{tabnote} \end{minipage}  
+\end{flushleft}
+}
+\end{table}

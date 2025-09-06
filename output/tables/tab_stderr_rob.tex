@@ -1,0 +1,31 @@
+\begin{table}[H] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Standard Deviation of Forecast Errors and the Location of the Forecaster - Alternative fixed effects}
+\label{tab:tab_stderr_rob}
+{\footnotesize
+\begin{tabularx}{\linewidth}{l l C C C C}
+
+\toprule
+&&\multicolumn{4}{c}{$\ln(\sigma^m_{\text{FE},i,j})$} \tabularnewline \cline{3-6} &\multicolumn{4}{c}{}& \multicolumn{1}{c}{Baseline}  \tabularnewline \cline{6-6} \tabularnewline &&{(1)}&{(2)}&{(3)}&{(4)} \tabularnewline
+{Variable}&{Coefficient}&{}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[0pt]
+\midrule $ \text{CPI}_{t} $ &Foreign&0.22**&0.10***&0.12**&0.12** \tabularnewline
+&&(0.09)&(0.03)&(0.05)&(0.05) \tabularnewline
+&N&6,671&6,671&6,662&6,662 \tabularnewline
+&$ R^2 $&0.01&0.46&0.50&0.80 \tabularnewline
+$ \text{GDP}_{t} $ &Foreign&0.25***&0.04*&0.10**&0.09** \tabularnewline
+&&(0.08)&(0.02)&(0.05)&(0.04) \tabularnewline
+&N&7,139&7,139&7,131&7,131 \tabularnewline
+&$ R^2 $&0.02&0.49&0.52&0.88 \tabularnewline
+&Country FE&&\checkmark&\checkmark&\checkmark \tabularnewline
+&Forecaster FE&&&\checkmark&\checkmark \tabularnewline
+&Month FE&&&&\checkmark \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\begin{flushleft}
+\footnotesize \begin{minipage}{1\linewidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} Columns (1) to (4) show the regression of the log standard deviation of the errors on the location of the forecaster with different fixed-effect specifications. Standard errors are clustered at the country and forecaster levels. \end{tabnote} \end{minipage}  
+\end{flushleft}
+}
+\end{table}

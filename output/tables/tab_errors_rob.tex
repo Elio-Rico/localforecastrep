@@ -1,0 +1,32 @@
+\begin{table}[H] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Absolute Forecast Errors and the Location of the Forecaster - Alternative fixed effects}
+\label{tab:tab_errors_rob}
+{\footnotesize
+\begin{tabularx}{\linewidth}{l l C C C C C}
+
+\toprule
+&&\multicolumn{5}{c}{$\ln(|Error_{ijt,t}^m|)$} \tabularnewline \cline{3-7} &\multicolumn{5}{c}{}& \multicolumn{1}{c}{Baseline}  \tabularnewline \cline{7-7} \tabularnewline &&{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline
+{Variable}&{Coefficient}&{}&{}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[0pt]
+\midrule $ \text{CPI}_{t} $ &Foreign&0.26***&0.09***&0.10***&0.10***&0.09*** \tabularnewline
+&&(0.08)&(0.03)&(0.03)&(0.02)&(0.02) \tabularnewline
+&N&153,089&153,089&153,066&152,886&99,228 \tabularnewline
+&$ R^2 $&0.01&0.11&0.14&0.55&0.62 \tabularnewline
+$ \text{GDP}_{t} $ &Foreign&0.27***&0.02&0.11***&0.06**&0.06** \tabularnewline
+&&(0.08)&(0.03)&(0.03)&(0.02)&(0.02) \tabularnewline
+&N&160,971&160,971&160,947&160,765&103,866 \tabularnewline
+&$ R^2 $&0.01&0.13&0.15&0.60&0.66 \tabularnewline
+&Country FE&&\checkmark&\checkmark&& \tabularnewline
+&Forecaster FE&&&\checkmark&\checkmark& \tabularnewline
+&Country $ \times $ Date FE&&&&\checkmark&\checkmark \tabularnewline
+&Forecaster $ \times $ Date FE &&&&&\checkmark \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\begin{flushleft}
+\footnotesize \begin{minipage}{1\linewidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} Columns (1) to (5) show the regression of the log absolute forecast error on the location of the forecaster with different fixed-effect specifications. Standard errors are clustered at the country, forecaster and date level. \end{tabnote} \end{minipage}  
+\end{flushleft}
+}
+\end{table}

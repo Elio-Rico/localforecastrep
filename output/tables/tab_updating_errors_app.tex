@@ -1,0 +1,37 @@
+\begin{table}[H] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Forecast Errors, Updating, and the Location of the Forecaster - Future year}
+\label{tab:updating_errors_app}
+{\footnotesize
+\begin{tabularx}{\linewidth}{l l C m{0.01\textwidth} C C C m{0.01\textwidth} C C C}
+
+\toprule
+{}&{}&{$\ln(\sigma^m_{\text{FE},i,j})$}&&\multicolumn{3}{c}{$\ln(|Error_{ijt+1,t}^m|)$}&&\multicolumn{3}{c}{$\ln(N_{ijt})$} \tabularnewline \cline{3-3} \cline{5-7} \cline{9-11} \tabularnewline &&{(1)}&&{(2)}&{(3)}&{(4)}&&{(5)}&{(6)}&{(7)} \tabularnewline
+{Variable}&{Coefficient}&{}&{}&{}&{}&{}&{}&{}&{Distinct updates}&{} \tabularnewline
+\midrule \addlinespace[0pt]
+\midrule $\text{CPI}_{t+1}$&Foreign&0.07*&&0.07***&0.14**&0.06**&&--0.11***&--0.12***&0.07* \tabularnewline
+&&(0.04)&&(0.02)&(0.06)&(0.03)&&(0.04)&(0.04)&(0.04) \tabularnewline
+&&&&&&&&&&0.01 \tabularnewline
+&&&&&&&&&&(0.03) \tabularnewline
+&N&6,134&&90,693&13,208&72,978&&10,082&10,082&72,978 \tabularnewline
+&$ R^2 $&0.86&&0.67&0.79&0.67&&0.53&0.51&0.67 \tabularnewline
+$\text{GDP}_{t+1}$&Foreign&0.06**&&0.01&0.09&--0.00&&--0.10**&--0.10***&0.06 \tabularnewline
+&&(0.03)&&(0.02)&(0.06)&(0.02)&&(0.04)&(0.03)&(0.05) \tabularnewline
+&&&&&&&&&&0.07 \tabularnewline
+&&&&&&&&&&(0.05) \tabularnewline
+&N&6,565&&95,508&13,591&77,328&&10,464&10,464&77,328 \tabularnewline
+&$ R^2 $&0.86&&0.72&0.79&0.73&&0.53&0.52&0.73 \tabularnewline
+&Country, For., Month FE&\checkmark&&&&&&&& \tabularnewline
+&Country $ \times $ Year FE&&&&&&&\checkmark&\checkmark& \tabularnewline
+&Forecaster $ \times $ Year FE &&&&&&&\checkmark&\checkmark& \tabularnewline
+&Country $ \times $ Date FE&&&\checkmark&\checkmark&\checkmark&&&&\checkmark \tabularnewline
+&Forecaster $ \times $ Date FE &&&\checkmark&\checkmark&\checkmark&&&&\checkmark \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\begin{flushleft}
+\footnotesize \begin{minipage}{1\linewidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} Column (1) shows the regression of the log standard deviation of the errors on the location of the forecaster. Columns (2) to (4) show the regression of the log absolute forecast error on the location of the forecaster. Columns (5) and (7) show the results of regression of the number of forecast updates within a year on the location of the forecaster. Subsample 1 is restricted to the forecasts that are distinct from their last release. Subsample 2 is restricted to the forecasters that produce both local and foreign forecasts. Standard errors are clustered at the country and forecaster level in columns (1) and (5) to (7), and at the country, forecaster and date level in columns (2) to (4). \end{tabnote} \end{minipage}  
+\end{flushleft}
+}
+\end{table}

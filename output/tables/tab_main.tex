@@ -1,0 +1,33 @@
+\begin{table}[H] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Behavioral Biases and Information Asymmetries}
+\label{tab:tab_main}
+{\footnotesize
+\begin{tabularx}{\linewidth}{l C C m{0.005\textwidth} C C m{0.005\textwidth} C C m{0.005\textwidth} C C m{0.005\textwidth} C C}
+
+\toprule
+&\multicolumn{5}{c}{Behavioral biases}&& & &&\multicolumn{5}{c}{Information asymmetries} \tabularnewline \cline{2-6} \cline{11-15}\tabularnewline &\multicolumn{2}{c}{$\beta^{BGMS}$}&&\multicolumn{2}{c}{$\hat\rho$}&&\multicolumn{2}{c}{$\beta^{CG}$}&&\multicolumn{2}{c}{$\beta^{FE}$}&&\multicolumn{2}{c}{$\beta^{Dis}$} \tabularnewline \cline{2-3} \cline{5-6} \cline{8-9} \cline{11-12} \cline{14-15}\tabularnewline &{(1)}&{(2)}&&{(3)}&{(4)}&&{(5)}&{(6)}&&{(7)}&{(8)}&&{(9)}&{(10)} \tabularnewline
+{Coefficient}&{$ \text{CPI}_{t} $}&{$ \text{GDP}_{t} $}&{}&{$ \text{CPI}_{t} $}&{$ \text{GDP}_{t} $}&{}&{$ \text{CPI}_{t} $}&{$ \text{GDP}_{t} $}&{}&{$ \text{CPI}_{t} $}&{$ \text{GDP}_{t} $}&{}&{$ \text{CPI}_{t} $}&{$ \text{GDP}_{t} $} \tabularnewline
+\midrule \addlinespace[0pt]
+\midrule Average&&&&&&&&&&&&&--0.08***&--0.07*** \tabularnewline
+&&&&&&&&&&&&&(0.03)&(0.02) \tabularnewline
+Average Locals&0.01**&0.04***&&0.40***&0.38***&&0.04***&0.10***&&--0.26***&--0.32***&&& \tabularnewline
+&(0.01)&(0.01)&&(0.01)&(0.01)&&(0.00)&(0.01)&&(0.00)&(0.01)&&& \tabularnewline
+$ \text{Foreign} $&--0.01&0.03&&0.03&0.04&&--0.00&--0.01&&--0.04***&--0.02*&&& \tabularnewline
+&(0.02)&(0.02)&&(0.02)&(0.02)&&(0.01)&(0.01)&&(0.01)&(0.01)&&& \tabularnewline
+N&3,067&3,333&&3,937&4,196&&1,214&1,224&&1,136&1,160&&592&604 \tabularnewline
+$ R^2 $&0.65&0.72&&0.63&0.72&&0.87&0.90&&0.85&0.76&&0.00&0 \tabularnewline
+Country $\times$ month FE&\checkmark&\checkmark&&\checkmark&\checkmark&&\checkmark&\checkmark&&\checkmark&\checkmark&&& \tabularnewline
+Forecaster $\times$ month FE&\checkmark&\checkmark&&\checkmark&\checkmark&&&&&&&&& \tabularnewline
+MG by ctry and month&&&&&&&&&&&&&\checkmark&\checkmark \tabularnewline
+MG by ctry, loc., and month&&&&&&&\checkmark&\checkmark&&\checkmark&\checkmark&&& \tabularnewline
+MG by ctry, for., and month&\checkmark&\checkmark&&\checkmark&\checkmark&&&&&&&&& \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\begin{flushleft}
+\footnotesize \begin{minipage}{1.35\textwidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} Columns (1) and (2) show the results of a regression of the $\beta^{BGMS}$ coefficients on the Foreign dummy, where the $\beta^{BGMS}$ are estimated using Equation \eqref{eq:BGMS} on different sub-groups of our sample. Columns (3) and (4) show the results of a regression of the perceived autocorrelation coefficients $\hat\rho$ on the Foreign dummy, where the $\hat\rho$ is estimated using Equation \eqref{eq:rhohat} on different sub-groups of our sample. Column (5) and (6) show the results of a regression of the $\beta^{CG}$ coefficients on the Foreign dummy, where the $\beta^{CG}$ are estimated using equation \eqref{eq:consensus} on different sub-groups of our sample. Columns (7) and (8) show the results of a regression of the $\beta^{FE}$ coefficients on the Foreign dummy, where the $\beta^{FE}$ are estimated using Equation \eqref{eq:pooledFE} on different sub-groups of our sample. In columns (1) to (8), \textit{Average locals} corresponds to the constant term (or average fixed effect). \textit{Foreign} corresponds to the coefficient of the Foreign dummy. Columns (9) and (10) show the results of a regression of the $\beta^{Dis}$ coefficients on the constant, where the $\beta^{Dis}$ are estimated using Equation \eqref{eq:disagreement} on different sub-groups of our sample.  corresponds to the constant term. Standard errors are clustered at the country and forecaster levels in Columns (1) to (4). Standard errors are clustered at the country and forecaster levels in Columns (5) to (10). All observations are weighted by the inverse of the estimated standard error of the corresponding $\beta$. \end{tabnote} \end{minipage}  
+\end{flushleft}
+}
+\end{table}

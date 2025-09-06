@@ -1,0 +1,34 @@
+\begin{table}[H] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Last Vintage - Aternative MG and Fixed Effects}
+\label{tab:tab_rob_last_vintage}
+{\footnotesize
+\begin{tabularx}{\linewidth}{l C C C C C C C C}
+
+\toprule
+&\multicolumn{8}{c}{$\beta^{LastVintage}$} \tabularnewline \cline{2-9} &\multicolumn{6}{c}{}& \multicolumn{2}{c}{Baseline}  \tabularnewline \cline{8-9} &{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)}&{(7)}&{(8)} \tabularnewline
+{Coefficient}&{$ \text{CPI}_{t} $}&{$ \text{GDP}_{t} $}&{$ \text{CPI}_{t} $}&{$ \text{GDP}_{t} $}&{$ \text{CPI}_{t} $}&{$ \text{GDP}_{t} $}&{$ \text{CPI}_{t} $}&{$ \text{GDP}_{t} $} \tabularnewline
+\midrule \addlinespace[0pt]
+\midrule Average Locals&--0.00&--0.09***&0.01**&--0.08***&0.01***&--0.06***&0.00**&--0.06*** \tabularnewline
+&(0.00)&(0.00)&(0.00)&(0.00)&(0.00)&(0.00)&(0.00)&(0.00) \tabularnewline
+$ \text{Foreign} $&--0.00&--0.01*&0.00&--0.01&0.00&--0.01&--0.00&--0.01 \tabularnewline
+&(0.01)&(0.01)&(0.01)&(0.02)&(0.01)&(0.01)&(0.01)&(0.01) \tabularnewline
+N&102&102&378&396&5,312&5,607&3,299&3,428 \tabularnewline
+$ R^2 $&0.91&0.94&0.67&0.72&0.45&0.54&0.66&0.73 \tabularnewline
+Country FE&\checkmark&\checkmark&\checkmark&\checkmark&\checkmark&\checkmark&& \tabularnewline
+Forecaster FE&&&\checkmark&\checkmark&\checkmark&\checkmark&& \tabularnewline
+Month FE&&&&&\checkmark&\checkmark&& \tabularnewline
+Ctry $\times$ month FE&&&&&&&\checkmark&\checkmark \tabularnewline
+For. $\times$ month FE&&&&&&&\checkmark&\checkmark \tabularnewline
+MG by ctry and loc.&\checkmark&\checkmark&&&&&& \tabularnewline
+MG by ctry and for.&&&\checkmark&\checkmark&&&& \tabularnewline
+MG by ctry, for., and month&&&&&\checkmark&\checkmark&\checkmark&\checkmark \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\begin{flushleft}
+\footnotesize \begin{minipage}{1.35\textwidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} Columns (1) to (8) show the results of a regression of the $\beta^{LastVintage}$ coefficients on the Foreign dummy, where the $\beta^{LastVintage}$ are estimated using $ Error_{ijt}^m=\beta^{LastVintage,m}_{ij}x_{jt-1}+\delta_{ij}^m+\lambda_{ijt}^m$, where $\frac{1}{N(j)}\sum_{i\in \textit{S}(j)}E^m_{ijt}(x_{jt})$ is the average expectation across all forecasters, with different fixed effects and mean-groups. The obervations are clustered at the country level in Columns (1) and (2), and at the country and forecaster levels in Columns (3) to (8). All observations are weighted by the inverse of the estimated standard error of the $\beta^{LastVintage}$ coefficient. \end{tabnote} \end{minipage}
+\end{flushleft}
+}
+\end{table}

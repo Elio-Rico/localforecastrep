@@ -1,0 +1,33 @@
+\begin{table}[H] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Forecast Errors, Updating, and the Location of the Forecaster - Forecasts on the Future Year}
+\label{tab:updating_errors_app_small}
+{\footnotesize
+\begin{tabularx}{\linewidth}{l l C m{0.01\textwidth} C C m{0.01\textwidth} C C}
+
+\toprule
+{}&{}&{$\ln(\sigma^m_{\text{FE},i,j})$}&&\multicolumn{2}{c}{$\ln(|Error_{ijt,t}^m|)$}&&\multicolumn{2}{c}{$\ln(N_{ijt})$} \tabularnewline \cline{3-3} \cline{5-6} \cline{8-9} \tabularnewline &&{(1)}&&{(2)}&{(3)}&&{(4)}&{(5)} \tabularnewline
+{Variable}&{Coefficient}&{}&{}&{}&{Distinct updates}&{}&{}&{Distinct updates} \tabularnewline
+\midrule \addlinespace[0pt]
+\midrule $\text{CPI}_{t+1}$&Foreign&0.07*&&0.07***&0.05**&&--0.11***&--0.12*** \tabularnewline
+&&(0.04)&&(0.02)&(0.02)&&(0.04)&(0.04) \tabularnewline
+&N&6,134&&90,693&48,937&&10,082&10,082 \tabularnewline
+&$ R^2 $&0.86&&0.67&0.71&&0.53&0.51 \tabularnewline
+$\text{GDP}_{t+1}$&Foreign&0.06**&&0.01&0.01&&--0.10**&--0.10*** \tabularnewline
+&&(0.03)&&(0.02)&(0.02)&&(0.04)&(0.03) \tabularnewline
+&N&6,565&&95,508&51,379&&10,464&10,464 \tabularnewline
+&$ R^2 $&0.86&&0.72&0.76&&0.53&0.52 \tabularnewline
+&Country, For., Month FE&\checkmark&&&&&& \tabularnewline
+&Country $ \times $ Year FE&&&&&&\checkmark&\checkmark \tabularnewline
+&Forecaster $ \times $ Year FE &&&&&&\checkmark&\checkmark \tabularnewline
+&Country $ \times $ Date FE&&&\checkmark&\checkmark&&& \tabularnewline
+&Forecaster $ \times $ Date FE &&&\checkmark&\checkmark&&& \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\begin{flushleft}
+\footnotesize \begin{minipage}{1\linewidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} Column (1) shows the regression of the log standard deviation of the errors on the location of the forecaster. Columns (2) and (3) show the regression of the log absolute forecast error on the location of the forecaster. Columns (4) and (5)) show the results of regression of the number of forecast updates within a year on the location of the forecaster. Standard errors are clustered at the country and forecaster level in columns (1), (4) and (5), and at the country, forecaster and date level in Columns (2) and (3). In Columns (3) and (5), the sample is restricted to the published forecasts that are distinct from the last published one. \end{tabnote} \end{minipage}  
+\end{flushleft}
+}
+\end{table}

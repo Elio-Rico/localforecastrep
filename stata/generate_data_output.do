@@ -80,8 +80,36 @@ local target = "`parent'/data"
 global output "`target'"
 local target = "`parent'/inst/data/produced/temp"
 global temp "`target'"
-
-
+local target = "`parent'/inst/data/produced/cultdist"
+global cultdistf "`target'"
+local target = "`parent'/inst/data/raw/cultdist"
+global cultdist "`target'"
+local target = "`parent'/inst/data/raw/migration"
+global migration "`target'"
+local target = "`parent'/inst/data/produced/migration"
+global migrationf "`target'"
+local target = "`parent'/inst/data/raw/regime"
+global regime "`target'"
+local target = "`parent'/inst/data/produced/regime"
+global regimef "`target'"
+local target = "`parent'/inst/data/raw/exp_imp"
+global expimp "`target'"
+local target = "`parent'/inst/data/produced/exp_imp"
+global expimpf "`target'"
+local target = "`parent'/inst/data/raw/tariff"
+global tariff "`target'"
+local target = "`parent'/inst/data/produced/tariff"
+global tarifff "`target'"
+local target = "`parent'/inst/data/raw/wdi"
+global wdi "`target'"
+local target = "`parent'/inst/data/produced/wdi"
+global wdif "`target'"
+local target = "`parent'/inst/data/raw/fkrsu"
+global fkrsu "`target'"
+local target = "`parent'/inst/data/produced/fkrsu"
+global fkrsuf "`target'"
+local target = "`parent'/inst/data/produced/stacked_temp"
+global stempf "`target'"
 
 * switch to data directory:
 cd $datace
@@ -3366,6 +3394,28 @@ erase "$bisf/all_claims.dta"
 
 
 
+
+use "$datace_imf/data_final_newVintage_2.dta", clear
+
+sort country date institution
+order country country_num institution id date datem dateq
+
+* MERGE  BIS:
+merge m:1 country Headquarters dateq using "$bisf/BIS_all_1.dta"
+drop if _merge == 2
+drop _merge
+
+
+
+merge m:1 country Headquarters dateq using "$bisf/BIS_all_2.dta"
+drop if _merge == 2
+drop _merge
+
+
+
+
+
+
 * merge data with main database:
 
 
@@ -3392,6 +3442,7 @@ save "$bisf/BIS_all_2_`var'.dta", replace
 }
 
 
+* Now, we do he merging also with respect to the nearest subsidiary!
 
 use "$datace_imf/data_final_newVintage_2.dta", clear
 
@@ -3906,8 +3957,6 @@ by institution: egen LocHQ = max(LocalHQ)
 by institution: egen ForHQ = max(ForeignHQ)
 gen LocForHQ = LocHQ*ForHQ
 
-
-
 save "$output/baseline.dta", replace
 ********************************************************************************
 
@@ -4001,15 +4050,6 @@ egen N_FE_cpi_current = count(FE_cpi_current_a1), by(idci month)
 egen N_FE_cpi_future = count(FE_cpi_future_a1), by(idci month)
 egen N_FE_gdp_current = count(FE_gdp_current_a1), by(idci month)
 egen N_FE_gdp_future = count(FE_gdp_future_a1), by(idci month)
-egen N_FE_sir_current = count(FE_sir_current), by(idci month)
-egen N_FE_sir_future = count(FE_sir_future), by(idci month)
-egen N_FE_lir_current = count(FE_lir_current), by(idci month)
-egen N_FE_lir_future = count(FE_lir_future), by(idci month)
-
-gen sir_current_a1 = vintage_sir_current
-gen sir_future_a1 = vintage_sir_future
-gen lir_current_a1 = vintage_lir_current
-gen lir_future_a1 = vintage_lir_future
 
 sort datem
 by datem: egen x = mean(GEPU_ppp) 
@@ -4076,7 +4116,7 @@ foreach var in `varlist'{
 
 
 
-use "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\Gravity Data\cultdist", clear
+use "$cultdist/cultdist.dta", clear
 
 replace country_1 = "United States" if country_1=="U.S.A"
 replace country_1 = "South Korea" if country_1=="Korea"
@@ -4096,7 +4136,7 @@ rename reldist_weighted_formula reldist_weighted
 
 keep country Headquarters cultural_distance lingdist_dominant lingdist_weighted reldist_dominant reldist_weighted
 
-save cultdist, replace
+save $cultdistf/cultdist, replace
 
 rename Headquarters country1
 rename country Headquarters
@@ -4107,13 +4147,13 @@ append using cultdist
 sort country Headquarters
 drop if Headquarters=="" | country==""
 
-save cultdist2, replace
+save $cultdistf/cultdist2, replace
 
-use TempE2, clear
+use "$output/extended.dta", clear
 
 sort country Headquarters
 
-merge m:1 country Headquarters using cultdist2
+merge m:1 country Headquarters using $cultdistf/cultdist2.dta
 drop if _merge == 2
 drop _merge
 
@@ -4124,14 +4164,14 @@ foreach VAR in `varlist' {
 
 replace cultural_distance = -87 if country==Headquarters
 
-save TempE2, replace
+save "$output/extended.dta", replace
 
 
 local varlist dist_ distw_
 
 foreach var in `varlist'{
 
-	use "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\Gravity Data\cultdist", clear
+	use "$cultdist/cultdist.dta", clear
 
 	replace country_1 = "United States" if country_1=="U.S.A"
 	replace country_1 = "South Korea" if country_1=="Korea"
@@ -4151,23 +4191,23 @@ foreach var in `varlist'{
 
 	keep country `var' `var'cultural_distance `var'lingdist_dominant `var'lingdist_weighted `var'reldist_dominant `var'reldist_weighted
 
-	save cultdist, replace
+	save $cultdistf/cultdist, replace
 
 	rename `var' country1
 	rename country `var'
 	rename country1 country
 
-	append using cultdist
+	append using $cultdistf/cultdist.dta
 
 	sort country `var'
 
-	save cultdist2, replace
+	save $cultdistf/cultdist2.dta, replace
 
-	use TempE2, clear
+	use "$output/extended.dta", clear
 
 	sort country `var'
 
-	merge m:1 country `var' using cultdist2
+	merge m:1 country `var' using $cultdistf/cultdist2
 	drop if _merge == 2
 	drop _merge
 	
@@ -4178,14 +4218,14 @@ foreach var in `varlist'{
 
 	replace `var'cultural_distance = -87 if country==`var'
 
-	save TempE2, replace
+	save "$output/extended.dta", replace
 }
 
 
 
 ***
 
-import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\P_Data_Extract_From_Global_Bilateral_Migration.xlsx", sheet("Data") firstrow clear
+import excel "$migration\P_Data_Extract_From_Global_Bilateral_Migration.xlsx", sheet("Data") firstrow clear
 
 drop Migration* CountryOriginCode CountryDestCode G H I J
 rename K Migration_2000
@@ -4214,31 +4254,31 @@ keep country Headquarters Migration_2000
 drop if country==""
 drop if Headquarters==""
 
-save migration, replace
+save $migrationf/migration, replace
 
 collapse (sum) Migration_2000, by(Headquarters)
 rename Migration_2000 Migration_2000_total
-save migration_total, replace
+save $migrationf/migration_total, replace
 
-use TempE2, clear
+use "$output/extended.dta", clear
 
 sort country Headquarters
 
-merge m:1 country Headquarters using migration
+merge m:1 country Headquarters using $migrationf/migration
 drop if _merge == 2
 drop _merge
-merge m:1 Headquarters using migration_total
+merge m:1 Headquarters using $migrationf/migration_total
 drop if _merge == 2
 drop _merge
 
-save TempE2, replace
+save "$output/extended.dta", replace
 
 
 local varlist dist_ distw_
 
 foreach var in `varlist'{
 
-	import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\P_Data_Extract_From_Global_Bilateral_Migration.xlsx", sheet("Data") firstrow clear
+	import excel "$migration/P_Data_Extract_From_Global_Bilateral_Migration.xlsx", sheet("Data") firstrow clear
 
 	drop Migration* CountryOriginCode CountryDestCode G H I J
 	rename K Migration_2000
@@ -4267,24 +4307,24 @@ foreach var in `varlist'{
 	keep country `var' `var'Migration_2000
 	drop if country==""
 	drop if `var'==""
-	save migration, replace
+	save $migrationf/migration, replace
 
 	collapse (sum) `var'Migration_2000, by(`var')
 	rename `var'Migration_2000 `var'Migration_2000_total
-	save migration_total, replace
+	save $migrationf/migration_total, replace
 	
-	use TempE2, clear
+	use "$output/extended.dta", clear
 
 	sort country `var'
 
-	merge m:1 country `var' using migration
+	merge m:1 country `var' using $migrationf/migration.dta
 	drop if _merge == 2
 	drop _merge
-	merge m:1 `var' using migration_total
+	merge m:1 `var' using $migrationf/migration_total.dta
 	drop if _merge == 2
 	drop _merge
 	
-	save TempE2, replace
+	save "$output/extended.dta", replace
 }
 
 **
@@ -4295,7 +4335,7 @@ local varlist dist_ distw_
 
 foreach var in `varlist'{
 
-	use TempE, clear
+	use "$output/extended.dta", clear
 
 	collapse totalclaims1 totalclaims2 totalliabilities1 totalliabilities2, by(country Head datem)
 
@@ -4309,25 +4349,25 @@ foreach var in `varlist'{
 	keep country `var'* datem
 	sort country `var' datem
 
-	save bis, replace
+	save $bisf/bis.dta, replace
 
-	use TempE2, clear
+	use "$output/extended.dta", clear
 
 	sort country `var' datem
 
-	merge m:1 country `var' datem using bis, nogen
+	merge m:1 country `var' datem using $bisf/bis, nogen
 
-	save TempE2, replace
+	save "$output/extended.dta", replace
 }
 
 drop totalclaims1_* totalclaims2_* totalliabilities1_* totalliabilities2_*
-save TempE2, replace
+save "$output/extended.dta", replace
 
 ********* more gravity
 
 ***** De jure regimes
 
-use "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Bilateral_DeJure_Regimes_neu.dta", clear
+use "$regime/Bilateral_DeJure_Regimes_neu.dta", clear
 
 replace country1 = "South Korea" if country1=="Korea"
 replace country1 = "Slovakia" if country1=="Slovak Republic"
@@ -4344,26 +4384,26 @@ rename country2 Headquarters
 keep country Headquarters year direct_link indirect_link cu_dummy other_nslt jf_1
 sort country Headquarters year
 
-save bilateral_regimes, replace
+save $regimef/bilateral_regimes, replace
 
 
-use TempE2, clear
+use "$output/extended.dta", clear
 
 sort country Headquarters year
-merge m:1 country Headquarters year using bilateral_regimes
+merge m:1 country Headquarters year using $regimef/bilateral_regimes
 drop if _merge == 2
 drop _merge
 
 replace direct_link = 1 if country==Headquarters
 replace indirect_link = 0 if country==Headquarters
 
-save TempE2, replace
+save "$output/extended.dta", replace
 
 local varlist dist_ distw_
 
 foreach var in `varlist'{
 
-	use "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Bilateral_DeJure_Regimes_neu.dta", clear
+	use "$regime/Bilateral_DeJure_Regimes_neu.dta", clear
 
 	replace country1 = "South Korea" if country1=="Korea"
 	replace country1 = "Slovakia" if country1=="Slovak Republic"
@@ -4386,24 +4426,28 @@ foreach var in `varlist'{
 	keep country `var' year `var'direct_link `var'indirect_link `var'cu_dummy `var'other_nslt `var'jf_1
 	sort country `var' year
 
-	save bilateral_regimes, replace
+	save $regimef/bilateral_regimes, replace
 
-	use TempE2, clear
+	use "$output/extended.dta", clear
 
 	sort country `var' year
-	merge m:1 country `var' year using bilateral_regimes
+	merge m:1 country `var' year using $regimef/bilateral_regimes
 	drop if _merge == 2
 	drop _merge
 
 	replace `var'direct_link = 1 if country==`var'
 	replace `var'indirect_link = 0 if country==`var'
 
-	save TempE2, replace
+	save "$output/extended.dta", replace
 }
+
+
+
+
 
 **** Imports and exports *****
 
-import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Exports_and_Imports_by_Areas_and_Co.xlsx", sheet("Exports, FOB") cellrange(B7:AA247) firstrow clear
+import excel "$expimp/Exports_and_Imports_by_Areas_and_Co.xlsx", sheet("Exports, FOB") cellrange(B7:AA247) firstrow clear
 
 reshape long year, i(country)
 rename year exports
@@ -4437,16 +4481,17 @@ drop id
 label var exports "Exports in million of USD"
 sort country year
 
-save exports, replace
+save $expimpf/exports, replace
 
-import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Exports_and_Imports_by_Areas_and_Co.xlsx", sheet("Imports, CIF") cellrange(B7:AA247) firstrow clear
+
+import excel "$expimp/Exports_and_Imports_by_Areas_and_Co.xlsx", sheet("Imports, CIF") cellrange(B7:AA247) firstrow clear
 
 reshape long year, i(country)
 rename year imports
 rename _j year
 drop if country==""
 encode country, gen(id)
-*keep if inlist(id,11,15,16,23,32,34,40,43,46,47,53,57,60,74,83,84,89,92,103,105,106,109,110,111,113,118,124,129,133,141,157,159,162,164,172,173,174,175,177,178,182,190,191,194,196,205,206,212,220,225,226,230)
+
 
 replace country = "China" if id == 46
 replace country = "Croatia" if id == 53
@@ -4473,25 +4518,31 @@ drop id
 label var imports "Imports in million of USD"
 sort country year
 
-save imports, replace
+save $expimpf/imports, replace
 
-use TempE2, clear 
+
+
+use "$output/extended.dta", clear 
 
 sort country year
 
-merge m:1 country year using exports
+merge m:1 country year using $expimpf/exports
 drop if _merge==2
 drop _merge
-merge m:1 country year using imports
+merge m:1 country year using $expimpf/imports
 drop if _merge==2
 drop _merge
 
-save TempE2, replace
+save "$output/extended.dta", replace
+
+
+
+
 
 
 **** Tariffs *****
 
-import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\WtoData_20240527134544.xlsx", sheet("Report") cellrange(A3:T170) firstrow clear
+import excel "$tariff/WtoData_20240527134544.xlsx", sheet("Report") cellrange(A3:T170) firstrow clear
 
 drop B
 
@@ -4506,7 +4557,7 @@ replace country = "Bahrain" if country=="Bahrain, Kingdom of"
 replace country = "Taiwan" if country=="Chinese Taipei"
 replace country = "Hong Kong" if country=="Hong Kong, China"
 
-merge 1:m country year using "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\EU.dta"
+merge 1:m country year using "$tariff/EU.dta"
 sort country country2 year
 replace country=country2 if country=="European Union"
 drop country2 _merge
@@ -4531,20 +4582,21 @@ drop country_num
 */
 rename tarriff tariff
 
-save tariffs, replace
+save $tarifff/tariffs, replace
 
-use TempE2, clear 
+
+use "$output/extended.dta", clear 
 
 sort country year
 
-merge m:1 country year using tariffs
+merge m:1 country year using $tarifff/tariffs
 drop if _merge==2
 drop _merge
 
-save TempE2, replace
+save "$output/extended.dta", replace
 
 
-import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\WtoData_20240527134709.xlsx", sheet("Report") cellrange(A3:T162) firstrow clear
+import excel "$tariff/WtoData_20240527134709.xlsx", sheet("Report") cellrange(A3:T162) firstrow clear
 
 drop B
 
@@ -4559,7 +4611,7 @@ replace country = "Bahrain" if country=="Bahrain, Kingdom of"
 replace country = "Taiwan" if country=="Chinese Taipei"
 replace country = "Hong Kong" if country=="Hong Kong, China"
 
-merge 1:m country year using "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\EU.dta"
+merge 1:m country year using "$tariff/EU.dta"
 sort country country2 year
 replace country=country2 if country=="European Union"
 drop country2 _merge
@@ -4585,22 +4637,26 @@ merge m:1 country_num using countries, nogen
 drop country_num
 */
 
-save tariffs_weighted, replace
+save $tarifff/tariffs_weighted, replace
 
-use TempE2, clear 
+
+
+use "$output/extended.dta", clear 
 
 sort country year
 
-merge m:1 country year using tariffs_weighted
+merge m:1 country year using $tarifff/tariffs_weighted
 drop if _merge==2
 drop _merge
 
-save TempE2, replace
+save "$output/extended.dta", replace
+
+
 
 
 ********* BC and inflation comovement
 
-import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Inflation_GDP_growth_World_Development_Indicators.xlsx", sheet("Data") firstrow clear
+import excel "$wdi\Inflation_GDP_growth_World_Development_Indicators.xlsx", sheet("Data") firstrow clear
 
 keep if SeriesName == "GDP growth (annual %)"
 reshape long YR, i(CountryName)
@@ -4624,10 +4680,10 @@ replace country = "Iran" if country=="Iran, Islamic Rep."
 
 sort country year
 
-save gdp_wdi, replace
+save $wdif/gdp_wdi, replace
 
 *
-import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Inflation_GDP_growth_World_Development_Indicators.xlsx", sheet("Data") firstrow clear
+import excel "$wdi/Inflation_GDP_growth_World_Development_Indicators.xlsx", sheet("Data") firstrow clear
 
 drop if CountryName == "Venezuela, RB" & SeriesName == "Inflation, consumer prices (annual %)"
 drop if CountryName == "Argentina" & SeriesName == "Inflation, consumer prices (annual %)"
@@ -4659,11 +4715,11 @@ replace country = "Iran" if country=="Iran, Islamic Rep."
 
 sort country year
 
-save cpi_wdi, replace
+save $wdif/cpi_wdi, replace
 
 *
 
-use TempE2, clear 
+use "$output/extended.dta", clear 
 
 keep gdp_current cpi_current Headquarters country
 collapse gdp_current cpi_current, by(Headquarters country)
@@ -4681,7 +4737,7 @@ replace n = 1
 bys country Headquarters: gen year = sum(n)
 replace year = year + 1989
 
-merge m:1 country year using gdp_wdi
+merge m:1 country year using $wdif/gdp_wdi
 drop if _merge==2
 drop _merge
 
@@ -4689,7 +4745,7 @@ rename gdp_wdi gdp_wdi_o
 rename country country1
 rename Headquarters country
 
-merge m:1 country year using gdp_wdi
+merge m:1 country year using $wdif/gdp_wdi
 drop if _merge==2
 drop _merge
 
@@ -4741,10 +4797,12 @@ gen corr_gdp_wdi_res = cov_gdp_wdi_res/(sd_gdp_wdi_d_res*sd_gdp_wdi_o_res)
 
 keep country Headquarters year corr_gdp_wdi roll_corr_gdp_wdi corr_gdp_wdi_res cov_gdp_wdi sd_gdp_wdi_o_res sd_gdp_wdi_o sd_gdp_wdi_d_res sd_gdp_wdi_d
 
-save corr_gdp_wdi, replace
+save $wdif/corr_gdp_wdi, replace
+
+
 
 *
-use TempE2, clear 
+use "$output/extended.dta", clear 
 
 keep gdp_current cpi_current Headquarters country
 collapse gdp_current cpi_current, by(Headquarters country)
@@ -4762,7 +4820,7 @@ replace n = 1
 bys country Headquarters: gen year = sum(n)
 replace year = year + 1989
 
-merge m:1 country year using cpi_wdi
+merge m:1 country year using $wdif/cpi_wdi
 drop if _merge==2
 drop _merge
 
@@ -4770,7 +4828,7 @@ rename cpi_wdi cpi_wdi_o
 rename country country1
 rename Headquarters country
 
-merge m:1 country year using cpi_wdi
+merge m:1 country year using $wdif/cpi_wdi
 drop if _merge==2
 drop _merge
 
@@ -4822,26 +4880,26 @@ gen corr_cpi_wdi_res = cov_cpi_wdi_res/(sd_cpi_wdi_d_res*sd_cpi_wdi_o_res)
 
 keep country Headquarters year corr_cpi_wdi roll_corr_cpi_wdi corr_cpi_wdi_res cov_cpi_wdi sd_cpi_wdi_o_res sd_cpi_wdi_o sd_cpi_wdi_d_res sd_cpi_wdi_d
 
-save corr_cpi_wdi, replace
+save $wdif/corr_cpi_wdi, replace
 
 *
-use TempE2, clear 
+use "$output/extended.dta", clear 
 
-merge m:1 country Headquarters year using corr_gdp_wdi
+merge m:1 country Headquarters year using $wdif/corr_gdp_wdi
 drop if _merge==2
 drop _merge
-merge m:1 country Headquarters year using corr_cpi_wdi
+merge m:1 country Headquarters year using $wdif/corr_cpi_wdi
 drop if _merge==2
 drop _merge
 
-save TempE2, replace
+save "$output/extended.dta", replace
 *
 	
 local varlist dist_ distw_
 
 foreach var in `varlist'{
 	
-	use TempE2, clear 
+	use "$output/extended.dta", clear 
 
 	keep gdp_current cpi_current `var' country
 	collapse gdp_current cpi_current, by(`var' country)
@@ -4859,7 +4917,7 @@ foreach var in `varlist'{
 	bys country `var': gen year = sum(n)
 	replace year = year + 1989
 
-	merge m:1 country year using gdp_wdi
+	merge m:1 country year using $wdif/gdp_wdi
 	drop if _merge==2
 	drop _merge
 
@@ -4867,7 +4925,7 @@ foreach var in `varlist'{
 	rename country country1
 	rename `var' country
 
-	merge m:1 country year using gdp_wdi
+	merge m:1 country year using $wdif/gdp_wdi
 	drop if _merge==2
 	drop _merge
 	
@@ -4922,10 +4980,10 @@ foreach var in `varlist'{
 
 	keep country `var' year `var'corr_gdp_wdi `var'roll_corr_gdp_wdi `var'corr_gdp_wdi_res `var'cov_gdp_wdi `var'sd_gdp_wdi_o_res `var'sd_gdp_wdi_o `var'sd_gdp_wdi_d_res `var'sd_gdp_wdi_d
 
-	save corr_gdp_wdi, replace
+	save $wdif/corr_gdp_wdi, replace
 
 	*
-	use TempE2, clear 
+	use "$output/extended.dta", clear 
 
 	keep gdp_current cpi_current `var' country
 	collapse gdp_current cpi_current, by(`var' country)
@@ -4943,7 +5001,7 @@ foreach var in `varlist'{
 	bys country `var': gen year = sum(n)
 	replace year = year + 1989
 
-	merge m:1 country year using cpi_wdi
+	merge m:1 country year using $wdif/cpi_wdi
 	drop if _merge==2
 	drop _merge
 	
@@ -4951,7 +5009,7 @@ foreach var in `varlist'{
 	rename country country1
 	rename `var' country
 
-	merge m:1 country year using cpi_wdi
+	merge m:1 country year using $wdif/cpi_wdi
 	drop if _merge==2
 	drop _merge
 	
@@ -5007,25 +5065,27 @@ foreach var in `varlist'{
 
 	keep country `var' year `var'corr_cpi_wdi `var'roll_corr_cpi_wdi `var'corr_cpi_wdi_res `var'cov_cpi_wdi `var'sd_cpi_wdi_o_res `var'sd_cpi_wdi_o `var'sd_cpi_wdi_d_res `var'sd_cpi_wdi_d
 
-	save corr_cpi_wdi, replace
+	save $wdif/corr_cpi_wdi, replace
 
 	*
-	use TempE2, clear 
+	use "$output/extended.dta", clear 
 
-	merge m:1 country `var' year using corr_gdp_wdi
+	merge m:1 country `var' year using $wdif/corr_gdp_wdi
 	drop if _merge==2
 	drop _merge
-	merge m:1 country `var' year using corr_cpi_wdi
+	merge m:1 country `var' year using $wdif/corr_cpi_wdi
 	drop if _merge==2
 	drop _merge
 	
-	save TempE2, replace
+	save "$output/extended.dta", replace
 }
+
+
 
 
 ********* Internet
 
-import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Internet_World_Development_Indicators.xlsx", sheet("Data") firstrow clear
+import excel "$wdi/Internet_World_Development_Indicators.xlsx", sheet("Data") firstrow clear
 
 keep if SeriesName == "Individuals using the Internet (% of population)"
 reshape long YR, i(CountryName)
@@ -5049,10 +5109,10 @@ replace country = "Iran" if country=="Iran, Islamic Rep."
 
 sort country year
 
-save internet_use, replace
+save $wdif/internet_use, replace
 
 *
-import excel "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\Internet_World_Development_Indicators.xlsx", sheet("Data") firstrow clear
+import excel "$wdi/Internet_World_Development_Indicators.xlsx", sheet("Data") firstrow clear
 
 keep if SeriesName == "Secure Internet servers (per 1 million people)"
 reshape long YR, i(CountryName)
@@ -5076,11 +5136,11 @@ replace country = "Iran" if country=="Iran, Islamic Rep."
 
 sort country year
 
-save servers, replace
+save $wdif/servers, replace
 
 *
 
-use TempE2, clear 
+use "$output/extended.dta", clear 
 
 keep gdp_current cpi_current Headquarters country year
 collapse gdp_current cpi_current, by(Headquarters country year)
@@ -5088,7 +5148,7 @@ drop if Headquarters == ""
 drop if gdp_current==. & cpi_current==.
 drop gdp_current cpi_current
 
-merge m:1 country year using internet_use
+merge m:1 country year using $wdif/internet_use
 drop if _merge==2
 drop _merge
 
@@ -5096,7 +5156,7 @@ rename internet_use internet_use_o
 rename country country1
 rename Headquarters country
 
-merge m:1 country year using internet_use
+merge m:1 country year using $wdif/internet_use
 drop if _merge==2
 drop _merge
 
@@ -5110,10 +5170,10 @@ sort country Headquarters year
 
 keep country Headquarters year internet_use_o internet_use_d
 
-save hq_internet_use, replace
+save $wdif/hq_internet_use, replace
 
 *
-use TempE2, clear 
+use "$output/extended.dta", clear 
 
 keep gdp_current cpi_current Headquarters country year
 collapse gdp_current cpi_current, by(Headquarters country year)
@@ -5121,7 +5181,7 @@ drop if Headquarters == ""
 drop if gdp_current==. & cpi_current==.
 drop gdp_current cpi_current
 
-merge m:1 country year using servers
+merge m:1 country year using $wdif/servers
 drop if _merge==2
 drop _merge
 
@@ -5129,7 +5189,7 @@ rename servers servers_o
 rename country country1
 rename Headquarters country
 
-merge m:1 country year using servers
+merge m:1 country year using $wdif/servers
 drop if _merge==2
 drop _merge
 
@@ -5143,26 +5203,26 @@ sort country Headquarters year
 
 keep country Headquarters year servers_o servers_d
 
-save hq_servers, replace
+save $wdif/hq_servers, replace
 
 *
-use TempE2, clear 
+use "$output/extended.dta", clear 
 
-merge m:1 country Headquarters year using hq_internet_use
+merge m:1 country Headquarters year using $wdif/hq_internet_use
 drop if _merge==2
 drop _merge
-merge m:1 country Headquarters year using hq_servers
+merge m:1 country Headquarters year using $wdif/hq_servers
 drop if _merge==2
 drop _merge
 
-save TempE2, replace
+save "$output/extended.dta", replace
 *
 	
 local varlist dist_ distw_
 
 foreach var in `varlist'{
 	
-	use TempE2, clear 
+	use "$output/extended.dta", clear 
 
 	keep gdp_current cpi_current `var' country year
 	collapse gdp_current cpi_current, by(`var' country year)
@@ -5170,7 +5230,7 @@ foreach var in `varlist'{
 	drop if gdp_current==. & cpi_current==.
 	drop gdp_current cpi_current
 
-	merge m:1 country year using internet_use
+	merge m:1 country year using $wdif/internet_use
 	drop if _merge==2
 	drop _merge
 
@@ -5178,7 +5238,7 @@ foreach var in `varlist'{
 	rename country country1
 	rename `var' country
 
-	merge m:1 country year using internet_use
+	merge m:1 country year using $wdif/internet_use
 	drop if _merge==2
 	drop _merge
 	
@@ -5192,10 +5252,10 @@ foreach var in `varlist'{
 
 	keep country `var' year `var'internet_use_o `var'internet_use_d
 
-	save `var'internet_use, replace
+	save $wdif/`var'internet_use, replace
 
 	*
-	use TempE2, clear 
+	use "$output/extended.dta", clear 
 
 	keep gdp_current cpi_current `var' country year
 	collapse gdp_current cpi_current, by(`var' country year)
@@ -5203,7 +5263,7 @@ foreach var in `varlist'{
 	drop if gdp_current==. & cpi_current==.
 	drop gdp_current cpi_current
 
-	merge m:1 country year using servers
+	merge m:1 country year using $wdif/servers
 	drop if _merge==2
 	drop _merge
 	
@@ -5211,7 +5271,7 @@ foreach var in `varlist'{
 	rename country country1
 	rename `var' country
 
-	merge m:1 country year using servers
+	merge m:1 country year using $wdif/servers
 	drop if _merge==2
 	drop _merge
 	
@@ -5225,25 +5285,27 @@ foreach var in `varlist'{
 
 	keep country `var' year `var'servers_o `var'servers_d
 
-	save `var'servers, replace
+	save $wdif/`var'servers, replace
 
 	*
-	use TempE2, clear 
+	use "$output/extended.dta", clear 
 
-	merge m:1 country `var' year using `var'internet_use
+	merge m:1 country `var' year using $wdif/`var'internet_use
 	drop if _merge==2
 	drop _merge
-	merge m:1 country `var' year using `var'servers
+	merge m:1 country `var' year using $wdif/`var'servers
 	drop if _merge==2
 	drop _merge
 	
-	save TempE2, replace
+	save "$output/extended.dta", replace
 }
+
+
 
 
 ********* Capital controls
 
-use "C:\Users\kbenhima\Dropbox\Research\Current_projects\Imperfect_information\FNS project\4Foreign vs local expectations\Data\data_input\2021-FKRSU-Update-12-08-2021.dta", clear
+use "$fkrsu/2021-FKRSU-Update-12-08-2021.dta", clear
 
 gen eqi = (eq_plbn + eq_siar)/2
 gen eqo = (eq_siln + eq_pabr)/2
@@ -5284,11 +5346,11 @@ replace country = "South Korea" if country=="Korea"
 
 sort country year
 
-save ka, replace
+save $fkrsuf/ka, replace
 
 *
 
-use TempE2, clear 
+use "$output/extended.dta", clear 
 
 keep gdp_current cpi_current Headquarters country year
 collapse gdp_current cpi_current, by(Headquarters country year)
@@ -5296,7 +5358,7 @@ drop if Headquarters == ""
 drop if gdp_current==. & cpi_current==.
 drop gdp_current cpi_current
 
-merge m:1 country year using ka
+merge m:1 country year using $fkrsuf/ka
 drop if _merge==2
 drop _merge
 
@@ -5306,7 +5368,7 @@ foreach VAR in eqi eqo boi boo mmi mmo cii cio dei deo cci cco fci fco gsi gso d
 rename country country1
 rename Headquarters country
 
-merge m:1 country year using ka
+merge m:1 country year using $fkrsuf/ka
 drop if _merge==2
 drop _merge
 
@@ -5321,24 +5383,27 @@ drop if country==""
 
 sort country Headquarters year
 
-save hq_ka, replace
+save $fkrsuf/hq_ka, replace
 
 *
-use TempE2, clear 
+use "$output/extended.dta", clear 
 
-merge m:1 country Headquarters year using hq_ka
+merge m:1 country Headquarters year using $fkrsuf/hq_ka
 drop if _merge==2
 drop _merge
 
-save TempE2, replace
+save "$output/extended.dta", replace
 
 *
+
+
+
 	
 local varlist dist_ distw_
 
 foreach var in `varlist'{
 	
-	use TempE2, clear 
+	use "$output/extended.dta", clear 
 
 	keep gdp_current cpi_current `var' country year
 	collapse gdp_current cpi_current, by(`var' country year)
@@ -5346,7 +5411,7 @@ foreach var in `varlist'{
 	drop if gdp_current==. & cpi_current==.
 	drop gdp_current cpi_current
 
-	merge m:1 country year using ka
+	merge m:1 country year using $fkrsuf/ka
 	drop if _merge==2
 	drop _merge
 		
@@ -5357,7 +5422,7 @@ foreach var in `varlist'{
 	rename `var' country
 
 
-	merge m:1 country year using ka
+	merge m:1 country year using $fkrsuf/ka
 	drop if _merge==2
 	drop _merge
 
@@ -5372,21 +5437,23 @@ foreach var in `varlist'{
 
 	sort country `var' year
 
-	save `var'_ka, replace
+	save $fkrsuf/`var'_ka, replace
 
 	*
-	use TempE2, clear 
+	use "$output/extended.dta", clear 
 
-	merge m:1 country `var' year using `var'_ka
+	merge m:1 country `var' year using $fkrsuf/`var'_ka
 	drop if _merge==2
 	drop _merge
 
-	save TempE2, replace
+	save "$output/extended.dta", replace
 }
 
 
 
 save "$output/extended.dta", replace
+
+
 
 
 * ----------------------
@@ -5404,21 +5471,21 @@ drop if country_num==.
 drop if Emerging==.
 collapse (mean) lgdp_ppp_o lgdp_cap_ppp_d ICRG WDI_institutions iq_spi_ovrl iq_sci_ovrl rho_gdp rho_cpi rmse_gdp rmse_cpi r2_gdp r2_cpi cc_est ICRG_Corrupt gdp_current_a1 cpi_current_a1 tariff ka_o, by(country_num year Emerging country)
 collapse (mean) lgdp_ppp_o lgdp_cap_ppp_d ICRG WDI_institutions iq_spi_ovrl iq_sci_ovrl rho_gdp rho_cpi rmse_gdp rmse_cpi r2_gdp r2_cpi cc_est ICRG_Corrupt (sd) sd_gdp = gdp_current_a1 sd_cpi = cpi_current_a1, by(country_num Emerging country)
-save cty_cs, replace
+save $stempf/cty_cs, replace
 sort country_num	
 restore
 
 preserve
 collapse (mean) lTotalRevenue lEmployees lprod Finance Banks Multinational, by(idi)
 sort idi
-save inst_cs, replace
+save $stempf/inst_cs, replace
 restore
 
 
 sort country_num
-merge m:1 country_num using cty_cs, nogen
+merge m:1 country_num using $stempf/cty_cs, nogen
 sort idi
-merge m:1 idi using inst_cs, nogen
+merge m:1 idi using $stempf/inst_cs, nogen
 sort country_num idi
 gen l_sd_gdp = log(sd_gdp)
 gen l_sd_cpi = log(sd_cpi)
@@ -5426,17 +5493,17 @@ gen l_rmse_gdp = log(rmse_gdp)
 gen l_rmse_cpi = log(rmse_cpi)
 gen l_sdreturn = log(sdreturn)
 
-save $output/tempE4.dta, replace
+save $output/extended_stacked.dta, replace
 
 gen var = "gdp"
 gen hor = "current"
-append using $output/tempE4.dta
+append using $output/extended_stacked.dta
 replace var = "gdp" if var == ""
 replace hor = "future" if hor == ""
-append using $output/tempE4.dta
+append using $output/extended_stacked.dta
 replace var = "cpi" if var == ""
 replace hor = "current" if hor == ""
-append using $output/tempE4.dta
+append using $output/extended_stacked.dta
 replace var = "cpi" if var == ""
 replace hor = "future" if hor == ""
 
@@ -5598,8 +5665,6 @@ gen fewCtries = (N_cty2<10)
 
 
 save "$output/extended_stacked.dta", replace
-
-erase $output/tempE4.dta
 
 
 
