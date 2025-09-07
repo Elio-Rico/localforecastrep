@@ -58,3 +58,13 @@ This folder contains the vintage series from the world economic outlook of the I
 This folder contains data from the [World Trade Organization](https://ttd.wto.org/en). It contains data for tariffs, simple average duty and trade-weighted average duty for each country.  
 
 
+### 6. [output/](output/)
+This folder contains all figures, tables and data produced with the stata do-files for each section. They are stored in the corresponding folders [output/figures](output/figures) and [output/tables](output/tables).
+
+
+
+### 7. [manuscript/](manuscript/)
+This folder contains the main latex file to i) generate the main paper ([manuscript/Paper.tex](manuscript/Paper.tex)) and the appendix ([manuscript/Appendix.tex](manuscript/Appendix.tex)). It uses as inputs the files from the subfolder [manuscript/Sections](manuscript/Sections) and the tables as well as figures from the folder [output/](output/).
+
+
+
