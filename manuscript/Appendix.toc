@@ -1,0 +1,16 @@
+\contentsline {section}{\numberline {A}Variance equality tests}{1}{appendix.A}%
+\contentsline {section}{\numberline {B}Robustness analysis}{3}{appendix.B}%
+\contentsline {paragraph}{Different Vintage Series.}{3}{section*.3}%
+\contentsline {paragraph}{Forecasters forecasting for both Local and Foreign Countries.}{3}{section*.4}%
+\contentsline {paragraph}{Alternative Trimming Strategy.}{4}{section*.5}%
+\contentsline {paragraph}{Distinct Forecasts.}{4}{section*.6}%
+\contentsline {paragraph}{Alternative Definition of Foreign Forecaster.}{4}{section*.7}%
+\contentsline {paragraph}{Alternative Clustering.}{4}{section*.8}%
+\contentsline {section}{\numberline {C}Tables}{7}{appendix.C}%
+\contentsline {section}{\numberline {D}Figures}{23}{appendix.D}%
+\contentsline {section}{\numberline {E}Proofs}{31}{appendix.E}%
+\contentsline {subsection}{\numberline {E.1}Proof of Proposition \ref {prop:variance}}{31}{subsection.E.1}%
+\contentsline {subsection}{\numberline {E.2}Proof of Proposition \ref {prop:BGMS}}{32}{subsection.E.2}%
+\contentsline {subsection}{\numberline {E.3}Proof of Proposition \ref {prop:consensus}}{36}{subsection.E.3}%
+\contentsline {subsection}{\numberline {E.4}Proof of Proposition \ref {prop:pooledFE}}{38}{subsection.E.4}%
+\contentsline {subsection}{\numberline {E.5}Proof of Proposition \ref {prop:disagreement}}{39}{subsection.E.5}%

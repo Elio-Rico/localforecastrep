@@ -4142,7 +4142,7 @@ rename Headquarters country1
 rename country Headquarters
 rename country1 country
 
-append using cultdist
+append using $cultdistf/cultdist
 
 sort country Headquarters
 drop if Headquarters=="" | country==""
@@ -5652,6 +5652,13 @@ egen WDI_bin = xtile(WDI), nq(2)
 egen lgdp_ppp_o_bin = xtile(lgdp_ppp_o), nq(2)
 egen l_sdreturn_bin = xtile(l_sdreturn), nq(2)
 egen vix_bin = xtile(vix), nq(2)
+
+gen large2 = lgdp_ppp_o_bin
+gen small2 = 1- lgdp_ppp_o_bin
+
+replace lgdp_ppp_o_bin = lgdp_ppp_o_bin-1
+gen large = lgdp_ppp_o_bin
+gen small = 1- lgdp_ppp_o_bin
 
 replace rec = 0 if gdp_current_a1!=.
 replace rec=1 if gdp_current_a1<0 & gdp_current_a1!=.

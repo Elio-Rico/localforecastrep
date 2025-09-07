@@ -1,0 +1,34 @@
+\begin{table}[H] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Forecast Errors $\ln(|Error_{ijt,t}^m|)$ using Driscoll-Kraay Standard Errors with different Bandwidths}
+\label{tab:rob_se_errors_}
+{\footnotesize
+\begin{tabularx}{\linewidth}{l l C C C C m{0.01\textwidth} C C C C}
+
+\toprule
+{}&{}&\multicolumn{4}{c}{Entire Sample}&{}&\multicolumn{4}{c}{Distinct Updates} \tabularnewline \cline{3-6} \cline{8-11} \tabularnewline &&{(1)}&{(2)}&{(3)}&{(4)}&&{(5)}&{(6)}&{(7)}&{(8)} \tabularnewline
+{Variable}&{Coefficient}&{BW 4}&{BW 5}&{BW 6}&{BW 7}&{}&{BW 4}&{BW 5}&{BW 6}&{BW 7} \tabularnewline
+\midrule \addlinespace[0pt]
+\midrule $ \text{CPI}_{t} $ &Foreign&0.09***&0.09***&0.09***&0.09***&&0.08***&0.08***&0.08***&0.08*** \tabularnewline
+&&(0.03)&(0.03)&(0.03)&(0.03)&&(0.02)&(0.02)&(0.02)&(0.02) \tabularnewline
+&N&99,228&99,228&99,228&99,228&&54,654&54,654&54,654&54,654 \tabularnewline
+$ \text{GDP}_{t} $ &Foreign&0.06**&0.06**&0.06**&0.06**&&0.06**&0.06**&0.06**&0.06** \tabularnewline
+&&(0.02)&(0.02)&(0.02)&(0.02)&&(0.02)&(0.02)&(0.02)&(0.02) \tabularnewline
+&N&103,866&103,866&103,866&103,866&&103,866&103,866&103,866&103,866 \tabularnewline
+$ \text{CPI}_{t+1} $ &Foreign&0.07***&0.07***&0.07***&0.07***&&0.07***&0.07***&0.07***&0.07*** \tabularnewline
+&&(0.02)&(0.02)&(0.02)&(0.02)&&(0.02)&(0.02)&(0.02)&(0.02) \tabularnewline
+&N&90,693&90,693&90,693&90,693&&90,693&90,693&90,693&90,693 \tabularnewline
+$ \text{GDP}_{t+1} $ &Foreign&0.01&0.01&0.01&0.01&&0.01&0.01&0.01&0.01 \tabularnewline
+&&(0.02)&(0.02)&(0.02)&(0.02)&&(0.02)&(0.02)&(0.02)&(0.02) \tabularnewline
+&N&95,508&95,508&95,508&95,508&&95,508&95,508&95,508&95,508 \tabularnewline
+&Country $ \times $ Date FE&\checkmark&\checkmark&\checkmark&\checkmark&&\checkmark&\checkmark&\checkmark&\checkmark \tabularnewline
+&Forecaster $ \times $ Date FE &\checkmark&\checkmark&\checkmark&\checkmark&&\checkmark&\checkmark&\checkmark&\checkmark \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\begin{flushleft}
+\footnotesize \begin{minipage}{1\linewidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} Columns (1) to (4) show the regression of the log absolute forecast error on the location of the forecaster using different bandwidths. Columns (5) to (6) show the same regression using the subsample of the published forecasts that are distinct from the last published one, again for different bandwidths. \end{tabnote} \end{minipage}  
+\end{flushleft}
+}
+\end{table}

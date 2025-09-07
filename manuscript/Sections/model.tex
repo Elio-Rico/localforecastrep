@@ -1,0 +1,61 @@
+
+
+We consider a set of $N$ professional forecasters indexed by $i=1,..,N$ who form expectations on $J$ countries indexed by $j=1,..,J$. We denote by $x_{jt}$ the variable that is forecasted. Denote by $\textit{S}(j)$ the set of forecasters who form expectations on country $j$. Forecaster $i\in\textit{S}(j)$ can belong either to the group of local forecasters $\textit{S}^l(j)$ or to the group of foreign forecasters $\textit{S}^f(j)$. We denote by $N(j)$, $N^l(j)$ and $N^f(j)$ the number of elements in $\textit{S}(j)$, $\textit{S}^l(j)$ and $\textit{S}^f(j)$ respectively. We assume that $x_{jt}$, the yearly realization of $x_j$, follows an AR(1):
+$x_{jt}=\rho_jx_{jt-1}+\epsilon_{jt}\label{eq:ar1}$, 
+with $\epsilon_{jt}\sim\textsl{N}(0,\gamma^{-1/2})$.
+
+\subsubsection{Information structure and behavioral biases}
+
+We consider an information structure and behavioral assumptions that are similar to \citet{Angeletosetal2020}, except that we include public signals.
+
+\paragraph{Information structure.}
+
+We assume that the information structure is country, month, and forecaster-specific. Between month $m$ of year $t-1$ and month $m$ of year $t$, forecasters receive two types of signals: a public signal
+$\phi_{jt}^m=x_{jt}+(\kappa_{j}^m)^{-1/2}u_{jt}^m$
+observed by all forecasters, where $u_{jt}^m\sim\textsl{N}(0,1)$ is an i.i.d. aggregate noise shock and $\kappa_{j}^m>0$ is the precision of the public signal, which is specific to country $j$ and to month $m$, and a private signal
+$\varphi_{ijt}^m=x_{jt}+(\tau_{ij}^m)^{-1/2}e_{ijt}^m$
+that is observed only by forecaster $i$, where $e_{ijt}^m\sim\textsl{N}(0,1)$ is an i.i.d. idiosyncratic noise shock, $\tau_{ij}^m>0$ is the precision of the private signal, which is specific to country $j$, to month $m$, but also to forecaster $i$. Through the law of large numbers we have $\frac{1}{N^l(j)}\sum_{i\in\textit{S}^l(j)}e_{ijt}^m=0$ and $\frac{1}{N^f(j)}\sum_{i\in\textit{S}^f(j)}e_{ijt}^m=0$.
+
+We assume that, for a given month $m$, $e_{ijt}^m$ and $u_{jt}^m$ are mutually and serially independent. This means, for instance, that the noise shocks in the signals of month $m$ from year $t$ are not correlated with the noise shocks in the signals of month $m$ from year $t-1$. But we do not impose that the noise shocks are serially uncorrelated within a given year.\footnote{This type of information structure would arise if forecasters were receiving independent signals every month. In that case, the information received between month $m$ of year $t-1$ and month $m$ of year $t$ would be represented by a 12-month moving average of the monthly signals, which is serially correlated on a month-on-month basis, but not on a year-on-year basis.}
+
+\paragraph{Behavioral biases.}
+
+Following \citet{Angeletosetal2020}, we consider two behavioral biases that go a long way in explaining survey forecasts: over-extrapolation and over-confidence. We denote forecaster $i$'s belief about the persistence of $x_{jt}$ by $\hat\rho_{ij}$, and her belief about the precision of her private signal by $\hat\tau_{ij}^m$. Over-(under-)extrapolation consists in distorted beliefs about the persistence of shocks $\rho_j$: $\hat\rho_{ij}\neq\rho_j$. Over-(under-)confidence consists in distorted beliefs about the precision of private signals $\hat\tau_{ij}^m\neq\tau_{jk}^m$.
+
+\paragraph{Expectations.}
+
+Between month $m$ of year $t-1$ and month $m$ of year $t$, the forecasters update their expectations in the following way:
+\begin{equation}
+	E_{ijt}^m(x_{jt})=(1-G_{ij}^m)\hat\rho_{ij}E_{ijt-1}^m(x_{jt-1})+G_{ij}^ms_{ijt}^m\label{eq:update}
+\end{equation}
+where $G_{ij}^m$ is the Kalman gain that is consistent with forecaster $i$' beliefs about the persistence of $x_{jt}$ and about the precision of their signals, and $s_{ijt}^m$ is a ``synthetic'' signal built out of the public and private signals: $s_{ijt}^m=h_{ij}^m\phi_{jt}^m+(1-h_{ij}^m)\varphi_{ijt}^m$, with $h_{ij}^m=\kappa_{j}^m/(\kappa_{j}^m+\hat\tau_{ij}^m)$. %, so that $E_{ijt}^m(x_{jt}|\phi_{jt}^m,\varphi_{ijt}^m)=(\kappa_{j}^m+\hat\tau_{ij}^m)/(\gamma_j+\kappa_{j}^m+\hat\tau_{ij}^m)s_{ijt}^m$. Note that this synthetic signal can be written as $s_{ijt}^m=x_{jt}+v_{ijt}^m$ with $v_{ijt}^m=h_{ij}^m(\kappa_j^m)^{-1/2}u_{jt}^m+(1-h_{ij}^m)(\tau_{ij}^m)^{-1/2}e_{ijt}^m$ an average of the private and public noises.
+
+%Notice that $E_{ijkt}(x_{jt})$ can be rewritten in its moving-average form as follows:
+%\begin{equation}E_{ijkt}(x_{jt})=\frac{G_{jk}}{1-(1-G_{jk})\hat\rho_{jk}L}s_{ijkt}\label{eq:ma}\end{equation}
+We define the forecast revisions between month $m$ of year $t-1$ and month $m$ of year $t$ as
+$Revision_{ijt}^m=E_{ijt}^m(x_{jt})-E_{ijt-1}^m(x_{jt})$ and the error as $Error_{ijt,t}^m=x_{jt}-E_{ijt}^m(x_{jt})$, as before.
+%with $\eta_{ijkt}=h_{jk}\kappa_j^{-1/2}u_{jt}+(1-h_{jk})\tau_{jk}^{-1/2}e_{ijt}$ is the total noise.
+
+
+%\paragraph{Assumptions} We will assume in our analysis that for a given country $j$, the information and behavioral bias structure differs between local and foreign forecasters, but it is homogeneous within the local and foreign forecaster pools:
+%\begin{assumption}[Within-location homogeneity]\label{ass:loc_hom} $\tau_{ij}^m=\tau_{jl}^m$, $\hat\tau_{ij}^m=\hat\tau_{jl}^m$ and $\hat\rho_{ij}=\hat\rho_{jl}$ if $i\in\mathcal{S}^l(j)$ and $\tau_{ij}^m=\tau_{jf}^m$, $\hat\tau_{ij}^m=\hat\tau_{jf}^m$ and $\hat\rho_{ij}=\hat\rho_{jf}$ if $i\in\mathcal{S}^f(j)$, for all $j=1,..J$ and $m=1,..,12$.
+%\end{assumption}
+
+%A stricter assumption will consist in assuming that local and foreign forecasters have the same behavioral biases regarding country $j$, and differ only regarding their information structure:
+%\begin{assumption}[Homogeneous biases]\label{ass:hom} $\hat\rho_{ij}=\hat\rho_{i'j}=\hat\rho_{j}$ and $(\tau_{ij}^m)^{-1}-(\hat\tau_{ij}^m)^{-1}=(\tau_{i'j}^m)^{-1}-(\hat\tau_{i'j}^m)^{-1}$ for all $(i,i')\in(\textit{S}(j))^2$, $j=1,..J$ and $m=1,..,12$.
+%\end{assumption}
+
+%Finally, it will be useful to consider the assumption that there are no behavioral biases:
+%\begin{assumption}[No biases]\label{ass:nobias} $\hat\rho_{ij}=\rho_j$ and $\hat\tau_{ij}^m=\tau_{ij}^m$, for all $i\in\mathcal{S}(j)$, $j=1,..J$ and $m=1,..,12$.
+%\end{assumption}
+
+
+\subsubsection{Variance of errors}
+
+Consider the case with no behavioral biases, so that the following assumption is satisfied:
+\begin{assumption}[No behavioral biases]\label{ass:nobias} $\hat\rho_{ij}=\rho_j$ and $\hat\tau_{ij}^m=\tau_{ij}^m$, for all $i\in\mathcal{S}(j)$, $j=1,..J$ and $m=1,..,12$.
+\end{assumption}
+Under this assumption, forecasters with less precise information make more errors on average. This derives from the forecasters' optimal use of information. In fact, the variance of errors can be related to the precision of private signals, as stated in the following proposition (see proof in Appendix \ref{proof:variance}):
+\begin{prop}\label{prop:variance} Under Assumption \ref{ass:nobias} (no behavioral biases), the variance of forecast errors $V(Error_{ijt,t-1}^m)$ and $V(Error_{ijt,t}^m)]$ are decreasing in $\tau_{ij}^m$.
+\end{prop}
+The variance of errors decreases with the precision of the private signals. Therefore, the difference in variance between local and foreign forecasters can be explained by local forecasters' more precise private information. But asymmetric information is not the only potential source of difference in variance. The Kalman filter is a minimum mean-square error estimator. Mis-specified parametric inputs to the estimator will increase the variance of errors as compared to the well-specified estimator. Therefore, the difference in variance may be due to differences in behavioral biases. In the remainder of the section, we use model-based tests to detect differences in behavioral biases and differences in information. 

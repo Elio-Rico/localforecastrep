@@ -1,0 +1,57 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  This bbl file is created by econ.bst ver.2.7
+%  The latest econ.bst is available at
+%  <https://github.com/ShiroTakeda/econ-bst>
+
+%%% Definition of \bysame
+\ifx\undefined\bysame
+\newcommand{\bysame}{\hskip.3em \leavevmode\rule[.5ex]{3em}{.3pt}\hskip0.5em}
+\fi
+
+\begin{thebibliography}{xxx}
+
+\harvarditem[Coibion and Gorodnichenko]{Coibion and
+  Gorodnichenko}{2015}{CoibionGorodnichenko2015}
+Coibion, Olivier and Yuriy Gorodnichenko (2015) ``Information Rigidity and the
+  Expectations Formation Process: A Simple Framework and New Facts,''
+  \textit{American Economic Review}, 105 (8),  2644--78.
+
+\harvarditem[Driscoll and Kraay]{Driscoll and Kraay}{1998}{Driscoll1998}
+Driscoll, John~C. and Aart~C. Kraay (1998) ``Consistent Covariance Matrix
+  Estimation with Spatially Dependent Panel Data,'' \textit{The Review of
+  Economics and Statistics}, 80 (4),  549--560.
+
+\harvarditem[Fearon]{Fearon}{2003}{Fearon2003}
+Fearon, James~D. (2003) ``Ethnic and Cultural Diversity by Country,''
+  \textit{Journal of Economic Growth}, 8 (2),  195--222.
+
+\harvarditem[Fern\'andez et~al.]{Fern\'andez, Klein, Rebucci, Schindler and
+  Uribe}{2016}{Fernandez2016}
+Fern\'andez, Andrés, Michael~W. Klein, Alessandro Rebucci, Martin Schindler,
+  and Mart\'in Uribe (2016) ``Capital Control Measures: A New Dataset,''
+  \textit{IMF Economic Review}, 64 (3),  548--574.
+
+\harvarditem[Kaufmann and Kraay]{Kaufmann and Kraay}{2023}{kaufmann2023}
+Kaufmann, Daniel and Aart Kraay (2023) ``Worldwide Governance Indicators, 2023
+  Update.''
+
+\harvarditem[Levene]{Levene}{1960}{levene1960robust}
+Levene, Howard (1960) ``Robust tests for equality of variances,''
+  \textit{Contributions to probability and statistics},  278--292.
+
+\harvarditem[Mayer and Zignago]{Mayer and Zignago}{2011}{Mayer2011}
+Mayer, Thierry and Soledad Zignago (2011) ``Notes on CEPII’s distances
+  measures: The GeoDist database,'' Working Papers 2011-25, CEPII.
+
+\harvarditem[{\"O}zden et~al.]{{\"O}zden, Parsons, Schiff and
+  Walmsley}{2011}{ozden2011earth}
+{\"O}zden, {\c{C}}a{\u{g}}lar, Christopher~R Parsons, Maurice Schiff, and
+  Terrie~L Walmsley (2011) ``Where on earth is everybody? The evolution of
+  global bilateral migration 1960--2000,'' \textit{The World Bank Economic
+  Review}, 25 (1),  12--56.
+
+\harvarditem[Spolaore and Wacziarg]{Spolaore and Wacziarg}{2016}{Spolaore2016}
+Spolaore, Enrico and Romain Wacziarg (2016)  \textit{Ancestry, Language and
+  Culture},  174--211, London: Palgrave Macmillan UK.
+
+\end{thebibliography}

@@ -1,0 +1,47 @@
+
+\paragraph{BGMS regressions.}
+
+We rely on regressions popularized by \citet{Bordaloetal2020} and \citet{BroerKohlhas2019} to assess the presence of behavioral biases among forecasters:
+\begin{equation}Error_{ijt}^m=\beta^{BGMSm}_{ij}Revision^m_{ijt}+\delta_{ij}^m+\lambda_{ijt}^m\label{eq:BGMS}
+\end{equation}
+where $\beta^{BGMSm}_{ij}$ is a country, forecaster and month-specific coefficient, $\delta_{ij}^m$ are country-forecaster-month fixed effects and $\lambda_{ijt}^m$ is an error term. Following \citet{Angeletosetal2020}, we can show that $\beta^{BGMSm}_{ij}$ is related to the deviations of the beliefs $\hat\rho_{ij}$ and $\hat\tau_{ij}$ from their true counterparts (see the proof in Appendix \ref{proof:BGMS}):
+\begin{prop}\label{prop:BGMS} The coefficient $\beta^{BGMSm}_{ij}$, estimated by OLS, can be approximated at the first-order around $\hat\rho_{ij}=\hat\rho_{j}=\rho_{j}$ and $(\hat\tau_{ij}^m)^{-1}=(\tau_{ij}^m)^{-1}=(\tau_j^m)^{-1}$, where $\tau_j^m$ is the average level of precision, as follows:
+$$\beta^{BGMSm}_{ij}\simeq -(\hat\rho_{ij}-\rho_{j})\hat\beta_{1j}^m- [(\tau_{ij}^m)^{-1}-(\hat\tau_{ij}^m)^{-1}]\hat\beta_{2j}^m$$
+where $\hat\beta_1^m$ and $\hat\beta_2^m$ are strictly positive and independent of $\hat\rho_{ij}$, $\tau_{ij}^m$ and $\hat\tau_{ij}^m$.
+\end{prop}
+A negative coefficient reflects an over-reaction of forecasters to their information. This over-reaction can arise from over-confidence ($\hat\tau_{ij}^m-\tau_{ij}^m>0$) or from over-extrapolation ($\hat\rho_{ij} -\rho_j>0$).
+%Differing levels of information precision can affect the BGMS coefficient, but these effects are proportional to the behavioral biases. For small levels of biases ($\hat\rho_j-\rho_j$ and $\hat\tau_{jk}^m-\tau_{jk}^m$ small), differences in coefficients across groups must be related to differences in over-confidence $(\hat\tau_{jf}^m-\tau_{jf}^m)-(\hat\tau_{jl}^m-\tau_{jl}^m)$. We make the assumption that the behavioral biases are small enough so that differences in $\hat\tau_{jk}$ do not affect the coefficient significantly.
+ Therefore, a more negative BGMS coefficient will be interpreted as reflecting differences in either over-confidence or over-extrapolation.
+
+We estimate Equation \eqref{eq:BGMS} using the mean-group methodology, under the assumption that the $\beta^{BGMS}$ coefficients could differ across each month and each country-forecaster pair. We collect the country-forecaster-month-specific $\beta^{BGMS}$ coefficients and test for significant differences between local and foreign forecasters by regressing the coefficient on the Foreign dummy, controlling for country-month and forecaster-month fixed effects. A significant coefficient for the Foreign dummy would indicate that there are systematic differences in behavioral biases. We restrict the sample to the pairs providing forecasts for at least 10 years and weight observations by the inverse of the coefficient's standard deviation to give more weight to the more precisely estimated coefficients.
+
+
+The results are displayed in Columns (1) and (2) of Table \ref{tab:tab_main}. There is no systematic difference between local and foreign forecasters. Interestingly, the average $\beta^{BGMS}$ coefficient is positive for both inflation and GDP growth in our most conservative specification, suggesting that forecasters under-react to news on average.\footnote{This might seem in contradiction with previous evidence, which has found over-reaction, especially for inflation \citep{Bordaloetal2020,BroerKohlhas2019,Angeletosetal2020}. However, previous evidence has focused on the Survey of Professional Forecasters, which provides forecasts for the US. Our estimated parameters are in fact heterogeneous, especially across countries (see Figure \ref{app:fig:dist_beta_cty} in the Appendix). Focusing on the US, we find that the inflation forecasts feature over-reaction on average, which is consistent with previous evidence. GDP growth forecasts do not feature systematic over- or under-reaction, which is also consistent with previous evidence.}
+
+\begin{landscape}
+	% TABLE
+	\enlargethispage{2em}
+	{\setstretch{1}
+		\input{../output/tables/tab_main}
+	}
+\end{landscape}
+
+
+
+\paragraph{Perceived persistence.}
+
+A non-negative BGMS coefficient can arise both from distorted beliefs on the precision of private signals and from distorted beliefs on the persistence of the shocks. We have shown that these BGMS coefficients do not differ systematically between local and foreign forecasters. However, this does not imply that foreign forecasters have similar over-(under-)confidence and over-(under-)extrapolation. A similar result would arise if the relative over-(under-)confidence of foreign forecasters compensates their relative over-(under-)extrapolation.  We examine more directly whether the beliefs on persistence are similar. To do this, we use the relation between the forecasts on current and future variables implied by our model:
+\begin{equation}E_{ijt}^m(x_{jt+1})=\hat\rho_{ij}E_{ijt}^m(x_{jt})\label{eq:rhohat}
+\end{equation}
+We estimate Equation \eqref{eq:rhohat} using the same mean-group methodology. In our model, $\hat\rho_{ij}$ is specific to a country-forecaster pair, but we allow it to differ across months as well.\footnote{In our model, all the innovations to inflation have the same persistence, whereas in reality, there could be some components of inflation that are purely transitory. We cannot exclude that forecasters learn about the transitory component over the year. That would affect the month-specific correlation between the current and the future forecast.}
+
+The results are reported in Columns (3) and (4) of Table \ref{tab:tab_main}. The estimated perceived persistence is not significantly different for foreign forecasters.\footnote{In Appendix \ref{tab:tab_rob_BGMS} and \ref{tab:tab_rob_overextr}, we provide the results when assuming that the $\beta^{BGMS}$ and the $\hat\rho$ coefficients only differ across countries and between local and foreign forecasters, when assuming that they differ only across country-forecaster pairs, and when using different sets of fixed effects. The results are consistent across specifications.}
+
+In Tables \ref{tab:tab_rob_past_consensus} and \ref{tab:tab_rob_last_vintage} in the Appendix, following \citet{BroerKohlhas2019} and \citet{GemmiValchev2021}, we examine over-(under-)reaction to public news, by examining regressions of forecast errors on public news, using two different measures of public news: the past consensus and the last vintage of realized outcome. A negative (positive) coefficient implies that forecasters over-react (under-react) to public news. Again, we do not find any systematic difference in behavioral biases.\footnote{Consistently with \citet{BroerKohlhas2019}, who find evidence of both under-reaction and over-reaction to salient public news, we find both under-reaction or over-reaction to public news (in Columns (5) and (6) of both tables, which include the largest set of fixed effects, we can see that forecasters under-react to the last vintage and past consensus on inflation and over-react to the last vintage and past consensus on GDP growth, as the average coefficient is positive for inflation and negative for GDP growth).} Finally, we also show that forecasters do not have a different systematic bias in their forecasts (see Table \ref{tab:tab_rob_bias} in the Appendix).\footnote{Interestingly, we find evidence of a systematic positive bias in inflation expectations: forecasters systematically overestimate inflation by 0.02 percentage points, which is statistically significant but small (see Column (7) of Table \ref{tab:tab_rob_bias}, our baseline specification). Forecasters tend to do the opposite with GDP growth forecasts, as they tend to underestimate it systematically by 0.04 percentage points (see Column (8)). The Foreign dummy, however, is not significant in both Columns (7) and (8), which shows that these systematic biases are similar across locations.}
+
+All in all, foreign and local forecasters do not have significantly different biases. From now on, we thus assume common behavioral biases across forecasters:
+%A stricter assumption will consist in assuming that local and foreign forecasters have the same behavioral biases regarding country $j$, and differ only regarding their information structure:
+\begin{assumption}[Homogeneous behavioral biases across locations]\label{ass:hom} $\hat\rho_{ij}=\hat\rho_{i'j}=\hat\rho_{j}$ and $(\tau_{ij}^m)^{-1}-(\hat\tau_{ij}^m)^{-1}=(\tau_{i'j}^m)^{-1}-(\hat\tau_{i'j}^m)^{-1}$ for all $(i,i')\in(\textit{S}(j))^2$, $j=1,..J$ and $m=1,..,12$.
+\end{assumption}
+Note that Assumption \ref{ass:nobias} (no biases)  is a special case of Assumption \ref{ass:hom}.
+In the next sub-section, we examine differences in information frictions under this assumption.

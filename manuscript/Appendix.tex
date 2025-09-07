@@ -1,0 +1,516 @@
+\documentclass[letterpaper,12pt]{article}
+\usepackage{amsmath}
+\usepackage{amsthm}              % See geometry.pdf to learn the layout options. There are lots.
+\usepackage{geometry}
+\usepackage[figuresleft]{rotating}
+\usepackage{pdflscape}
+%\geometry{a5paper}                   % ... or a4paper or a5paper or ...
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{afterpage}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{float}
+\setlength{\columnseprule}{.4pt}
+%\doublespacing
+\usepackage{natbib} % if you're using natbib
+\setlength{\bibsep}{0pt} % removes the space between items
+\usepackage[multiple]{footmisc}
+\geometry{left=1in,right=1in,top=1in,bottom=1in}
+%\makeatother \addtolength{\textwidth}{0.4in}
+%\addtolength{\oddsidemargin}{-0.2in}
+%\addtolength{\textheight}{0.8in} \addtolength{\topmargin}{-0.4in}
+\newtheorem{prop}{Proposition}
+\newtheorem{cor}{Corollary}
+\newtheorem{lemma}{Lemma}
+\newtheorem{assumption}{Assumption}
+\usepackage{xcolor}
+\setlength{\tabcolsep}{2pt}
+\usepackage{xr}
+ \externaldocument{PaperAccepted}
+
+% datatool to  make ces in Latex to external values
+\usepackage{datatool}
+\DTLsetseparator{|}
+\DTLloaddb{valuesData}{Sections/valuesDataUpdated.csv}
+%\DTLloaddb{valuesData2}{Sections/valuesData2.csv}
+%
+% make tables from csv:
+\usepackage{csvsimple}
+
+\usepackage{longtable}
+\usepackage{tabularx}
+
+% subfigures
+\usepackage{caption}
+\usepackage{subcaption}
+
+% inline notes or comments
+%\usepackage{todonotes} % if want notes
+
+% environment for figure notes:
+\newenvironment{fignote}{\footnotesize \begin{singlespace} \noindent}{\end{singlespace} \par }
+
+% environment for table notes:
+\newenvironment{tabnote}{\footnotesize \begin{singlespace} \noindent }{\end{singlespace} \par}
+
+
+
+% new date format:
+\usepackage{datetime}
+
+\newdateformat{monthyeardate}{%
+	\monthname[\THEMONTH], \THEYEAR}
+
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+\newcommand{\kenza}[1]{\todo[inline,linecolor=red, backgroundcolor=blue!10!white, bordercolor=red, size=\tiny]{#1}}
+\newcommand{\elio}[1]{\todo[inline,linecolor=blue, backgroundcolor=yellow!20!white, bordercolor=blue, size=\tiny]{#1}}
+
+\usepackage{hyperref}
+
+\renewcommand{\baselinestretch}{1.5}
+
+
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{Do Local Forecasters Have Better Information?\\
+	Online Appendix}
+\vspace{-1cm}
+\author{Kenza Benhima\footnote{HEC-Lausanne (University of Lausanne) and CEPR, email: kenza.benhima@unil.ch.} and Elio Bolliger\footnote{Swiss Federal Department of Finance.} }
+\date{May 2025}
+\vspace{-1cm}
+%\date{May 2025}%\today
+%\\
+%\vspace{0.5cm}
+%\href{https://www.dropbox.com/s/74qfltmzqvt3yei/Local_vs_foreign_forecasters_most_recent.pdf?dl=0}{\emph{Click here for the most recent version} }
+% }
+
+\begin{document}
+
+\vspace{-1cm}
+\maketitle
+
+\tableofcontents 
+
+
+\newpage
+
+\setcounter{page}{1}
+
+\appendix
+
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+
+\setstretch{1.5}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Variance equality tests}
+\label{app:sec:variance}
+
+In a more formal test, we investigate whether the variance of forecast errors is larger for foreign forecasters than the variance of local forecasters. To do this, we perform a simple variance equality test applied to the annual average of forecast errors across locations, defined as $\frac{1}{12}\sum_{m=1}^{12} Error_{ijt,t+h}^m$, for $h=0,1$. We use the annual average here to take into account a potential high correlation of the errors within a year, which could bias the test. We implement Levene’s variance equality test \citep{levene1960robust}. The null hypothesis, $H_0$, is that variances are equal $\sigma^2_{\text{FE}_{\text{Local}}} = \sigma^2_{\text{FE}_{\text{Foreign}}}$, versus the alternative hypothesis of unequal variances,  $H_A$, $\sigma^2_{\text{FE}_{\text{Local}}} \neq \sigma^2_{\text{FE}_{\text{Foreign}}}$.\footnote{Note that there are different ways for calculating the test statistic for equal variances, namely using the mean, median or trimmed mean. We observe very little differences across these methods which is why we report the results of the test statistics calculating with the mean.}
+
+
+%the ratio of the standard deviation of the errors of local forecasters to that of foreign ones, and conduct a one-sided test with the null hypothesis, $H_0$, of equal variance, i.e. $\frac{\sigma_{\text{FE}_{\text{Local}}}}{\sigma_{\text{FE}_{\text{Foreign}}}} = 1$ versus the alternative hypothesis, $H_A$, that the ratio is $<1$.
+
+{\setstretch{1}
+\input{../output/tables/cpi_gdp_current_future_sdtest_robvar}
+}
+
+Table \ref{tab:error_sdtest} reports the results. In column (1), we define different sub-samples. We split the sample into advanced and emerging countries, multinational and national forecasters, financial and non-financial forecasters. Column (2) and (3) show the number of observations for local and foreign forecasters, respectively. Column (4) and (5) show the standard deviation of the forecast error conditional on the location. Column (6) reports the F-statistics and column (7) the corresponding p-value.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Robustness analysis}\label{sec:robustness}
+\input{Sections/robustness}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section{Tables}
+
+%%%%%%% DATA
+{\setstretch{0.8}
+\begin{table}[H]
+	\catcode`"=9
+	\caption{\small Range of Observation Periods for each Country }
+	%	\vspace{-20pt}
+	\label{tab:app_data_countryrange}
+	{\footnotesize{
+			\newcolumntype{Y}{>{\centering\arraybackslash}X}
+			\begin{tabularx}{\textwidth}{l l Y Y }\toprule
+				%& & \multicolumn{2}{c}{\textbf{Forecasts}}  & \multicolumn{2}{c}{\textbf{Actual Outcomes}}   \\
+				& \textbf{Country} & \textbf{GDP} & \textbf{CPI}  \\ \hline \midrule
+				\csvreader[
+				late after line=\\,
+				late after last line=\\\bottomrule]
+				{Sections/countryTimeVar.csv}{country=\country,fdGdpCurrent=\fdGdpCurrent,ldGdpCurrent=\ldGdpCurrent,fdCpiCurrent=\fdCpiCurrent,ldCpiCurrent=\ldCpiCurrent}%
+				{\thecsvrow & \country& \fdGdpCurrent  -- ~\ldGdpCurrent & \fdCpiCurrent  -- ~\ldCpiCurrent }%
+			\end{tabularx}
+		}
+	}
+	\centering	
+	
+\begin{flushleft}
+	\footnotesize \begin{minipage}{1\linewidth} \vspace{-10pt} \begin{tabnote} {\footnotesize{ \textit{Notes:} The table shows the first and last observation date for GDP and CPI for which forecasts and vintages are available. The data for forecasts come from Consensus Economics, while actual outcomes are from the International Monetary Fund World Economic Outlook (IMF WEO).}} \end{tabnote} \end{minipage}
+\end{flushleft}
+\end{table}
+
+
+}
+			
+
+
+{\setstretch{1}
+	\input{../output/tables/emerging_advanced_sum}
+}
+
+%%%%%%% ERRORS
+
+{\setstretch{1}
+\input{../output/tables/tab_stderr_rob}
+}
+
+{\setstretch{1}
+\input{../output/tables/tab_errors_rob}
+}
+
+{\setstretch{1}
+\input{../output/tables/tab_updating_rob}
+}
+
+{\setstretch{1}
+\input{../output/tables/tab_updating_errors_app_small}
+}
+
+%%%%%%% BIASES / INFORMATION
+
+	\begin{landscape}% Landscape page
+		\enlargethispage{1em}
+\input{../output/tables/tab_rob_BGMS}
+	\end{landscape}
+
+	\begin{landscape}% Landscape page
+		\enlargethispage{1em}
+\input{../output/tables/tab_rob_overextr}
+	\end{landscape}
+	
+	\begin{landscape}% Landscape page
+		\enlargethispage{1em}
+\input{../output/tables/tab_rob_past_consensus}
+	\end{landscape}	
+
+	\begin{landscape}% Landscape page
+		\enlargethispage{1em}
+\input{../output/tables/tab_rob_last_vintage}
+	\end{landscape}	
+	
+	%\begin{landscape}% Landscape page
+		%\enlargethispage{1em}
+%\input{../output/tables/tab_rob_local}
+	%\end{landscape}	
+	
+	\begin{landscape}% Landscape page
+		\enlargethispage{1em}
+\input{../output/tables/tab_rob_bias}
+	\end{landscape}	
+	
+	\begin{landscape}% Landscape page
+		\enlargethispage{1em}
+\input{../output/tables/tab_rob_consensus}
+	\end{landscape}
+
+	\begin{landscape}% Landscape page
+		\enlargethispage{1em}
+\input{../output/tables/tab_rob_FE}
+	\end{landscape}
+
+	\begin{landscape}% Landscape page
+		\enlargethispage{1em}
+\input{../output/tables/tab_rob_disag}
+	\end{landscape}	
+	
+	\begin{landscape}% Landscape page
+		\enlargethispage{1em}
+\input{../output/tables/tab_r3}
+	\end{landscape}	
+%%%%%%% DETERMINANTS
+
+\input{../output/tables/error_reg_labs_cs_ind}
+
+\input{../output/tables/FE_reg_mg}
+
+
+
+%%%%%%% INFORMATION BARRIER VAR DESCRIPTION
+
+{\setstretch{1}
+\begin{table}[H] \centering
+	\newcolumntype{C}{>{\centering\arraybackslash}X}
+	
+	\caption{Variable Description for Barriers to Information}
+	\label{app:descvarbarriers}
+	{\footnotesize
+		\begin{tabularx}{\linewidth}{p{2cm} p{10cm} p{4cm}}
+			
+			\toprule
+			{Variable}&{Descrption}&{Source} \tabularnewline
+			\hline
+			\midrule \addlinespace[0pt]
+			Physical Distance & Calculates the shortest path, or geodesic distance, between two countries by averaging the distances between their capital cities, with each distance weighted according to the population distribution.  & CEPII's GeoDist dataset \citep{Mayer2011} \tabularnewline
+			Cultural Distance & The Cultural Distance measure reflects differences in current values and beliefs as initially conceptualized by  \citet{Spolaore2016}. It is based on responses to 98 selected questions from the World Values Survey, spanning the years 1981–2010. These questions cover areas such as personal views on life, the environment, work, family, politics, religion, and national identity. This subset, drawn from an original pool of 740 questions, was specifically chosen to ensure comparability across country pairs. To calculate cultural distance, Euclidean distances are determined for each question’s responses between countries, and these distances are then averaged to create a comprehensive index.  & \citet{Spolaore2016} \tabularnewline
+			Linguistic Distance & Measures the distance in spoken languages between countries. It quantifies how closely related contemporary languages are based on their historical lineage. For instance, Italian and French, both derived from Latin, are more closely related than German, which comes from a different branch of the Indo-European family. This measure is calculated by counting the linguistic nodes between languages as classified by Ethnologue. It reflects potential communication challenges and information frictions that arise from language differences, impacting cross-cultural interactions.& \citet{Fearon2003}, \citet{Spolaore2016} \tabularnewline
+			Business Cycle Comovement & Squared correlation of GDP growth or inflation rates between the forecaster's country and the target country, capturing cyclical alignment. & Constructed using the IMF WEO vintage data information for GDP and inflation \tabularnewline
+			Migration & Share of the forecaster country's population born in the target country in 2000,  measuring population links.  Based on the Global Bilateral Migration Database &  \cite{ozden2011earth} \tabularnewline %https://datacatalog.worldbank.org/search/dataset/0039577
+			Trade Linkages & Exports from the forecaster's headquarters country to the target country, normalized by the forecaster's country GDP,  reflecting trade ties. & Trade data from CEPII's GeoDist dataset \citep{Mayer2011}, national accounts \tabularnewline
+			Institutions & Measures the quality of institutions in the target country performing a principal component analysis on 6 indicators from the Worldbank Worldwide Governance Indicators. Namely, we used control of corruption, government effectiveness, political stability and absence of violence/terrorism, regulatory quality, rule of law, and voice and accountability.  & \citep{kaufmann2023} \tabularnewline
+			Low Cap. Controls & Indicator variable for countries with low capital controls, representing financial openness. It is calculated as the sum of the two indicators on inflow and outflow control in  \citet{Fernandez2016}.  We define having low capital controls as a dummy when this indicator is equal or below 0.1, which represents the first quartile of openness.  & \citet{Fernandez2016} \tabularnewline
+			\bottomrule \addlinespace[\belowrulesep]
+			
+		\end{tabularx}
+		\begin{flushleft}
+			\footnotesize \begin{minipage}{1\textwidth} \vspace{-10pt} \begin{tabnote}  \textit{Notes:} The table describes the additional data used for regressions in Table \ref{tab:error_reg_labs_gravity}. \end{tabnote} \end{minipage}  
+		\end{flushleft}
+	}
+\end{table}
+
+}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Figures}
+
+%%%% DATA
+\begin{figure}[H]
+\begin{center}
+		\includegraphics[width=.4\linewidth]{../output/figures/hq_sub_obs.pdf}
+		\includegraphics[width=.4\linewidth]{../output/figures/hq_sub_pairs.pdf}
+\end{center}
+	\caption{Distribution of forecasts and country-forecaster pairs conditional on Location and Scope of Forecaster}
+	\label{fig:hq_sub_obs}
+	\begin{fignote}
+		\textit{Notes:} The figure shows the distribution of the forecasts and country-forecaster pairs conditional on the location and scope of the forecaster. A forecast is either provided by a forecaster with headquarters located in the country, or by a forecaster with no headquarters but with at least a subsidiary located in the country, or by a forecaster with neither headquarters or subsidiaries located in the country. Multinational forecasters have subsidiaries in countries other than the one where their headquarters are located. National forecasters have only subsidiaries in the same country as their headquarters.
+	\end{fignote}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+		\includegraphics[width=.9\linewidth]{../output/figures/hq_sub_obs_by_cty.pdf}
+\end{center}
+	\caption{Proportion of forecasts conditional on Location and Scope of Forecaster, by country}
+	\label{fig:hq_sub_obs_by_cty}
+	\begin{fignote}
+		\textit{Notes:} The figure shows the distribution of the forecasts conditional on the location and scope of the forecaster. A forecast is either provided by a forecaster with headquarters located in the country, or by a forecaster with no headquarters but with at least a subsidiary located in the country, or by a forecaster with neither headquarters or subsidiaries located in the country. Multinational forecasters have subsidiaries in countries other than the one where their headquarters are located. National forecasters have only subsidiaries in the same country as their headquarters.
+	\end{fignote}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+		\includegraphics[width=.4\linewidth]{../output/figures/loc_for_inst.pdf}
+		\includegraphics[width=.4\linewidth]{../output/figures/loc_for_obs.pdf}	
+	\caption{Forecasters publishing Local and Foreign Forecasts}
+		\label{fig:loc_for}
+\end{center}
+
+	\begin{fignote}
+		\textit{Notes:} The figure shows the distribution of the forecasters depending on the nature of their forecasts. A forecaster either provides local forecasts only, or foreign forecasts only, or both local and foreign forecasts.
+	\end{fignote}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+		\includegraphics[width=.4\linewidth]{../output/figures/hist_mult.pdf}
+		\includegraphics[width=.4\linewidth]{../output/figures/hist_nat.pdf}	
+	\caption{Number of countries in forecasters' portfolio}
+	\label{fig:hist}
+\end{center}
+	\begin{fignote}
+		\textit{Notes:} The figure shows the distribution, across forecasters, of the number of countries that are in a forecaster's portfolio, depending of the forecaster's scope (multinational or national firm). A country is in a forecaster's portfolio if the forecaster provides forecasts for that country.
+	\end{fignote}
+\end{figure}
+
+%%%% ERRORS
+\newpage
+
+
+
+\begin{figure}[h]
+	
+		\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/cpi_current_FE_density}
+		\caption{$Error_{ijt,t}^m$: $\text{CPI}_t$ }
+		\label{fig:error_density_cpi_c}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/gdp_current_FE_density}
+		\caption{$Error_{ijt,t}^m$. $\text{GDP}_t$ }
+		\label{fig:error_density_gdp_c}
+	\end{subfigure}
+	
+		\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/cpi_future_FE_density}
+		\caption{$Error_{ijt,t}^m$: $\text{CPI}_{t+1}$ }
+		\label{fig:error_density_cpi_f}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/gdp_future_FE_density}
+		\caption{$Error_{ijt,t}^m$. $\text{GDP}_{t+1}$ }
+		\label{fig:error_density_gdp_f}
+	\end{subfigure}
+	
+	\caption{Distribution of errors}
+	\label{fig:errors}
+	\begin{fignote}
+		\textit{Notes:} Panels (a) and (b) display the density of the current year forecast error $Error_{ijt,t}^m$ conditional on the location of the forecaster. Panels (c) and (d) display the density of the future year forecast error $Error_{ijt,t+1}^m$ conditional on the location of the forecaster. The population corresponds to all the country-forecaster-year units.
+	\end{fignote}
+\end{figure}
+
+
+
+
+\begin{figure}[H]
+	
+		\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/cpi_current_N_density}
+		\caption{$N_{ijt}$: $\text{CPI}_t$ }
+		\label{fig:cpi_current_N_density}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/gdp_current_N_density}
+		\caption{$N_{ijt}$: $\text{GDP}_t$}
+		\label{fig:gdp_current_N_density}
+		\end{subfigure}
+	
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/cpi_current_N_density2}
+		\caption{$N_{ijt}$: $\text{CPI}_{t}$ }
+		\label{fig:cpi_current_N_density2}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/gdp_current_N_density2}
+		\caption{$N_{ijt}$: $\text{GDP}_{t}$}
+		\label{fig:gdp_current_N_density2}
+	\end{subfigure}
+	
+	\caption{Distribution of the number of yearly updates}
+	\label{fig:updates}
+	\begin{fignote}
+		\textit{Notes:} Panels (a) and (b) display the histograms of the number of current year forecasts $N_{ijt}$ by location, where we consider all the published forecast. Panels (c) and (d) display the histograms of the number of current year forecasts by location, where we consider only the published forecasts that are distinct from the last published one.
+	\end{fignote}
+\end{figure}
+
+
+%%%%%%% BIASES
+
+\newpage
+%\begin{figure}[H]
+	%
+	%\begin{subfigure}[b]{0.48\textwidth}
+		%\centering
+		%\includegraphics[width=1\linewidth]{Figures/dist_beta_cpi}
+		%\caption{$\text{CPI}_t$ }
+		%\label{fig:dist_beta_cpi}
+	%\end{subfigure}
+	%\hfill
+	%\begin{subfigure}[b]{0.48\textwidth}
+		%\centering
+		%\includegraphics[width=1\linewidth]{Figures/dist_beta_gdp}
+		%\caption{$\text{GDP}_t$ }
+		%\label{fig:dist_beta_gdp}
+	%\end{subfigure}
+	%\caption{Distribution of $\beta^{BGMS}$ coefficients}
+	%\label{app:fig:dist_beta}
+	%\begin{fignote}
+		%\textit{Notes:} The figure displays the distribution of the $\beta^{BGMS}$ coefficients estimated for each country-forecaster pair.
+	%\end{fignote}
+%\end{figure}
+
+\begin{figure}[H]
+	
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/dist_beta_cpi_cty}
+		\caption{$\text{CPI}_t$ }
+		\label{fig:dist_beta_cpi_cty}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/dist_beta_gdp_cty}
+		\caption{$\text{GDP}_t$ }
+		\label{fig:dist_beta_gdp_cty}
+	\end{subfigure}
+	\caption{$\beta^{BGMS}$ coefficients by country}
+	\label{app:fig:dist_beta_cty}
+	\begin{fignote}
+		\textit{Notes:} The figure displays the $\beta^{BGMS}$ coefficients estimated for each country-forecaster pair, by country, where countries are ranked by their median value.
+	\end{fignote}
+\end{figure}
+
+\begin{landscape}
+\begin{figure}[H]
+	
+	\begin{subfigure}[b]{0.65\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/heterogeneity_by_month.pdf}
+		\caption{Foreign penalty by month}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.65\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/heterogeneity_by_year.pdf}
+		\caption{Foreign penalty by year}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.65\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/heterogeneity_by_cty.pdf}
+		\caption{Foreign penalty by country}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.65\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{../output/figures/heterogeneity_by_for.pdf}
+		\caption{Foreign penalty by forecaster}
+	\end{subfigure}
+		\caption{Heterogeneity in Foreign penalty}
+	\begin{fignote}
+		\textit{Notes:} The figure displays the Foreign coefficients per year, month, country and forecaster. These estimates are obtained by estimating Equation \eqref{eq:heterogeneity} with $X_{ijt,h}^{m,x}$ successively replaced with the categorical variables year, month, and country and forecaster.
+	\end{fignote}
+	\label{fig:heterogeneity}
+\end{figure}
+\end{landscape}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Proofs}
+\input{Sections/proofs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{Estimation Deep Parameters}
+%\input{Sections/modelEstimation}
+
+\bibliographystyle{econ}
+\bibliography{references}
+
+\end{document}

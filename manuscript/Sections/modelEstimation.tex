@@ -1,0 +1,132 @@
+We use the following three equations:
+\begin{align*}
+&	x_{jt} = \rho_j x_{jt-1} + \epsilon_{jt}\\
+ & s_{ijkt}^m = x_{jt} + v_{ijkt}^m , \\
+	\text{with } & v_{ijkt}^m = h_{jk}^m (\kappa_j^m)^{\frac{-1}{2} } u_{jt} + (1-h_{jk}^m ) (\tau_{jk}^m )^{\frac{-1}{2}} e_{ijkt}^m \\
+	& 	E_{ijkt}^m(x_{jt})=(1-G_{jk}^m)\hat\rho_{jk}^mE_{ijkt-1}^m(x_{jt-1})+G_{jk}^ms_{ijkt}^m
+\end{align*}
+We define 
+\begin{align*}
+y_{ikt}^m \equiv	\begin{bmatrix}
+		E_{ijkt}^m(x_{jt}) \\
+		x_{jt}
+	\end{bmatrix} 
+\end{align*}
+Therefore, 
+\begin{align*}
+	y_{ikt}^m = A y_{ikt-1}^m + \begin{bmatrix}
+		G_{jk}^m & 0\\
+		0 & 1
+	\end{bmatrix}  \begin{bmatrix}
+	v_{ijkt}^m \\
+	\epsilon_{jt}
+\end{bmatrix} 
+\end{align*}
+with 
+\begin{align*}
+	A =  \begin{bmatrix}
+		(1-G_{jk}^m) \hat{\rho} & G_{jk}^m\\
+		0 & \rho
+	\end{bmatrix} 
+\end{align*}
+Furthermore, we define
+\begin{align*}
+	Var(y_{ikt}^m) \equiv  P
+\end{align*}
+Then, we have
+\begin{align*}
+		P = A P A' +  \begin{bmatrix}
+		(G_{jk}^{m})^2 Var(v_{ijkt})& 0\\
+		0 & \gamma^{-1}
+	\end{bmatrix} 
+\end{align*}
+with 
+$$ Var(v_{ijkt}) = (h_{jk}^m)^2 (\kappa_j^m)^{-1} + (1-h_{jk}^m)^2 (\tau_{jk}^m)^{-1}$$
+
+The variance of the forecast error can then be written as:
+\begin{align*}
+	Var( x_{jt}- E_{ijkt}^m(x_{jt})) & = Var\left( \begin{bmatrix}
+		-1 & 1
+	\end{bmatrix}  y_{ikt}^m \right)\\
+& =  \begin{bmatrix}
+	-1 & 1
+\end{bmatrix}  P  \begin{bmatrix}
+-1 \\ 1
+\end{bmatrix}  \\
+& = h
+\end{align*}
+Defining
+\begin{align*}
+	\eta_{t, ijk}= x_{jt}- E_{ijkt}^m(x_{jt}) = \begin{bmatrix}
+		-1 & 1
+	\end{bmatrix}  y_{ikt}^m  , 
+\end{align*}
+the maximum likelihood function is then given as
+\begin{align*}
+	f(Error_{jkt:T}^m) = \left(\frac{1}{\sqrt{2\pi}}\right)^{nT} \left(|	 h |^{-T/2}  \right) \exp \left(   \frac{-1}{2} \sum_{t=1}^{T} (\eta_{t, ijk}' h^{-1} \eta_{t, ijk})\right)
+\end{align*}
+
+%As the errors of the public and private signals are uncorrelated with the true data generating process, the Kalman filter can be derived using the properties of the multivariate normal distribution:
+
+%\begin{align*}
+%	\begin{bmatrix}
+%		x_{jt}  \\
+%		s_{ijkt}^m 
+%	\end{bmatrix}
+%		 \sim N
+%		 \left(
+%	\begin{bmatrix}
+%	\mu_1  \\
+%	 \mu_2 \\ 
+%\end{bmatrix},
+%	\begin{bmatrix}
+%	\Sigma_{11} &\Sigma_{12} \\
+%	\Sigma_{21} & \Sigma_{22} \\ 
+%\end{bmatrix}		
+%		 \right)
+%\end{align*}
+%such that 
+%\begin{align*}
+%	E(x_{jt}| s_{ijkt}^m  )& = \mu_1 + \Sigma_{12} \Sigma_{22}^{-1} (s_{ijkt}^m  - \mu_2) \\
+%	Var(x_{tj} | s_{ijkt}^m )& = \Sigma_{11} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{21}
+%\end{align*}
+%With $x_{jt}|_z = E(x_{jt} | s_{ijk, 1:z})$, we can write
+%\begin{align*}
+%	x_{t}|_{t-1, j} &= \hat{\rho}_{jk} x_{t-1}|_{t-1,j} & (\mu_1)\\
+%	s_t |_{t-1, ijk} &= x_t |_{t-1,j}  & (\mu_2 )\\
+%	P_t |_{t-1,j} &= \hat{\rho}_{jk} P_{t-1} |_{t-1,j}  \hat{\rho}_{jk}  + \gamma^{\frac{-1}{2}} & (\Sigma_{11}) \\
+%	h_{t, ijk} & = P_t |_{t-1,j} + \gamma^{-1/2} + (h_{k,j})^2 (\kappa_{j})^{-1} + (1-h_{k,j})^2 (\hat{\tau}_{k,j})^{-1}& (\Sigma_{22})\\ 
+%	K_{t,ijk} & = P_t|_{t-1,j}  (h_{t, ijk})^{-1} & (\Sigma_{12} \Sigma_{22}^{-1})\\
+%		\eta_{t,ijk} & = \underbrace{s_{t, ijk}}_{\text{Unobserved}} - s_{t|t-1, ijk} &  (s_2 - \mu_2)\\
+%\underbrace{	x_{t|t, ijk}}_{\text{Observed}} & = x_{t|_{t-1, ijk} } + K_{t, ijk}\underbrace{\eta_{t, ijk}}_{\text{unobserved }}& ( \mu_1 + \Sigma_{12} \Sigma_{22}^{-1} (s_2 - \mu_2)) \\
+%P_{t|t, ijk} &= P_{t|t-1, ijk} - K_{t, ijk} P_{t|t-1, ijk} &  \Sigma_{11} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{21} \\
+%\end{align*}
+%%
+%Procedure:\\
+%With initial conditions, we can set-up the Kalman Filter and calculate $\eta_{t,ijk}$ as follows:
+%\begin{itemize}
+%	\item We now all the expressions above up until $K_{t,ijk}$. 
+%	\item Then, we calculate $\left(\underbrace{	x_{t|t, ijk}}_{\text{Observed}} - x_{t}|_{t-1, j} \right) / K_{t,ijk} = \eta_{t, ijk} $
+%	\item With this information, we can then calculate the corresponding maximum likelihood as we have $\eta_{t, ijk} $ and  $h_{t, ijk} $
+%	\item Question: where do $\tau$ (unbiased) and $\rho$ show up?
+%\end{itemize}
+%
+%%As we know the nowcast of the agents, and $K_t$ and $x_t|_{t-1}$ can be computed, we can calculate $\eta_t$.
+%
+%The likelihood function is given as
+%\begin{align*}
+%	f(S_{1:T, ijk}) = \left(\frac{1}{\sqrt{2\pi}}\right)^{nT} \left(\prod_{t=1}^{T} |h_{t, ijk}|^{-1/2}  \right) \exp \left(   \frac{-1}{2} \sum_{t=1}^{T} (\eta_{t, ijk}' h_{t, ijk}^{-1} \eta_{t, ijk})\right)
+%\end{align*}
+
+%Note that 
+%\begin{align*}
+%	Var(s_{t, ijk}) & = Var(x_{jt} + v_{ijkt}) \\
+%	& = Var(x_{jt}) + Var(v_{ijkt}) \\
+%	& = \gamma^{\frac{-1}{2}} + Var(v_{ijkt}) +\underbrace{2Cov(x_{jt}, v_{ijkt})}_{=0}
+%\end{align*}
+%$2Cov(x_{jt}, v_{ijkt}) = 0$ as the public and private signals shocks are uncorrelated with $\epsilon_{jt}$ of the data generating process. Further, we have that
+%\begin{align*}
+%	Var(v_{ijkt}) & = (h_{jk}^m)^2 (\kappa_j^m)^{-1} + (1-h_{jk}^m)^2 (\tau_{jk}^m)^{-1}
+%\end{align*}
+
+

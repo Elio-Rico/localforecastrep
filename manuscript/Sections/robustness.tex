@@ -1,0 +1,60 @@
+
+We perform robustness tests where (i) we use alternative vintage series to compute the forecast errors, (ii) we include only forecasters who produce forecasts for both local and foreign forecasts, (iii) we use alternative trimming strategies, (iv) we exclude forecasts that are identical to their previous release and (vi) use an alternative definition of Foreign forecasters. We replicate the results of Table \ref{tab:updating_errors_main_small} and Table \ref{tab:tab_main} under these different specifications. The results are very stable across these different exercises. 
+
+In addition, in Table \ref{tab:rob_se_errors_} we provide an additional robustness check for our results of the panel regression \ref{eq:regModelFE} using \citet{Driscoll1998} standard errors.
+
+
+
+\paragraph{Different Vintage Series.}
+To calculate forecast errors, it is standard practice in the literature to use vintage series of actual outcomes for GDP and inflation. In the main text, we focus on the vintage series from the IMF that are published in April of the subsequent year. To show that our results do not depend on this specific vintage series, we provide a robustness check using an alternative series of the actual outcome of GDP and inflation. 
+ 
+We use the data published in April two years after the forecast date. For a forecast submitted in October 2011 for the year 2011 ($t$) and for 2012 ($t+1$), we use the data published in April 2013 and in April 2014 to calculate the forecast error for 2011 ($t$) and 2012 ($t+1$). 
+ 
+ 
+ %We use the vintage series published in September of the subsequent year. For example, if a forecast for the year 2011 was submitted in October 2011, we take the vintage Series posted in September 2012 to calculate the forecast error. Similarly, if a forecast for the year 2012 was submitted in October 2011, we use the vintage Series posted in September 2013. As a second alternative, we take the data published in April two years after the forecast date. Therefore, for the same forecasts submitted in October 2011, we use the data published in April 2013 and in April 2014. 
+ 
+ 
+The results are displayed in Columns (2) to (3) of Table \ref{tab:rob_sumres}, for inflation and GDP. Overall, the results are robust across this vintage series.
+
+
+%We report the same regression results as in Column (2) of Table \ref{tab:updating_errors_app_small} and Table \ref{tab:tab_main}, using the vintage series published in September of the subsequent year. In Columns (3) to (4), we replicate the same regressions using the vintage series published in April two years after the forecast date. Overall, the results are robust across vintage series.
+ 
+
+\paragraph{Forecasters forecasting for both Local and Foreign Countries.} The rich country and forecaster coverage in our dataset allows us to focus exclusively on forecasters that are both local and foreign with respect to the countries they forecast for. This allows for a more direct comparison of the forecast precision conditional on the location. With this restricted subsample, we re-estimate our main results and report them in Columns (4) and (5) of Table \ref{tab:rob_sumres}. Overall, the findings are very similar to the baseline results.
+
+
+\paragraph{Alternative Trimming Strategy.} In the main text, we remove forecasts that are more than 5 interquartile ranges away from the median. We re-estimate our main results with a slightly less conservative trimming method. We trim observations that are more than 6 interquartile ranges away from the median, resulting in a loss of observations for current inflation and GDP of 3 and 0.6 percent, and for future inflation and GDP of 9 and 7 percent, respectively. The results are displayed in Columns (6) and (7) of table \ref{tab:rob_sumres} and are similar.
+
+\paragraph{Distinct Forecasts.} In columns (8) and (9), we re-estimate our main results using only those forecasts that differ from the previous forecast. Forecasters may publish a forecast without necessarily updating it. Conditioning on those forecasts that differ from the last publication, we are assure that the forecasts reveal new information. The results using this subsample remain very similar to the results from the main text.
+
+
+
+\paragraph{Alternative Definition of Foreign Forecaster.} In the main text, a foreign forecaster is defined as a forecaster that has neither its headquarters nor any subsidiary located in the country it forecasts for. This definition suggests that there is an information flow even between subsidiaries and their headquarters, regardless of the size of these subsidiaries. In this robustness check, we use an alternative definition where we define a forecaster to be foreign if its headquarters are located in another country. Compared to the 28\% of foreign forecasters in the baseline results, 64\% of the forecasters are defined to be foreign according to the alternative definition. We re-estimate our main results, reported in Columns (10) and (11) of table \ref{tab:rob_sumres}. Overall, our results remain robust to this alternative definition, even though they are slightly less pronounced and more imprecisely estimated. We conclude that the location of the headquarters seems to be relevant, but that there is some information flowing from local subsidiaries to foreign headquarters.
+
+
+
+\paragraph{Alternative Clustering.} For our main panel regression of equation \ref{eq:regModelFE}, we report alternative standard errors in Table \ref{tab:rob_se_errors_}. We use  \citet{Driscoll1998} with various bandwidths, including the rule-of-thumb $\textbf{BW} = 4(T/100)^{2/9} = 5$. These standard errors are robust to disturbances that are common to the forecasters and that are autocorrelated. The results are very similar to our baseline specification with clustered standard errors.
+
+
+
+
+%	\thispagestyle{empty}% empty page style (?)
+	\begin{landscape}% Landscape page
+{\setstretch{1}
+\input{../output/tables/robustness_alltables_revision}
+}
+	\end{landscape}
+	\afterpage{\clearpage}
+%	\clearpage% Flush page
+%}
+
+
+\input{../output/tables/rob_se_tab_labs_withdistinct_bw}
+
+
+
+
+%\textcolor{red}{\textbf{To Discuss} \\
+%	I also did a robustness check for table 4 for different subsamples - see \ref{tab:rob_subsamples_t4} - but I don't think that this table adds much. furthermore, i also re-estimated all the main results for emerging versus developed and reported the results in table \ref{tab:rob_devstat}. I don't think we should include that table - some results are similar to the main text, where some effects go into opposite directions between emerging and foreign. I think there is no value in opening a discussion why this is the case as the results are not very consistent. I suggest therefore to drop that table.   }
+
+%\subsection{Interest rate forecasts}

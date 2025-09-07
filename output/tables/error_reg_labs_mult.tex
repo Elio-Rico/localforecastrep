@@ -1,0 +1,30 @@
+\begin{table}[H] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Multinational and Non-Multinational Forecasters}
+\label{tab:error_reg_labs_mult}
+{\footnotesize
+\begin{tabularx}{\linewidth}{l C C C C C}
+
+\toprule
+&\multicolumn{5}{c}{$\ln(|Error_{ijt,t}^m|)$}\tabularnewline\cline{2-6} &{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline
+{Coefficient}&{}&{Non-Mult.}&{Mult.}&{Mult.}&{Mult.} \tabularnewline
+\midrule \addlinespace[0pt]
+\midrule Foreign&0.06***&0.25***&0.04**&& \tabularnewline
+&(0.02)&(0.07)&(0.02)&& \tabularnewline
+Foreign HQ&&&&0.04&0.08** \tabularnewline
+&&&&(0.02)&(0.03) \tabularnewline
+Local Subsidiary&&&&&--0.04** \tabularnewline
+&&&&&(0.02) \tabularnewline
+N&389,295&57,888&313,197&313,197&313,197 \tabularnewline
+$ R^2 $&0.70&0.77&0.71&0.71&0.71 \tabularnewline
+Country $ \times $ Date $ \times $ Var. $ \times $ Hor. FE&\checkmark&\checkmark&\checkmark&\checkmark&\checkmark \tabularnewline
+For. $ \times $ Date $ \times $ Var. $ \times $ Hor. FE &\checkmark&\checkmark&\checkmark&\checkmark&\checkmark \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\begin{flushleft}
+\footnotesize \begin{minipage}{1\textwidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:}   The table shows the regression of the log absolute forecast error of current and future CPI and GDP on regressors on different sub-samples. All standard errors are clustered at the country, forecaster and date levels. \end{tabnote} \end{minipage}  
+\end{flushleft}
+}
+\end{table}

@@ -1,0 +1,68 @@
+This is BibTeX, Version 0.99d (TeX Live 2021)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: Paper.aux
+The style file: econ.bst
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=200001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: references.bib
+I was expecting a `,' or a `}'---line 649 of file references.bib
+ : 
+ : year = {2001}
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+A bad cross reference---entry "MincerZarnowitz1969"
+refers to entry "NBERminc69-1", which doesn't exist
+Warning--I didn't find a database entry for "NBERminc69-1"
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--empty institution in Buietal2021
+Warning--empty institution in cpigravity22
+Warning--there is no volume, number, and pages in DeMarcoetal2021
+Warning--empty institution in GemmiValchev2021
+Warning--can't use both author and editor fields in Spolaore2016
+You've used 45 entries,
+            6744 wiz_defined-function locations,
+            1602 strings with 16853 characters,
+and the built_in function-call counts, 56027 in all, are:
+= -- 9248
+> -- 2310
+< -- 130
++ -- 731
+- -- 674
+* -- 3211
+:= -- 7474
+add.period$ -- 44
+call.type$ -- 45
+change.case$ -- 333
+chr.to.int$ -- 45
+cite$ -- 50
+duplicate$ -- 1475
+empty$ -- 2635
+format.name$ -- 696
+if$ -- 14704
+int.to.chr$ -- 0
+int.to.str$ -- 0
+missing$ -- 0
+newline$ -- 148
+num.names$ -- 471
+pop$ -- 563
+preamble$ -- 1
+purify$ -- 331
+quote$ -- 0
+skip$ -- 3915
+stack$ -- 0
+substring$ -- 4460
+swap$ -- 347
+text.length$ -- 120
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 749
+warning$ -- 5
+while$ -- 430
+width$ -- 0
+write$ -- 682
+(There were 2 error messages)

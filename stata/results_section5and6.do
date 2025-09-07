@@ -21,6 +21,8 @@ local target = "`parent'/output/tables"
 global tables "`target'"
 local target = "`parent'/output/figures"
 global figures "`target'"
+local target = "`parent'/inst/data/produced/stacked_temp"
+global stempf "`target'"
 local target = "`parent'/output/temp_data"
 global temp_data "`target'"
 
@@ -30,7 +32,7 @@ cd $output
 * Check
 
 
-
+set scheme stcolor, permanently
 
 ***************************************
 * 6. Determinants
@@ -640,7 +642,7 @@ replace N_FR = N_FR_cpi if var == "cpi"
 replace sd_FR = sd_FR_cpi if var == "cpi"
 
 sort country_num
-merge m:1 country_num using $temp_data/cty_cs, nogen
+merge m:1 country_num using $stempf/cty_cs, nogen
 gen l_sd_gdp = log(sd_gdp)
 gen l_sd_cpi = log(sd_cpi)
 gen l_rmse_gdp = log(rmse_gdp)
@@ -706,7 +708,7 @@ replace N_FR = N_FR_cpi if var == "cpi"
 replace sd_FR = sd_FR_cpi if var == "cpi"
 
 sort country_num
-merge m:1 country_num using $temp_data/cty_cs, nogen
+merge m:1 country_num using $stempf/cty_cs, nogen
 gen l_sd_gdp = log(sd_gdp)
 gen l_sd_cpi = log(sd_cpi)
 gen l_rmse_gdp = log(rmse_gdp)
@@ -800,7 +802,7 @@ label var col_8 ""
 gen col_9=.
 label var col_9 ""
 
-texsave var col_1-col_5 col_9 col_6-col_8 using "$tables\FE_reg_mg.tex", ///
+texsave var col_1-col_5 col_9 col_6-col_8 using "$tables/FE_reg_mg.tex", ///
 	title(Variable, Horizon, and Country Dependence - $\beta$ coefficients) varlabels nofix hlines(0) headersep(0pt) ///
 frag  size(scriptsize)  align(l C C C C C m{0.01\textwidth} C C C) location(H) replace label(tab:FE_reg_mg) headerlines("&\multicolumn{5}{c}{$\beta^{FE}$}&&\multicolumn{3}{c}{$\beta^{Dis}$}\tabularnewline\cline{2-6} \cline{8-10} &{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&&{(6)}&{(7)}&{(8)}") footnote(		"\begin{minipage}{1\textwidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:}   The table shows the regression of $\beta^{FE}$ and $\beta^{Dis}$ on regressors with different fixed-effects specifications. All standard errors are clustered on the country level. \end{tabnote} \end{minipage}  ")
 

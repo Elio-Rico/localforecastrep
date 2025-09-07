@@ -1,0 +1,153 @@
+\documentclass[letterpaper,12pt]{article}
+\usepackage{newtxtext}
+\usepackage{newtxmath}
+\usepackage{amsmath}
+\let\openbox\relax
+\usepackage{amsthm}              % See geometry.pdf to learn the layout options. There are lots.
+\usepackage{geometry}
+\usepackage[figuresleft]{rotating}
+\usepackage{pdflscape}
+\usepackage{afterpage}
+\usepackage{graphicx}
+%\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{float}
+\setlength{\columnseprule}{.4pt}
+%\doublespacing
+\usepackage{natbib} % if you're using natbib
+\setlength{\bibsep}{0pt} % removes the space between items
+\usepackage[multiple]{footmisc}
+\geometry{left=1in,right=1in,top=1in,bottom=1in}
+%\makeatother \addtolength{\textwidth}{0.4in}
+%\addtolength{\oddsidemargin}{-0.2in}
+%\addtolength{\textheight}{0.8in} \addtolength{\topmargin}{-0.4in}
+\newtheorem{prop}{Proposition}
+\newtheorem{cor}{Corollary}
+\newtheorem{lemma}{Lemma}
+\newtheorem{assumption}{Assumption}
+\usepackage{xcolor}
+\setlength{\tabcolsep}{2pt}
+\usepackage{xr}
+\externaldocument{Appendix}
+
+% datatool to  make ces in Latex to external values
+\usepackage{datatool}
+\DTLsetseparator{|}
+\DTLloaddb{valuesData}{Sections/valuesDataUpdated.csv}
+%\DTLloaddb{valuesData2}{Sections/valuesData2.csv}
+%
+% make tables from csv:
+\usepackage{csvsimple}
+
+\usepackage{longtable}
+\usepackage{tabularx}
+
+% subfigures
+\usepackage{caption}
+\usepackage{subcaption}
+
+% inline notes or comments
+%\usepackage{todonotes} % if want notes
+
+% environment for figure notes:
+\newenvironment{fignote}{\footnotesize \begin{singlespace} \noindent}{\end{singlespace} \par }
+
+% environment for table notes:
+\newenvironment{tabnote}{\footnotesize \begin{singlespace} \noindent }{\end{singlespace} \par}
+
+
+
+% new date format:
+\usepackage{datetime}
+
+\newdateformat{monthyeardate}{%
+	\monthname[\THEMONTH], \THEYEAR}
+
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+
+\usepackage{hyperref}
+
+\renewcommand{\baselinestretch}{2}
+
+
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{Do Local Forecasters Have Better Information?\thanks{We are thankful to the editor, Olivier Coibion, three anonymous referees, Daron Acemoglu, Adrian Bruhin, Harald Hau, Beata Javorcik, Lorenz Kueng, Evgenia Passari, Jean-Paul Renne, David Thesmar, Qingyuan Yang, three anonymous referees and seminar and conference participants at the University of Lausanne's Macro Workshop, the University of Lausanne's Department of Economics Research Days, the EEA annual meeting 2022, the RCEA 2022, the Webinar Series for Graduate Economic Students, T2M 2022, the University of Lyon 2, the KOF Institute, the 2022 Annual meeting of the CEPR International Macro and Finance group, the SFI annual meeting 2022, the Annual Congress of the Swiss Society of Economics and Statistics 2022, the Durham University Business School CEMAP Workshop 2022, the University of Heidelberg, the Halle Institute for Economic Research, the 14th ifo Conference on Macroeconomics and Survey Data and the ECB for useful discussions. Navid Samadi provided outstanding research assistance. We acknowledge financial support by the SNSF grant number 100018\_182195.}}
+\vspace{-1cm}
+\author{Kenza Benhima\footnote{HEC-Lausanne (University of Lausanne) and CEPR, email: kenza.benhima@unil.ch.} and Elio Bolliger\footnote{Swiss Federal Department of Finance.} }
+\date{}
+\vspace{-1cm}
+\date{May 2025}%\today
+%\\
+%\vspace{0.5cm}
+%\href{https://www.dropbox.com/s/74qfltmzqvt3yei/Local_vs_foreign_forecasters_most_recent.pdf?dl=0}{\emph{Click here for the most recent version} }
+% }
+
+\begin{document}
+
+\vspace{-1cm}
+\maketitle
+
+
+\vspace{-1cm}
+\begin{abstract}
+\begin{singlespace}
+%Do local forecasters outperform foreign ones when forecasting macroeconomic fundamentals? If so, is this local advantage due to behavioral biases or information asymmetries?
+Using inflation and growth forecasts for a panel of emerging and advanced economies, we provide evidence that foreign forecasters publish and update their forecasts less frequently than local forecasters and make larger errors. We provide tests that identify differences in information frictions across groups and show that the lower accuracy of foreigners is not due to more irrational expectations, but to less precise information. This informational advantage is linked both to barriers to information and to incentives and is typically stronger when uncertainty is lower. These results provide a basis for disciplining international finance and trade models with heterogeneous information.\\
+\textbf{Keywords:} Information asymmetries, Expectation formation. \\
+\textbf{JEL codes:} E3, E7, D82.
+\end{singlespace}
+
+\end{abstract}
+
+%\newpage
+%\tableofcontents
+
+\newpage
+
+\setcounter{page}{1}
+
+\section{Introduction}
+\input{Sections/introduction}
+
+\section{The Data}\label{sec:data}
+\input{Sections/data}
+
+\section{Forecast Errors and Updating}\label{sec:mistakes}
+\input{Sections/errors}
+\input{Sections/updating}
+\input{Sections/significance}
+
+
+\section{Behavioral Biases or Information Asymmetry?}\label{sec:model}
+
+To account for foreigner excess error, we lay down a simple noisy information model. We explore two potential sources of heterogeneity between local and foreign forecasters: behavioral biases and information asymmetry. We rule out differences in behavioral biases using rational expectation tests that are now common in the literature. We then establish the presence of asymmetric information by using two tests that are robust to common behavioral biases and to public signals.
+
+\subsection{A Simple Noisy Information Model}
+\input{Sections/model}
+
+\subsection{Testing for Differences in Behavioral Biases}
+\input{Sections/biases}
+
+\subsection{Testing for Asymmetric Information}
+\input{Sections/precision}
+
+\section{The Geography of Information}\label{sec:geography}
+\input{Sections/geography}
+
+\section{Heterogeneity}\label{sec:heterogeneity}
+\input{Sections/heterogeneity}
+
+
+\section{Conclusion}\label{sec:conclusion}
+\input{Sections/conclusion}
+
+\bibliographystyle{econ}
+\bibliography{references}
+
+\end{document}

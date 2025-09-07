@@ -1,0 +1,62 @@
+\begin{table}[H] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Variable, Horizon, Time and Country Dependence}
+\label{tab:error_reg_labs_cs}
+{\scriptsize
+\begin{tabularx}{\linewidth}{l C C C C C C C C}
+
+\toprule
+&\multicolumn{8}{c}{$\ln(|Error_{ijt,t}^m|)$}\tabularnewline\cline{2-9} &{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)}&{(7)}&{(8)} \tabularnewline
+{Coefficient}&{}&{}&{}&{}&{}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[0pt]
+\midrule Foreign&0.05***&0.09***&0.18***&0.03&0.06***&0.05*&--0.39**&--0.43*** \tabularnewline
+&(0.02)&(0.02)&(0.06)&(0.05)&(0.02)&(0.02)&(0.17)&(0.16) \tabularnewline
+GDP&0.30***&&&&&&& \tabularnewline
+&(0.07)&&&&&&& \tabularnewline
+Future&0.94***&&&&&&& \tabularnewline
+&(0.05)&&&&&&& \tabularnewline
+Month-of-year&--0.09***&&&&&&& \tabularnewline
+&(0.00)&&&&&&& \tabularnewline
+VIX&&0.02***&&&&&& \tabularnewline
+&&(0.00)&&&&&& \tabularnewline
+Recession&&0.26***&&&&&& \tabularnewline
+&&(0.07)&&&&&& \tabularnewline
+Emerging&&&0.27***&0.08&&&& \tabularnewline
+&&&(0.09)&(0.10)&&&& \tabularnewline
+Institutions&&&--0.06***&--0.11***&&&& \tabularnewline
+&&&(0.02)&(0.02)&&&& \tabularnewline
+ln(GDP)&&&&--0.13***&&&& \tabularnewline
+&&&&(0.03)&&&& \tabularnewline
+Foreign $\times$ GDP&&&&&--0.04**&&&--0.04* \tabularnewline
+&&&&&(0.02)&&&(0.02) \tabularnewline
+Foreign $\times$ Future&&&&&--0.03**&&&--0.03** \tabularnewline
+&&&&&(0.01)&&&(0.02) \tabularnewline
+Foreign $\times$ Month-of-year&&&&&0.01**&&&0.00** \tabularnewline
+&&&&&(0.00)&&&(0.00) \tabularnewline
+Foreign $\times$ VIX&&&&&&0.00&&0.00 \tabularnewline
+&&&&&&(0.00)&&(0.00) \tabularnewline
+Foreign $\times$ Recession&&&&&&0.02&&0.04 \tabularnewline
+&&&&&&(0.02)&&(0.03) \tabularnewline
+Foreign $\times$ Emerging&&&&&&&0.03&0.04 \tabularnewline
+&&&&&&&(0.03)&(0.03) \tabularnewline
+Foreign $\times$ Institutions&&&&&&&0.01&0.01 \tabularnewline
+&&&&&&&(0.01)&(0.01) \tabularnewline
+Foreign $\times$ ln(GDP)&&&&&&&0.02**&0.02*** \tabularnewline
+&&&&&&&(0.01)&(0.01) \tabularnewline
+N&602,113&601,907&375,846&366,653&389,295&389,218&366,401&366,401 \tabularnewline
+$ R^2 $&0.36&0.25&0.37&0.37&0.70&0.70&0.70&0.70 \tabularnewline
+Cty. $ \times $ Year FE&\checkmark&&&&&&& \tabularnewline
+For. $ \times $ Year FE&\checkmark&&&&&&& \tabularnewline
+Cty $ \times $ Var. $ \times $ Hor. FE&&\checkmark&&&&&& \tabularnewline
+For. $ \times $ Var. $ \times $ Hor. FE&&\checkmark&&&&&& \tabularnewline
+For. $ \times $ Date $ \times $ Var. $ \times $ Hor. FE&&&\checkmark&\checkmark&\checkmark&\checkmark&\checkmark&\checkmark \tabularnewline
+Cty $ \times $ Date $ \times $ Var. $ \times $ Hor. FE &&&&&\checkmark&\checkmark&\checkmark&\checkmark \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\begin{flushleft}
+\footnotesize \begin{minipage}{1\textwidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:}   The table shows the regression of the log absolute forecast error of current and future CPI and GDP on regressors with different fixed-effects specifications. All standard errors are clustered at the country, forecaster and date levels. \end{tabnote} \end{minipage}  
+\end{flushleft}
+}
+\end{table}

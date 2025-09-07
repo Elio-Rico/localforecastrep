@@ -1,0 +1,48 @@
+\begin{table}[H] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{The Geography of Information}
+\label{tab:error_reg_labs_gravity}
+{\footnotesize
+\begin{tabularx}{\linewidth}{l C C C C C C C m{0.005\textwidth} C C C m{0.005\textwidth} C C}
+
+\toprule
+&\multicolumn{14}{c}{$\ln(|Error_{ijt,t}^m|)$}\tabularnewline\cline{2-15} \tabularnewline  \cline{2-8} \cline{10-12} \cline{14-15}\tabularnewline  &{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)}&{(7)}&&{(8)}&{(9)}&{(10)}&&{(11)}&{(12)} \tabularnewline
+{Coefficient}&{}&{}&{}&{}&{}&{}&{}&{}&{Finance}&{Finance}&{Finance}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[0pt]
+\midrule Foreign&.0577***&.054***&.0356&.0262&.0727**&.059**&.0189&&.0389*&.0348*&.026&&.024&.079*** \tabularnewline
+&(.0158)&(.0148)&(.022)&(.0249)&(.0295)&(.029)&(.024)&&(.0208)&(.0206)&(.0186)&&(.0287)&(.0256) \tabularnewline
+\textbf{\emph{W.r.t. closest subs.:}} &&&&&&&&&&&&&& \tabularnewline
+Physical dist.&&.0053&&&&&&&&&&&& \tabularnewline
+&&(.0078)&&&&&&&&&&&& \tabularnewline
+Cultural dist.&&&.0115&&&&&&&&&&& \tabularnewline
+&&&(.0085)&&&&&&&&&&& \tabularnewline
+Linguistic dist.&&&&.0189*&&&.0193*&&&&&&.022*& \tabularnewline
+&&&&(.0108)&&&(.0103)&&&&&&(.0125)& \tabularnewline
+BC comovement&&&&&.007&&&&&&&&& \tabularnewline
+&&&&&(.0106)&&&&&&&&& \tabularnewline
+Migration&&&&&&.015&&&&&&&& \tabularnewline
+&&&&&&(.0287)&&&&&&&& \tabularnewline
+Trade&&&&&&&&&&&&&&.0133 \tabularnewline
+&&&&&&&&&&&&&&(.0094) \tabularnewline
+\textbf{\emph{W.r.t. headquarters:}} &&&&&&&&&&&&&& \tabularnewline
+Linguistic dist.&&&&&&&&&&&&&.0144& \tabularnewline
+&&&&&&&&&&&&&(.0101)& \tabularnewline
+Trade&&&&&&&-.0233**&&&&&&&-.0214** \tabularnewline
+&&&&&&&(.0105)&&&&&&&(.0105) \tabularnewline
+Foreign $\times$ Low Cap. Controls&&&&&&&&&&-.0776***&-.0811**&&& \tabularnewline
+&&&&&&&&&&(.0264)&(.0325)&&& \tabularnewline
+Foreign $\times$ Institutions&&&&&&&&&&&-.0116&&& \tabularnewline
+&&&&&&&&&&&(.0082)&&& \tabularnewline
+N&389,295&388,415&349,093&373,980&378,911&290,630&373,066&&235,608&214,216&205,122&&348,250&382,051 \tabularnewline
+$ R^2 $&.698&.6977&.7056&.6995&.7004&.7065&.6995&&.7196&.7177&.7178&&.6993&.6976 \tabularnewline
+Cty $ \times $ Date $ \times $ Var. $ \times $ Hor. FE&\checkmark&\checkmark&\checkmark&\checkmark&\checkmark&\checkmark&\checkmark&&\checkmark&\checkmark&\checkmark&&\checkmark&\checkmark \tabularnewline
+For. $ \times $ Date $ \times $ Var. $ \times $ Hor. FE &\checkmark&\checkmark&\checkmark&\checkmark&\checkmark&\checkmark&\checkmark&&\checkmark&\checkmark&\checkmark&&\checkmark&\checkmark \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\begin{flushleft}
+\footnotesize \begin{minipage}{1\linewidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:}   The table shows the regression of the log absolute forecast error on regressors accounting for the geography of information. All standard errors are clustered at the country, forecaster and date levels. \end{tabnote} \end{minipage}  
+\end{flushleft}
+}
+\end{table}

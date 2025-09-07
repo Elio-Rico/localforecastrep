@@ -1,0 +1,296 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Proof of Proposition \ref{prop:variance}}
+\label{proof:variance}
+
+We first demonstrate the following Lemma:
+
+\begin{lemma}\label{lemma:variance} Under Assumption \ref{ass:nobias} (no behavioral biases), the variance of errors is given by:
+\begin{equation}\begin{array}{lll}V(Error_{ijt,t-1}^m)&=V[x_{jt}-E_{ijt-1}^m(x_{jt})]&=\frac{\gamma^{-1}}{1-\rho_{j}^2(1-G_{ij}^m)}\\
+																 V(Error_{ijt,t}^m)&=V[x_{jt}-E_{ijt}^m(x_{jt})]&=\frac{\gamma^{-1}(1-G_{ij}^m)}{1-\rho_{j}^2(1-G_{ij}^m)}
+																\end{array}\label{eq:variance}\end{equation}
+Both variances are decreasing in $G_{jk}^m$.
+\end{lemma}
+
+\begin{proof}
+
+Under Assumption \ref{ass:nobias}, we have $\hat\rho_{ij}=\rho_j$ and $\hat\tau_{ij}^m=\tau_{ij}^m$.
+
+The model can be written as follows:
+\begin{equation}\begin{array}{ll}x_{jt}	&=\rho_jx_{jt-1}+\epsilon_{jt}\\
+								s_{ijt}^m&=x_{jt}+v_{ijt}^m\\
+								\end{array}\label{eq:model}\end{equation}
+with $v_{ijt}^m=h_{ij}^m(\kappa^m_{j})^{-1/2}u_{jt}^m+(1-h_{ij}^m)(\tau^m_{ij})^{-1/2}e^m_{ijt}$, $v_{ijt}^m\sim\textsl{N}(0,(\kappa_j^m+\tau_{ij}^m)^{-1/2})$. We denote $\lambda_{ij}^m=\kappa_j^m+\tau_{ij}^m$.
+
+Denote the one step-ahead forecast error associated to the Kalman filter by $\Phi_{ij}^m=V(Error_{ijt,t-1}^m)=V[x_{jt}-E_{ijt-1}^m(x_{jt})]$. We can find $\Phi_{ij}^m$ from the Riccati equation $$\Phi_{ij}^m=\rho_j^2[\Phi_{ij}^m-\Phi_{ij}^m(\Phi_{ij}^m+(\lambda_{ij}^m)^{-1})^{-1}\Phi_{ij}^m]+\gamma_j^{-1}.$$ Denote the gain of the Kalman filter by $$G_{ij}^m=\Phi_{ij}^m(\Phi_{ij}^m+(\lambda_{ij}^m)^{-1})^{-1}.$$ Substituting in the Riccati equation, we obtain
+$$\Phi_{ij}^m=\rho_j^2(1-G_{ij}^m)\Phi_{ij}^m+\gamma_j^{-1},$$
+hence the first result of the Lemma.
+
+Now denote the forecast error in the Kalman filter with $\Omega_{ij}^m=V(Error_{ijt,t}^m)=V[x_{jt}-E_{ijt}^m(x_{jt})]$
+We can use recursions of the Kalman filter to relate $\Omega_{ij}^m$ and $\Phi_{ij}^m$:
+$$\Omega_{ij}^m=\Phi_{ij}^m-G_{ij}^m(\Phi_{ij}^m+(\lambda_{ij}^m)^{-1})G_{ij}^{m'}$$
+Replacing $G_{jk}^{m'}$, we obtain
+$$\begin{array}{ll}\Omega_{ij}^m&=\Phi_{ij}^m-G_{ij}^m(\Phi_{ij}^m+(\lambda_{ij}^m)^{-1})[\Phi_{ij}^m(\Phi_{ij}^m+(\lambda_{ij}^m)^{-1})^{-1}]'\\
+															&=\Phi_{ij}^m-G_{ij}^m\Phi_{ij}^m\\
+															&=(1-G_{ij}^m)\Phi_{ij}^m\\
+															\end{array}$$
+Hence the second result of the Lemma.
+\end{proof}
+
+Since $G_{ij}^m$ is increasing in $\tau_{ij}^m$, then the variances are decreasing in $\tau_{ij}^m$. This proves Proposition \ref{prop:variance}.
+
+Note that solving the Riccati equation gives us an expression for $\Phi_{ij}^m$:
+\begin{equation}\Phi_{ij}^m=\frac{1}{2}\left(\gamma_j^{-1}-(1-\rho_j^2)(\lambda_{ij}^m)^{-1}+\sqrt{(\gamma_j^{-1}-(1-\rho_j^2)(\lambda_{ij}^m)^{-1})^2+4\gamma_j^{-1}(\lambda_{ij}^m)^{-1}}\right)\label{eq:Phi}\end{equation}
+and for $G_{ij}$:
+$$G_{ij}^m=1-\frac{2}{\lambda_{ij}^m/\gamma_j+1+\rho_j^2+\sqrt{(\lambda_{ij}^m/\gamma_j-(1-\rho_j^2))^2+4\lambda_{ij}^m/\gamma_j}}$$
+which is an increasing function of $\lambda_{ij}^m$ and hence of $\tau_{ij}^m$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Proof of Proposition \ref{prop:BGMS}}
+\label{proof:BGMS}
+
+First, we demonstrate the following Lemma:
+\begin{lemma}\label{lemma:BGMS} Estimating Equation \eqref{eq:BGMS} for each $i=1,..N$, $j=1,..J$ and $m=1,..12$ by OLS gives the following coefficients:
+$$\beta^{BGMSm}_{ij}=-(\hat\rho_{ij}-\rho_j)\beta_{1ij}^m - [(\tau_{ij}^m)^{-1}-(\hat\tau_{ij}^m)^{-1}]\beta_{2ij}^m$$
+$\beta_{1ij}^m$ and $\beta_{2ij}^m$ are described below. They depend on the country-invariant parameters $\kappa_j^m$ and $\rho_j$ but also on the forecaster-specific beliefs $\hat\tau_{ij}^m$ and $\hat\rho_{ij}$.
+\end{lemma}
+A negative coefficient reflects an over-reaction of forecasters to their information. This over-reaction can arise from over-confidence ($\hat\tau_{ij}^m-\tau_{ij}^m>0$) or from over-extrapolation ($\hat\rho_{ij} -\rho_j>0$).
+
+\begin{proof}
+
+Notice that $E_{ijt}^m(x_{jt})$ can be rewritten in its moving-average form as follows:
+\begin{equation}E_{ijt}^m(x_{jt})=\frac{G_{ij}^m}{1-(1-G_{ij}^m)\hat\rho_{ij}L}s_{ijt}^m\label{eq:ma}\end{equation}
+Forecast revision can then be written as
+\begin{equation}\begin{array}{ll}Revision_{ijt}^m&=E_{ijt}^m(x_{jt})-E_{ijt-1}^m(x_{jt})\\
+																								&=E_{ijt}^m(x_{jt})-\hat\rho_{ij}E_{ijt-1}^m(x_{jt-1})\\
+																								&=\frac{G_{ij}^m[1-\hat\rho_{ij}L]}{1-(1-G_{ij}^m)\hat\rho_{ij}L}s_{ijt}^m\\
+																								&=\frac{G_{ij}^m[1-\hat\rho_{ij}L]}{1-(1-G_{ij}^m)\hat\rho_{ij}L}(x_{jt}+v_{ijt}^m)\\
+																								\end{array}\label{eq:revision2}\end{equation}
+and the error as
+\begin{equation}\begin{array}{ll}Error_{ijt,t}^m&=x_{jt}-E_{ijt}^m(x_{jt})\\
+																							&=x_{jt}-\frac{G_{ij}^m}{1-(1-G_{ij}^m)\hat\rho_{ij}L}s_{ijt}^m\\
+																							&=\left(1-\frac{G_{ij}^m}{1-(1-G_{ij}^m)\rho_{ij}L}\right)x_{jt}-\frac{G_{ij}^m}{1-(1-G_{ij}^m)\hat\rho_{ij}L}v_{ijt}^m\\
+																								\end{array}\label{eq:error2}\end{equation}
+with $v_{ijt}^m=h_{ij}^m(\kappa_j^m)^{-1/2}u_{jt}^m+(1-h_{ij}^m)(\tau_{ij}^m)^{-1/2}e_{ijt}^m$ is the total noise.
+
+
+The estimated OLS coefficient $\beta^{BGMSm}_{ij}$ is given by
+$$\beta^{BGMSm}_{ij}  = \frac{Cov\left(Error_{ijt}^m,Revision_{ijt}^m\right)}{V\left(Revision_{ijt}^m\right)}$$
+We define $\tilde Error_{ijt,t}^m$ as the error if the persistence and private signal precisions were the ones corresponding to the forecaster's beliefs:
+\begin{equation}\tilde Error_{ijt,t}^m=\left(1-\frac{G_{ij}^m}{1-(1-G_{ij}^m)   \hat\rho_{ij}   L}\right)\tilde x_{ijt}-\frac{G_{ij}^m}{1-(1-G_{ij}^m)\hat\rho_{ij}L}\tilde v_{ijt}^m\label{eq:tildeerror}\end{equation}
+with $\tilde x_{ijt}=\epsilon_{jt}/(1-\hat\rho_{ij}L)$ and $\tilde v_{ijt}^m=h_{ij}^m(\kappa_j^m)^{-1/2}u_{jt}^m+(1-h_{ij}^m)(\hat\tau_{ij}^m)^{-1/2}e_{ijt}^m$. We define $\tilde Revision_{ijt,t}^m$ similarly:
+$$\tilde Revision_{ijt}^m=\frac{G_{ij}^m[1-\hat\rho_{ij}L]}{1-(1-G_{ij}^m)\hat\rho_{ij}L}(\tilde x_{ijt}+\tilde v_{ijt}^m)$$
+
+We then use the fact that the forecaster's expectations are rational conditional on their beliefs: $Cov(\tilde Error_{ijt,t}^m,\tilde Revision_{ijt}^m)=0$ to determine the covariance of the actual errors and revisions:
+$$\begin{array}{rl}Cov\left(Error_{ijt}^m,Revision_{ijt}^m\right)=& Cov\left(Error_{ijt}^m-\tilde Error_{ijt}^m,\tilde Revision_{ijt}^m\right) \\
+&+ Cov\left(\tilde Error_{ijt}^m,Revision_{ijt}^m-\tilde Revision_{ijt}^m\right)\\
+&+Cov\left(Error_{ijt}^m-\tilde Error_{ijt}^m,Revision_{ijt}^m-\tilde Revision_{ijt}^m\right)\\
+=&Cov\left(\left(1-\frac{G_{ij}^m}{1-(1-G_{ij}^m)\hat\rho_{ij}L}\right)(x_{jt}-\tilde x_{ijt}),\frac{G_{ij}^m(1-\hat\rho_{ij}L)}{1-(1-G_{ij}^m)\hat\rho_{ij}L}\tilde x_{ijt}\right)\\
+&+Cov\left(\left(1-\frac{G_{ij}^m}{1-(1-G_{ij}^m)\hat\rho_{ij}L}\right)\tilde x_{ijt},\frac{G_{ij}^m(1-\hat\rho_{ij}L)}{1-(1-G_{ij}^m)\hat\rho_{ij}L}(x_{jt}-\tilde x_{ijt})\right)\\
+&+Cov\left(\left(1-\frac{G_{ij}^m}{1-(1-G_{ij}^m)\hat\rho_{ij}L}\right)(x_{jt}-\tilde x_{ijt}),\frac{G_{ij}^m(1-\hat\rho_{ij}L)}{1-(1-G_{ij}^m)\hat\rho_{ij}L}(x_{jt}-\tilde x_{ijt})\right)\\
+&-Cov\left(\frac{G_{ij}^m}{1-(1-G_{ij}^m)\hat\rho_{ij}L}\tilde v_{ijt}^m,\frac{G_{ij}^m(1-\hat\rho_{ij}L)}{1-(1-G_{ij}^m)\hat\rho_{ij}L}( v_{ijt}^m-\tilde v_{ijt}^m)\right)\\
+&-Cov\left(\frac{G_{ij}^m}{1-(1-G_{ij}^m)\hat\rho_{ij}L}(v_{ijt}^m-\tilde v_{ijt}^m),\frac{G_{ij}^m(1-\hat\rho_{ij}L)}{1-(1-G_{ij}^m)\hat\rho_{ij}L}\tilde v_{ijt}^m\right)\\
+&-Cov\left(\frac{G_{ij}^m}{1-(1-G_{ij}^m)\hat\rho_{ij}L}(v_{ijt}^m-\tilde v_{ijt}^m),\frac{G_{ij}^m(1-\hat\rho_{ij}L)}{1-(1-G_{ij}^m)\hat\rho_{ij}L}(v_{ijt}^m-\tilde v_{ijt}^m)\right)\\
+=&-(\hat\rho_{ij}-\rho_j)G_{ij}^m(1-G_{ij}^m)\frac{2\hat\rho_{ij}(1-G_{ij}^m)(1-\rho_j^2)-(\hat\rho_{ij}-\rho_j)[1+\rho_j\hat\rho_{ij}(1-G_{ij}^m)]}{[1-\rho_j\hat\rho_{ij}(1-G_{ij}^m)][1-\rho_j^2][1-\hat\rho_{ij}^2(1-G_{ij}^m)^2]}\\
+&-[(\tau_{ij}^m)^{-1}-(\hat\tau_{ij}^m)^{-1}]((1-h_{ij}^m) G_{ij}^m)^2\frac{1-\hat\rho_{ij}^2(1-G_{ij}^m)}{1-\hat\rho_{ij}^2(1-G_{ij}^m)^2}\\
+\end{array}$$
+
+We used
+$$\begin{array}{ll}
+\tilde Error_{ijt}^m&=(1-G_{ij}^m)\sum_{s=0}^{+\infty}(1-G_{ij}^m)^s\hat\rho_{ij}^sL^s\epsilon_{jt}\\
+&-G_{ij}^m\sum_{s=0}^{+\infty}(1-G_{ij}^m)^s\hat\rho_{ij}^sL^s h_{ij}^m(\hat\tau_{ij}^m)^{-1/2}e_{ijt}^m\\
+\tilde Revision_{ijt}^m&=G_{ij}^m\sum_{s=0}^{+\infty}(1-G_{ij}^m)^s\hat\rho_{ij}^sL^s\epsilon_{jt}\\
+&-G_{ij}^m\left(1-\frac{G_{ij}^m}{1-G_{ij}^m}\sum_{s=1}^{+\infty}(1-G_{ij}^m)^s\hat\rho_{ij}^sL^s \right) (1-h_{ij}^m)(\hat\tau_{ij}^m)^{-1/2}e_{ijt}^m\\
+Error_{ijt}^m-\tilde Error_{ijt}^m&=\frac{-\left(\frac{\hat\rho_{ij}}{\rho_j}-1\right)(1-G_{ij}^m)}{1-(1-G_{ij}^m)\frac{\hat\rho_{ij}}{\rho_j}}\left(\sum_{s=0}^{+\infty}\rho_{ij}^sL^s-\sum_{s=0}^{+\infty}(1-G_{ij}^m)^s\hat\rho_{ij}^sL^s\right)\epsilon_{jt}\\
+&-G_{ij}^m\sum_{s=0}^{+\infty}(1-G_{ij}^m)^s\hat\rho_{ij}^sL^s h_{ij}^m[(\tau_{ij}^m)^{-1/2}-(\hat\tau_{ij}^m)^{-1/2}]e_{ijt}^m\\
+Revision_{ijt}^m-\tilde Revision_{ijt}^m&=\frac{-\left(\frac{\hat\rho_{ij}}{\rho_j}-1\right)G_{ij}^m}{1-(1-G_{ij}^m)\frac{\hat\rho_{ij}}{\rho_j}}\left(\sum_{s=0}^{+\infty}\rho_{ij}^sL^s-\sum_{s=0}^{+\infty}(1-G_{ij}^m)^s\hat\rho_{ij}^sL^s\right)\epsilon_{jt}\\
+&-G_{ij}^m\left(1-\frac{G_{ij}^m}{1-G_{ij}^m}\sum_{s=1}^{+\infty}(1-G_{ij}^m)^s\hat\rho_{ij}^sL^s \right) (1-h_{ij}^m)[(\tau_{ij}^m)^{-1/2}-(\hat\tau_{ij}^m)^{-1/2}]e_{ijt}^m\\
+\end{array}$$
+
+We thus have
+$$\beta_{1ij}^m =\frac{G_{ij}^m(1-G_{ij}^m)\frac{2\hat\rho_{ij}(1-G_{ij}^m)(1-\rho_j^2)-(\hat\rho_{ij}-\rho_j)[1+\rho_j\hat\rho_{ij}(1-G_{ij}^m)]}{[1-\rho_j\hat\rho_{ij}(1-G_{ij}^m)][1-\rho_j^2][1-\hat\rho_{ij}^2(1-G_{ij}^m)^2]}}{V\left(Revision_{ijt}^m\right)}$$
+and
+$$\beta_{2ij}^m =\frac{(h_{ij}^mG_{ij}^m)^2\frac{1-\hat\rho_{ij}^2(1-G_{ij}^m)}{1-\hat\rho_{ij}^2(1-G_{ij}^m)^2}}{V\left(Revision_{ijt}^m\right)}$$
+with
+$$\begin{array}{ll}V(Revision_{ijt}^m)=&\frac{(G_{ij}^m)^2}{1-\frac{\hat\rho_{ij}}{\rho_j}(1-G_{ij}^m)}\left(\frac{G_{ij}^m\frac{\hat\rho_{ij}}{\rho_j}[1-\hat\rho_{ij}^2(1-G_{ij})]}{[1-\rho_j\hat\rho_{ij}(1-G_{ij})][1-\hat\rho_{ij}^2(1-G_{ij})^2]}-(\hat\rho_{ij}-\rho_j)\frac{1-\rho_j\hat\rho_{ij}}{[1-\rho_j\hat\rho_{ij}(1-G_{ij})](1-\rho_j^2)}\right)\\
+&+(G_{ij}^m)^2\left(1+\left(\frac{G_{ij}^m}{1-G_{ij}^m}\right)^2\frac{\hat\rho_{ij}^2(1-G_{ij}^m)^2}{1-\hat\rho_{ij}^2(1-G_{ij}^m)^2}\right)[(h_{ij}^m)^2\kappa_j^{-1}+(1-h_{ij}^m)^2\tau_{ij}^{-1}]\end{array}$$
+
+Here we used
+$$\begin{array}{ll}Revision_{ijt}^m=&\frac{G_{ij}^m}{1-\frac{\hat\rho_{ij}}{\rho_j}(1-G_{ij}^m)}\left(\frac{\hat\rho_{ij}}{\rho_j}\sum_{s=0}^{+\infty}(1-G_{ij}^m)^s\hat\rho_{ij}^sL^s-\left(\frac{\hat\rho_{ij}}{\rho_j}-1\right)\sum_{s=0}^{+\infty}\rho_{j}^sL^s\right)\epsilon_{jt}\\
+&+G_{ij}^m\left(1-\frac{G_{ij}^m}{1-G_{ij}^m}\sum_{s=1}^{+\infty}(1-G_{ij}^m)^s\hat\rho_{ij}^sL^s\right)v_{ijt}^m\\
+\end{array}$$
+
+\end{proof}
+
+According to Lemma \ref{lemma:BGMS}, while a non-zero coefficient can help detect the presence of behavioral biases, it suffers from one drawback in our context: the coefficient is a non-linear and potentially non-monotonic function of $\hat\tau_{ij}-\tau_{ij}$, $\hat\rho_{ij}-\rho_{j}$, the biases, but also of $\tau_{ij}$, the precision of private signals. Interpreting differences in coefficients is therefore not straightforward. To prove Proposition \ref{prop:BGMS}, we therefore linearize $\beta_{ij}^{BGMSm}$.
+
+%We simply note here that $\beta_{1ij}^m$ and $\beta_{2ij}^m$, evaluated at $(\hat\tau_{ij}^m)^{-1}=(\tau_{ij}^m)^{-1}=(\tau_j^m)^{-1}$ and $\hat\rho_{ij}=\rho_j$, are both strictly positive, while $\hat\rho_{ij}-\rho_{j}$ and $(\tau_{ij}^m)^{-1}-(\hat\tau_{ij}^m)^{-1}$ are both equal to zero for $\hat\tau_{ij}^m=\tau_{ij}^m=\tau_j^m$ and $\hat\rho_{ij}=\rho_j$.
+
+Note that $\beta_{1ij}^m$ and $\beta_{2ij}^m$ are functions of the parameters, so we denote $\beta_{1ij}^m=g_1\left((\hat\tau_{ij}^m)^{-1},(\tau_{ij}^m)^{-1},\hat\rho_{ij},\rho_j\right)$ and $\beta_{2ij}^m=g_2\left((\hat\tau_{ij}^m)^{-1},(\tau_{ij}^m)^{-1},\hat\rho_{ij},\rho_j\right)$. The first-order Taylor expansion for $\beta_{ij}^{BGMSm}$ around $(\hat\tau_{ij}^m)^{-1}=(\tau_{ij}^m)^{-1}=(\tau_j^m)^{-1}$ and $\hat\rho_{ij}=\rho_j$ is
+$$\beta_{ij}^{BGMSm}\simeq -(\hat\rho_{ij}-\rho_j)g_1\left((\tau_{j}^m)^{-1},(\tau_{j}^m)^{-1},\rho_{j},\rho_j\right) - [(\tau_{ij}^m)^{-1}-(\hat\tau_{ij}^m)^{-1}]g_2\left((\tau_{j}^m)^{-1},(\tau_{j}^m)^{-1},\rho_{j},\rho_j\right)$$
+We can show that $\hat\beta_{1j}^m=g_1\left((\tau_{j}^m)^{-1},(\tau_{j}^m)^{-1},\rho_{j},\rho_j\right)$ and $\hat\beta_{2j}^m=g_2\left((\tau_{j}^m)^{-1},(\tau_{j}^m)^{-1},\rho_{j},\rho_j\right)$ are both strictly positive, hence the result in Proposition \ref{prop:BGMS}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Proof of Proposition \ref{prop:consensus}}
+\label{proof:consensus}
+
+First, we show the following Lemma:
+\begin{lemma}\label{lemma:consensus} Suppose that Assumptions \ref{ass:nobias} and \ref{ass:loc_hom} are satisfied: there are no behavioral biases and the precision parameters are identical within foreign forecasters and within local forecasters. Estimating Equation \eqref{eq:consensus} for each $j=1,..J$, $m=1,..,12$ and $k=l,f$ by OLS gives the following coefficients:
+$$\beta^{CGm}_{jk}=\frac{\frac{1-G_{jk}^m}{G_{jk}^m}\gamma^{-1}-[1-\rho_j^2(1-G_{jk}^m)]h_{jk}^2(\kappa_j^m)^{-1}}{\gamma^{-1}+[1-\rho_j^2(1-2G_{jk}^m)](h_{jk}^m)^2(\kappa_j^m)^{-1}}$$
+\end{lemma}
+
+\begin{proof}
+
+Suppose that there are no behavioral biases (Assumption \ref{ass:nobias}): $\hat\rho_{ij}=\rho_j$ and $\hat\tau_{ij}^m=\tau_{ij}^m$, and that the precision parameters are identical within foreign forecasters and within local forecasters (Assumption \ref{ass:loc_hom}): $\tau_{ij}^m=\tau_{jl}^m$ if $i\in\mathcal{S}^l(j)$ and $\tau_{ij}^m=\tau_{jf}^m$ if $i\in\mathcal{S}^f(j)$, for all $j=1,..J$ and $m=1,..,12$.
+
+The estimated OLS coefficient $\beta^{CGm}_{jk}$, for $k=l,f$, $m=1,..,12$ and $j=1,..,J$, is given by
+\begin{equation}\begin{array}{ll}\beta^{CGm}_{jk}  = \frac{Cov\left(Error_{jkt}^m,Revision_{jkt}^m\right)}{V\left(Revision_{jkt}^m\right)}\label{eq:beta}\end{array}\end{equation}
+
+And we can write:																
+$$\begin{array}{ll}Cov\left(Error_{jkt}^m,Revision_{jkt}^m\right) &=Cov\left(\left(1-\frac{G_{jk}^m}{1-(1-G_{jk}^m)\rho_{j}L}\right)\frac{1}{1-\rho_{j}L}\epsilon_{jt},\frac{G_{jk}^m}{1-(1-G_{jk}^m)\rho_{j}L}\epsilon_{jt}\right)\\
+&+Cov\left(-\frac{G_{jk}^m}{1-(1-G_{jk}^m)\rho_{j}L}h_{jk}^m(\kappa_j^m)^{-1/2}u_{jt}^m,\frac{G_{jk}^m[1-\rho_{j}L]}{1-(1-G_{jk}^m)\rho_{j}L}h_{jk}^m(\kappa_j^m)^{-1/2}u_{jt}^m\right)\\
+&=\frac{G_{jk}^m(1-G_{jk}^m)}{1-\rho_{j}^2(1-G_{jk}^m)^2}\gamma^{-1} -(G_{jk}^m)^2\left(1-\frac{G_{jk}^m}{1-G_{jk}^m}\frac{\rho_{j}^{2}(1-G_{jk}^m)^{2}}{1-\rho_{j}^{2}(1-G_{jk}^m)^{2}}\right)(h_{jk}^m)^2(\kappa_j^m)^{-1}\\
+\end{array}$$
+and
+$$\begin{array}{ll}V(Revision_{jkt}^m)&=(G_{jk}^m)^2\frac{1}{1-\hat\rho_{jk}^2(1-G_{jk}^m)^2}\gamma^{-1} + (G_{jk}^m)^2\left(1+\left(\frac{G_{jk}^m}{1-G_{jk}^m}\right)^2\frac{\hat\rho_{jk}^{2}(1-G_{jk}^m)^{2}}{1-\hat\rho_{jk}^{2}(1-G_{jk}^m)^{2}}\right)(h_{jk}^m)^2(\kappa_j^m)^{-1}
+\end{array}$$
+
+Here we used
+{\footnotesize
+$$\begin{array}{ll}
+ Error_{jkt}^m&=\left(1-\frac{G_{jk}^m}{1-(1-G_{jk}^m)\rho_{j}L}\right)\frac{1}{1-\rho_{j}L}\epsilon_{jt}\\
+&-\frac{G_{jk}^m}{1-(1-G_{jk}^m)\rho_{j}L}h_{jk}^m(\kappa_j^m)^{-1/2}u_{jt}^m\\
+&=\left(\sum_{s=0}^{+\infty}\rho_{j}^s\left[1-G_{jk}^m\left(\sum_{i=0}^s(1-G_{jk}^m)^i\right)\right]L^s\right)\epsilon_{jt}\\
+&-G_{jk}^m\sum_{s=0}^{+\infty}\rho_{j}^s(1-G_{jk}^m)^sL^sh_{jk}^m(\kappa_j^m)^{-1/2}u_{jt}^m\\
+ Revision_{jkt}^m&=\frac{G_{jk}^m}{1-(1-G_{jk}^m)\rho_{j}L}\epsilon_{jt}\\
+&+\frac{G_{jk}^m[1-\rho_{j}L]}{1-(1-G_{jk}^m)\rho_{j}L}h_{jk}(\kappa_j^m)^{-1/2}u_{jt}^m\\
+&=G_{jk}^m\sum_{s=0}^{+\infty}\rho_{j}^s(1-G_{jk}^m)^sL^s\epsilon_{jt}\\
+&+G_{jk}^m\left(1-\frac{G_{jk}^m}{1-G_{jk}^m}\sum_{s=1}^{+\infty}\rho_{j}^{s}(1-G_{jk}^m)^sL^{s}\right)h_{jk}^m(\kappa_j^m)^{-1/2}u_{jt}^m
+\end{array}$$
+}
+
+Therefore,
+$$\begin{array}{ll}\beta^{CGm}_{jk} = \beta^{CG}(\rho_j) &= \frac{\frac{G_{jk}^m(1-G_{jk}^m)}{1-\rho_j^2(1-G_{jk}^m)^2}\gamma^{-1} -(G_{jk}^m)^2\left(1-\frac{G_{jk}^m}{1-G_{jk}^m}\frac{\rho_j^{2}(1-G_{jk}^m)^{2}}{1-\rho_j^{2}(1-G_{jk}^m)^{2}}\right)(h_{jk}^m)^2(\kappa_j^m)^{-1}}{(G_{jk}^m)^2\frac{1}{1-\rho_j^2(1-G_{jk}^m)^2}\gamma^{-1} + (G_{jk}^m)^2\left(1+\left(\frac{G_{jk}^m}{1-G_{jk}^m}\right)^2\frac{\rho_j^{2}(1-G_{jk}^m)^{2}}{1-\rho_j^{2}(1-G_{jk}^m)^{2}}\right)(h_{jk}^m)^2(\kappa_j^m)^{-1}}\\
+																		&= \frac{\frac{1-G_{jk}^m}{G_{jk}^m}\gamma^{-1} -[1-\rho_j^2(1-G_{jk}^m)](h_{jk}^m)^2(\kappa_j^m)^{-1}}{\gamma^{-1} + [1-\rho_j^2(1-2G_{jk}^m)](h_{jk}^m)^2(\kappa_j^m)^{-1}}
+\end{array}$$
+
+%%
+%If $\hat\rho_{jk}\neq\rho_j$, then
+%$$\begin{array}{ll}\beta^{CGm}_{jk} &= \beta^{CG}(\hat\rho_{jk})-\frac{(\hat\rho_{jk}-\rho_j)\chi}{V(\tilde Revision_{jkt}^m)-(\hat\rho_{jk}-\rho_j)\chi}[1-\beta^{CG}(\hat\rho_{jk})]
+%\end{array}$$
+%with $\chi=(G_{jk}^m)^2\frac{2\hat\rho_{jk}(1-G_{jk}^m)(1-\rho_j^2)-(\hat\rho_{jk}-\rho_j)[1+\rho_j\hat\rho_{jk}(1-G_{jk}^m)]}{[1-\rho_j\hat\rho_{jk}(1-G_{jk}^m)][1-\rho_j^2][1-\hat\rho_{jk}^2(1-G_{jk}^m)^2]}\gamma^{-1}$.
+
+\end{proof}
+
+According to Lemma \ref{lemma:consensus}, $\beta^{CGm}_{jk}=(1-G_{jk}^m)/G_{jk}^m$ when there is no public signal, or, equivalently, when $\kappa_j^m=0$, which corresponds to the case studied by \citet{CoibionGorodnichenko2015}. The coefficient is directly related to the Kalman gain. A large coefficient implies a small Kalman gain and hence noisier information. Therefore, $\beta^{CGm}_{jl}<\beta^{CGm}_{jf}$ would imply that foreigners have noisier information ($\tau_{jf}^m>\tau_{jl}^m$).
+
+In other terms, in the case where $\kappa_j^m=0$, we have $\beta^{CGm}_{jk}=(1-G_{jk}^m)/G_{jk}^m$ and thus $\partial\beta^{CGm}_{jk}/\partial \tau_{jk}^m=-(\partial G_{jk}^m/\partial \tau_{jk}^m)/(G_{jk}^m)^2<0$ because $\partial G_{jk}^m/\partial \tau_{jk}^m>0$. This proves that the coefficients $\beta^{CGm}_{jk}$ can be locally decreasing in $\tau_{jk}^m$.
+
+Now we focus on the case where $\kappa_j^m>0$. We first show that $\beta^{CGm}_{jk}>0$ when $\tau_{jk}^m>0$.
+
+Notice that
+$$\begin{array}{ll}Cov\left(Error_{ijkt}^m,Revision_{ijkt}^m\right) =&Cov\left(Error_{jkt}^m,Revision_{jkt}^m\right) \\
+&-(G_{jk}^m)^2\left(1-\frac{G_{jk}^m}{1-G_{jk}^m}\frac{\rho_{j}^{2}(1-G_{jk}^m)^{2}}{1-\rho_{j}^{2}(1-G_{jk}^m)^{2}}\right)(1-h_{jk}^m)^2(\tau_{jk}^m)^{-1}\\
+\end{array}$$
+Since we are considering a case without behavioral biais, we have $Cov\left(Error_{ijkt}^m,Revision_{ijkt}^m\right)=0$. In that case, the above equation implies that $Cov\left(Error_{jkt}^m,Revision_{jkt}^m\right)>0$ when $(1-h_{jk}^m)^2(\tau_{jk}^m)^{-1}>0$, which is satisfied for $\tau_{jk}^m>0$. As a consequence, $\beta^{CGm}_{jk}>0$.
+
+This equation also implies that $Cov\left(Error_{jkt}^m,Revision_{jkt}^m\right)$ converges to zero as $\tau_{jk}^m$ goes to zero. In contrast, $V(Revision_{jkt}^m)$ converges to a strictly positive value. As a result $\beta^{CGm}_{jk}$ converges to zero as $\tau_{jk}^m$ goes to zero. Since $\beta^{CGm}_{jk}>0$ is strictly positive for $\tau_{jk}^m>0$, this implies that $\beta^{CGm}_{jk}$ is incresing in $\tau_{jk}^m$ in the vicinity of $\tau_{jk}^m=0$. This proves that the coefficients $\beta^{CGm}_{jk}$ can be locally increasing in $\tau_{jk}^m$.
+
+Since $\beta^{CGm}_{jk}$ can be both locally decreasing and locally increasing in $\tau_{jk}^m$, then this proves Proposition \ref{prop:consensus}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Proof of Proposition \ref{prop:pooledFE}}
+\label{proof:pooledFE}
+
+We first demonstrate the following Lemma:
+\begin{lemma}\label{lemma:pooledFE} Suppose that Assumption \ref{ass:loc_hom} is satisfied: the behavioral biases and the precision parameters are homogeneous within foreign forecasters and within local forecasters. Estimating Equation \eqref{eq:pooledFE} for each $j=1,..J$, $m=1,..,12$ and $k=l,f$ by OLS gives the following coefficients:
+$$\beta^{FEm}_{jk}=-\frac{1-\hat\rho_{jk}(1-G_{jk}^m)}{1-\hat\rho_{jk}(1-2G_{jk}^m)}$$
+\end{lemma}
+
+\begin{proof}
+
+Suppose that the parameters are homogeneous within foreign forecasters and within local forecasters (Assumption \ref{ass:loc_hom}): $\hat\rho_{ij}=\hat\rho_{jl}$, $\tau_{ij}=\tau_{jl}$ and $\hat\tau_{ij}=\hat\tau_{j}$, if $i\in\mathcal{S}^l(j)$, and $\hat\rho_{ij}=\hat\rho_{jf}$, $\tau_{ij}=\tau_{jf}$ and $\hat\tau_{ij}=\hat\tau_{jf}$, if $i\in\mathcal{S}^f(j)$.
+
+Consider the revision and error. We can rewrite them as follows:
+$$\begin{array}{ll}Revision_{ijkt}^m&=E_{ijkt}^m(x_{jt})-E_{ijkt-1}^m(x_{jt-1})\\
+																								&=\frac{G_{jk}^m[1-\hat\rho_{jk}L]}{1-(1-G_{jk}^m)\hat\rho_{jk}L}(1-h_{jk}^m)(\tau_{jk}^m)^{-1/2}e_{ijkt}^m+\text{terms specific to }\{j,k,m,t\}\\
+Error_{ijkt}^m&=x_{jt}-E_{ijkt}^m(x_{jt})\\
+																							&=-\frac{G_{jk}^m}{1-(1-G_{jk}^m)\hat\rho_{jk}L}(1-h_{jk}^m)(\tau_{jk}^m)^{-1/2}e_{ijkt}^m+\text{terms specific to }\{j,k,m,t\}\\
+																								\end{array}$$
+for $k=l,f$.
+
+The estimated coefficient is then equal to the covariance between the error and the revision conditional on all the terms that are country-location-time specific, divided by the variance of the revision conditional on all the terms that are country-location-time specific
+$$\begin{array}{ll}\beta^{FEm}_{jk}&=\frac{Cov\left(-\frac{G_{jk}^m}{1-(1-G_{jk}^m)\hat\rho_{jk}L}(1-h_{jk}^m)(\tau_{jk}^m)^{-1/2}e_{ijkt}^m,\frac{G_{jk}^m[1-\hat\rho_{jk}L]}{1-(1-G_{jk}^m)\hat\rho_{jk}L}(1-h_{jk}^m)(\tau_{jk}^m)^{-1/2}e_{ijkt}^m\right)}{V\left(\frac{G_{jk}^m[1-\hat\rho_{jk}L]}{1-(1-G_{jk}^m)\hat\rho_{jk}L}(1-h_{jk}^m)(\tau_{jk}^m)^{-1/2}e_{ijkt}^m\right)}\\
+&=\frac{-(G_{jk}^m)^2\left(1-\frac{G_{jk}^m}{1-G_{jk}^m}\frac{\hat\rho_{jk}^{2}(1-G_{jk}^m)^{2}}{1-\hat\rho_{jk}^{2}(1-G_{jk}^m)^{2}}\right)(1-h_{jk}^m)^2(\tau_{jk}^m)^{-1}}{(G_{jk}^m)^2\left(1+\left(\frac{G_{jk}^m}{1-G_{jk}^m}\right)^2\frac{\hat\rho_{jk}^{2}(1-G_{jk}^m)^{2}}{1-\hat\rho_{jk}^{2}(1-G_{jk}^m)^{2}}\right)(1-h_{jk}^m)^2(\tau_{jk}^m)^{-1}}
+\end{array}$$			
+Hence the result.
+
+\end{proof}
+
+
+If, additionally, forecasters have identical behavioral biases (Assumption \ref{ass:hom}), that is, $\hat\rho_{jl}=\hat\rho_{jf}=\hat\rho_j$ and $(\hat\tau_{jl}^m)^{-1}-(\tau_{jl}^m)^{-1}=(\hat\tau_{jf}^m)^{-1}-(\tau_{jf}^m)^{-1}$, and if $0<\hat\rho_j<1$, then Lemma \ref{lemma:pooledFE} implies that $\beta^{FEm}_{jf}<\beta^{FEm}_{jl}$ if and only if $\tau_{jl}^m>\tau_{jf}^m$. This proves Proposition \ref{prop:pooledFE}.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Proof of Proposition \ref{prop:disagreement}}
+\label{proof:disagreement}
+
+We first demonstrate the following Lemma:
+\begin{lemma}\label{lemma:disagreement} Suppose that Assumption \ref{ass:loc_hom} is satisfied: the behavioral biases and  the precision parameters are homogeneous within foreign forecasters and within local forecasters. Estimating Equation \eqref{eq:disagreement} for each $j=1,..J$ and $m=1,..,12$ by OLS gives the following coefficients:
+$$\beta^{DISm}_{j}=\left(\frac{G_{jl}^mh_{jl}^m-G_{jf}^mh_{jf}^m}{\frac{1}{2}(h_{jl}^mG_{jl}^m+h_{jf}^mG_{jf}^m)}\right)$$
+\end{lemma}
+
+\begin{proof}
+
+Suppose that the parameters are homogeneous within foreign forecasters and within local forecasters (Assumption \ref{ass:loc_hom}): $\hat\rho_{ij}=\hat\rho_{jl}$, $\tau_{ij}=\tau_{jl}$ and $\hat\tau_{ij}=\hat\tau_{j}$, if $i\in\mathcal{S}^l(j)$, and $\hat\rho_{ij}=\hat\rho_{jf}$, $\tau_{ij}=\tau_{jf}$ and $\hat\tau_{ij}=\hat\tau_{jf}$, if $i\in\mathcal{S}^f(j)$.
+
+The first step is to write $Disagreement_{jt}$, $Revision{jt}$ as a function of he regressors in the disagreeement regression \eqref{eq:disagreement} and of the common noise $u_{jt}^m$.
+$$\begin{array}{rl}
+Disagreement_{jt}^m=&E_{jlt}^m(x_{jt})-E_{jft}^m(x_{jt})\\
+									=&G_{jl}^m(x_{jt}+h_{jl}^m(\kappa_j^m)^{-1/2}u_{jt}^m)+(1-G_{jl}^m)E_{jlt-1}^m(x_{t})\\
+								&-G_{jf}^m(x_{jt}+h_{jf}^m(\kappa_j^m)^{-1/2}u_{jt}^m)-(1-G_{jf}^m)E_{jft-1}^m(x_{t})\\
+								=&(G_{jl}^m-G_{jf}^m)x_{jt}+(h_{jl}^mG_{jl}^m-h_{jf}^mG_{jf}^m)(\kappa_j^m)^{-1/2}u_{jt}^m\\
+								&+(1-G_{jl}^m)E_{jlt-1}^m(x_{t})-(1-G_{jf}^m)E_{jft-1}^m(x_{t})\\
+Revision_{jt}^m=&\frac{1}{2}(Revision_{jlt}^m+Revision_{jft}^m)\\
+						=&\frac{1}{2}G_{jl}^m[(x_{jt}+h_{jl}^m(\kappa_j^m)^{-1/2}u_{jt}^m)-E_{jlt-1}^m(x_{jt})]\\
+						&+\frac{1}{2}G_{jf}^m[(x_{jt}+h_{jf}^m(\kappa_j^m)^{-1/2}u_{jt}^m)-E_{jft-1}^m(x_{jt})]\\
+						=&\frac{1}{2}(G_{jl}^m+G_{jf}^m)x_{jt}+\frac{1}{2}(h_{jl}^mG_{jl}^m+h_{jf}^mG_{jf}^m)(\kappa_j^m)^{-1/2}u_{jt}^m\\
+						&-\frac{G_{jl}^m}{2}E_{jlt-1}^m(x_{jt})-\frac{G_{jf}^m}{2}E_{jft-1}^m(x_{jt})
+\end{array}$$		
+To obtain these formulas, we used the Kalman formula \eqref{eq:update}, the definition of $E_{jkt}^m(x_{jt})$, $s_{ijt}^m=x_{jt}+h_{ij}^m(\kappa_{j}^m)^{-1/2}u_{jt}^m+(1-h_{ij}^m)(\tau_{ij}^m)^{-1/2}e_{ijt}^m$ and the fact that $G_{ij}^m=G_{jk}^m$ and $h_{ij}^m=h_{jk}^m$ are homogenous within location $k$ so that $E_{jkt}^m(x_{jt})$ can be written as follows:
+$$\begin{array}{ll}E_{jkt}^m(x_{jt})&=\frac{1}{N(j)^k}\sum_{i\in\textit{S}^k(j)}E_{ijkt}(x_{jt})\\
+&=\frac{1}{N(j)^k}\sum_{i\in\textit{S}^k(j)}\left[(1-G_{ij}^m)\hat\rho_{ij}E_{ijt-1}^m(x_{jt-1})+G_{ij}^ms_{ijt}^m\right]\\
+&=(1-G_{jk}^m)\hat\rho_{jk}E_{jkt-1}^m(x_{jt-1})+G_{jk}^m\frac{1}{N(j)^k}\sum_{i\in\textit{S}^k(j)}s_{ijt}^m\\
+&=(1-G_{jk}^m)E_{jkt-1}^m(x_{jt})+G_{jk}^m[x_{jt}+h_{jk}^m(\kappa_{j}^m)^{-1/2}u_{jt}^m]
+\end{array}$$ for $k=l,f$, and we replaced $E_{jjt}^m(x_{jt})$ and $E_{jft}^m(x_{jt})$.
+
+
+The variables $x_{jt}$, $E_{jlt-1}^m(x_{jt})$ and $E_{jft-1}^m(x_{jt})$ are controls in the disagreement regression. Therefore, according the the Frisch-Waugh-Lovell theorem, only the the variations in the noise $u_{jt}^m$ will determine the coefficient of $Revision_{jt}^m$ in the regression. Namely, the $\beta_j^{DISm}$ coefficient can be identified by regressing $\widehat{Disagreement}_{jt}^m$ on $\widehat{Revision}_{jt}^m$, where
+$$\begin{array}{rl}
+\widehat{Disagreement}_{jt}^m=&Disagreement_{jt}^m-\left[(G_{jl}^m-G_{jf}^m)x_{jt}+(1-G_{jl}^m)E_{jlt-1}^m(x_{t})-(1-G_{jf}^m)E_{jft-1}^m(x_{t})\right]\\
+						=&(h_{jl}^mG_{jl}^m-h_{jf}^mG_{jf}^m)(\kappa_j^m)^{-1/2}u_{jt}^m\\
+\widehat{Revision}_{jt}^m=&Revision_{jt}^m-\left[\frac{1}{2}(G_{jl}^m+G_{jf}^m)x_{jt}-\frac{G_{jl}^m}{2}E_{jlt-1}^m(x_{jt})-\frac{G_{jf}^m}{2}E_{jft-1}^m(x_{jt})\right]\\
+						=&\frac{1}{2}(h_{jl}^mG_{jl}^m+h_{jf}^mG_{jf}^m)(\kappa_j^m)^{-1/2}u_{jt}^m
+\end{array}$$		
+
+The estimated coefficient is then given by
+$$\begin{array}{ll}\beta^{DISm}_{j}&=\frac{Cov\left(\frac{1}{2}(h_{jl}^mG_{jl}^m+h_{jf}^mG_{jf}^m)(\kappa_j^m)^{-1/2}u_{jt}^m,(h_{jl}^mG_{jl}^m-h_{jf}^mG_{jf}^m)(\kappa_j^m)^{-1/2}u_{jt}^m\right)}{V\left(\frac{1}{2}(h_{jl}^mG_{jl}^m+h_{jf}^mG_{jf}^m)(\kappa_j^m)^{-1/2}u_{jt}^m\right)}\\
+																	&=\frac{h_{jl}^mG_{jl}^m-h_{jf}^mG_{jf}^m}{\frac{1}{2}(h_{jl}^mG_{jl}^m+h_{jf}^mG_{jf}^m)}
+																	\end{array}$$
+Hence the result.
+
+\end{proof}
+
+To understand how the sign of $\beta^{DISm}_{j}$ can be related to the information structure of local and foreign forecasters, consider first the rational expectations case without behavioral bias. We have $G_{jk}^m=\Phi_{jk}(\Phi_{jk}+(\lambda_{jk}^m)^{-1})^{-1}$ and $h_{jk}^m=\kappa_j^m/\lambda_{jk}^m$. We can thus rewrite:
+$$h_{jk}^mG_{jk}^m=\frac{\kappa_j^m}{\lambda_{jk}^m+\Phi_{jk}^{-1}}$$
+For a given $\kappa_j^m$, for $h_{jk}^mG_{jk}^m$ to be decreasing in $\tau_{jk}^m$, it is enough that $\lambda_{jk}^m+\Phi_{jk}^{-1}$ is increasing in $\lambda_{jk}^m$. We use the definition of $\Phi_{jk}$ in \eqref{eq:Phi} to compute this derivative:
+$$\begin{array}{ll}\frac{\partial(\lambda_{jk}^m+\Phi_{jk}^{-1})}{\partial\lambda_{jk}^m}&=1+\frac{1}{2}(1-\rho_j^2)\frac{1}{(\lambda_{jk}^m)^2}\left(1-\frac{(1-\rho_j^2)(\lambda_{jk}^m)^{-1}-\gamma_j^{-1}}{\sqrt{(\gamma_j^{-1}-(1-\rho_j^2)(\lambda_{jk}^m)^{-1})^2+4\gamma_j^{-1}}}\right)\\
+&=1+\frac{1}{2}(1-\rho_j^2)\frac{1}{(\lambda_{jk}^m)^2}\left(\underbrace{\frac{\sqrt{(\gamma_j^{-1}-(1-\rho_j^2)(\lambda_{jk}^m)^{-1})^2+4\gamma_j^{-1}}+\gamma_j^{-1}-(1-\rho_j^2)(\lambda_{jk}^m)^{-1}}{\sqrt{(\gamma_j^{-1}-(1-\rho_j^2)(\lambda_{jk}^m)^{-1})^2+4\gamma_j^{-1}}}}_{>0}\right)\\
+\end{array}$$
+$h_{jk}^mG_{jk}^m$ is therefore decreasing in $\tau_{jk}^m$.
+
+Consider now the case with behavioral biases. $h_{jk}$ and $G_{jk}$ are similar, except that $\rho_{j}$ and $\tau_{jk}^m$ are replaced by the perceived parameters $\hat\rho_{jk}$ and $\hat\tau_{jk}^m$. As a consequence, $h_{jk}^mG_{jk}^m$ is decreasing in $\hat\tau_{jk}^m$. Therefore, for a given $(\hat\tau_{jk}^m)^{-1}-(\tau_{jk}^m)^{-1}$, $h_{jk}^mG_{jk}^m$ is decreasing in $\tau_{jk}^m$.
+
+If, additionally, forecasters have identical behavioral biases (Assumption \ref{ass:hom}), that is, $\hat\rho_{jl}=\hat\rho_{jf}=\hat\rho_j$ and $(\hat\tau_{jl}^m)^{-1}-(\tau_{jl}^m)^{-1}=(\hat\tau_{jf}^m)^{-1}-(\tau_{jf}^m)^{-1}$, then differences in $h_{jk}^mG_{jk}^m$ reflect differences in $\tau_{jk}^m$. In that case, $h_{jl}^mG_{jl}^m<h_{jf}^mG_{jf}^m$, and hence, $\beta^{DISm}_{j}<0$, if and only if $\tau_{jl}^m>\tau_{jf}^m$. This proves Proposition \ref{prop:disagreement}.
+

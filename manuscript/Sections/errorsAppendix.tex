@@ -1,0 +1,61 @@
+
+\subsection{Variance equality tests}
+\label{app:sec:variance}
+
+In a more formal test, we investigate whether the variance of forecast errors is larger for foreign forecasters than the variance of local forecasters. To do this, we perform a simple variance equality test applied to the annual average of forecast errors across locations, defined as $\frac{1}{12}\sum_{m=1}^{12} Error_{ijt,t+h}^m$, for $h=0,1$. We use the annual average here to take into account a potential high correlation of the errors within a year, which could bias the test. We implement Levene’s variance equality test \citep{levene1960robust}. The null hypothesis, $H_0$, is that variances are equal $\sigma^2_{\text{FE}_{\text{Local}}} = \sigma^2_{\text{FE}_{\text{Foreign}}}$, versus the alternative hypothesis of unequal variances,  $H_A$, $\sigma^2_{\text{FE}_{\text{Local}}} \neq \sigma^2_{\text{FE}_{\text{Foreign}}}$.\footnote{Note that there are different ways for calculating the test statistic for equal variances, namely using the mean, median or trimmed mean. We observe very little differences across these methods which is why we report the results of the test statistics calculating with the mean.}
+
+
+%the ratio of the standard deviation of the errors of local forecasters to that of foreign ones, and conduct a one-sided test with the null hypothesis, $H_0$, of equal variance, i.e. $\frac{\sigma_{\text{FE}_{\text{Local}}}}{\sigma_{\text{FE}_{\text{Foreign}}}} = 1$ versus the alternative hypothesis, $H_A$, that the ratio is $<1$.
+
+{\setstretch{1}
+\input{Tables/cpi_gdp_current_future_sdtest_robvar}
+}
+
+Table \ref{tab:error_sdtest} reports the results. In column (1), we define different sub-samples. We split the sample into advanced and emerging countries, multinational and national forecasters, financial and non-financial forecasters. Column (2) and (3) show the number of observations for local and foreign forecasters, respectively. Column (4) and (5) show the standard deviation of the forecast error conditional on the location. Column (6) reports the F-statistics and column (7) the corresponding p-value.
+
+
+\newpage
+\begin{figure}[h]
+	
+		\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{Figures/cpi_future_FE_density}
+		\caption{$Error_{ijt,t}^m$: $\text{CPI}_{t+1}$ }
+		\label{fig:error_density_cpi_f}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{Figures/gdp_future_FE_density}
+		\caption{$Error_{ijt,t}^m$. $\text{GDP}_{t+1}$ }
+		\label{fig:error_density_gdp_f}
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{Figures/cpi_future_N_density}
+		\caption{$N_{ijt}$: $\text{CPI}_{t+1}$ }
+		\label{fig:cpi_future_N_density}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{Figures/gdp_future_N_density}
+		\caption{$N_{ijt}$: $\text{GDP}_{t+1}$}
+		\label{fig:gdp_future_N_density}
+	\end{subfigure}
+	
+	\caption{Distribution of errors and distribution of the number of yearly updates}
+	\label{fig:error_update_future}
+	\begin{fignote}
+		\textit{Notes:} Panels (a) and (b) display the density of the forecast error $Error_{ijt,t}^m$ conditional on the location of the forecaster. Panels (c) and (d) display the histograms of the number of updates $N_{ijt}$ by location. The population corresponds to all the country-forecaster-year units. We consider that any published forecast is an update.
+	\end{fignote}
+\end{figure}
+
+{\setstretch{1}
+\input{Tables/tab_errors_rob} 
+}
+
+{\setstretch{1}
+\input{Tables/tab_updating_errors_app} 
+}

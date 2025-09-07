@@ -1,0 +1,34 @@
+
+In this section, we analyze the forecasters' errors and forecast updating. We find that foreign forecasters make larger errors than local ones, and that they update their forecasts less often.
+
+\subsection{Foreign Forecasters Make Larger Errors}
+
+As preliminary descriptive evidence on forecast errors, Panels (a) and (b) of Figure \ref{fig:errors} in the Appendix show the density of forecast errors regarding the current year for each group of forecasters. The forecast errors are distributed around 0 for both local and foreign forecasters. However, the distribution of forecast errors for foreign forecasters is wider than for local forecasters, which indicates that foreign forecasts are less precise.\footnote{Panels (c) and (d) of Figure \ref{fig:errors} in the Appendix show similar distributions regarding forecasts about the future year.} Formal tests of variance equality are performed in Appendix \ref{app:sec:variance} and show that the variance of foreign forecasters' errors is indeed significantly larger.
+
+Note, however, that this preliminary evidence does not control for country- and forecaster-specific characteristics. For instance, a higher proportion of forecasts by multinational forecasters is local. Given that multinationals are also more likely to have well-endowed forecasting departments, local forecasts could artificially appear more accurate if we do not control for forecasters' characteristics. Besides, small countries' forecasts are more likely to be produced by a foreign forecaster. Given that small countries typically have more volatile business cycles, foreign forecasts could misleadingly appear less accurate if we do not control for country characteristics. For this reason, we control for forecaster- and country-specific characteristics by exploiting the panel structure of our data.
+
+As a first measure of the forecast error distribution, we estimate the standard deviation $\sigma^m_{\text{FE},i,j}$ of the forecast error for every forecaster-country-month triplet $(m,i,j)$ for current forecasts. We discard forecaster-country-month triplets with less than 10 observations. We take the log of $\sigma^m_{\text{FE},i,j}$ and estimate
+\begin{align}
+	\ln(\sigma^m_{\text{FE},i,j}) =  \delta^m +\tilde\delta_{i} + \bar{\delta}_{j} +
+\beta \text{Foreign}_{ij} + \varepsilon_{ij}^m  \,, \label{eq:regModelSE_FE}
+\end{align}
+where  $ \delta^m $, $\tilde\delta_{i} $ and $\bar{\delta}_{j} $ are respectively month-of-year, forecaster and country fixed effects. $\text{Foreign}_{ij} $ is a dummy that takes the value of 1 if forecaster $i$ is foreign to country $j$, and 0 otherwise.
+
+Column (1) of Table \ref{tab:updating_errors_main_small} reports the coefficient $\beta$. The standard deviation of forecast errors is higher when a forecaster produces a foreign forecast than when it produces a local one (14\% higher for inflation, 11\% higher for GDP growth). Since the average standard deviation for local forecasters is 0.63pp for CPI inflation and 0.93 for GDP growth, this implies that the foreign forecasts' extra standard deviation is approximately 0.09-0.1pp for both variables.\footnote{Table \ref{tab:tab_stderr_rob} in the Appendix shows the results for alternative, less rich fixed-effect specifications. The results show that fixed effects are important to reduce endogeneity. For instance, the coefficient of Foreign drops when country fixed effects are added (Column (2)). It is possible, as discussed above, that institutions forecasting small countries, which are also more volatile, are more likely to be foreign.}
+
+{\setstretch{1}
+	\input{../output/tables//tab_updating_errors_main_small}
+}
+
+
+In this specification, we control for country, forecaster and month-of-year characteristics, but not for the time period. Ignoring time-specific characteristics could bias our results if, for instance, more foreign forecasts are produced in times of turmoil and uncertainty, where all forecasters will make more mistakes. Therefore, as a second measure of the forecast error distribution, we calculate the log absolute value of the forecast error, which is time-varying.\footnote{For absolute forecast errors smaller than 0.001 percentage point, we assign the value of $\ln(0.001)$ to keep all observations in the sample.}  The model we estimate is as follows.
+\begin{align}
+	\ln(|Error_{ijt,t}^m|)= \delta_{it}^m +\tilde\delta_{jt}^m +  \beta \text{Foreign}_{ij} + \varepsilon_{ij,t}^m  \,, \label{eq:regModelFE}
+\end{align}
+$ \delta_{it}^m$ are forecaster-date fixed effects and $\tilde\delta_{jt}^m$ are country-date fixed effects. These fixed effects enable us to control for country-specific trends in volatility and forecaster-specific trends in forecasting performance.
+
+
+Column (2) of Table \ref{tab:updating_errors_main_small} displays the results for CPI and GDP. Foreign forecast errors are significantly larger in absolute value than local forecasts. More precisely, the absolute value of foreign forecast errors is 9\% larger for current inflation and 6\% for current GDP growth. Since the average error of local forecasters regarding CPI inflation (GDP growth) is 0.45pp (0.60pp), this means that the typical extra error on foreign forecasters is on average 0.04pp (0.036pp).\footnote{Table \ref{tab:tab_errors_rob} in the Appendix shows the results for alternative, less rich fixed-effect specifications. The coefficient of Foreign drops when country fixed effects are added (Column (2)). Interestingly, the Foreign coefficient for GDP growth becomes insignificant when introducing country fixed effects. However, this is arguably due to noise, as it becomes significant again when introducing forecaster fixed effects (Column (3)). These results show that fixed effects are not only important to reduce endogeneity, but also to improve the estimates' precision.} %Presumably, as uncertainty is higher when forecasting at a longer time horizon, the informational advantage is lower for local forecasters.
+
+
+Table \ref{tab:updating_errors_app_small} in the Appendix shows the results for forecasts about future inflation and GDP growth. The gap in forecast precision between foreign and local forecasters appears smaller than for forecasts about current GDP growth and inflation. For inflation, it drops from 14\% to 6\% for the standard deviation of errors (Column (1)) and from 9\% to 6\% for the log of the absolute value of errors (Column (2)). For GDP growth, it even becomes insignificant in Column (2). The extra standard deviation (or extra absolute error) of foreign forecasters still remain sizable at 0.08-10.12pp (0.01-0.05pp), because local forecasters make larger errors when forecasting the future than the current year.

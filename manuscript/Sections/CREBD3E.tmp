@@ -1,0 +1,75 @@
+
+The preceding sections have established that asymmetric information between local and foreign forecasters explains foreigners' excess errors. In this section, we use our multi-country, multi-forecaster panel to explore whether well-identified barriers to information acquisition drive the foreign penalty. We however first discuss in more details whether the location of subsidiaries matter in the case of multinationals.
+
+\subsection{Multinationals and the Relevance of Local Subsidiaries}
+
+In our analysis, we have chosen to consider a forecast to be ``foreign'' if the forecasting firm has neither their headquarters nor a subsidiary located in the country. While this assumption is innocuous for non-multinational firms, whose subsidiaries (if there are any) are all located in the same country as the headquarters, it is not the case for multinational firms. This relies on the implicit assumption that a forecaster with its headquarters in the country and a forecaster with only a subsidiary in the country are equally good at forecasting that country. We reconsider this assumption here, in order to also further understand the origin of the foreign penalty. In other words, is it important to have some activity in the country to gain an informational advantage, or is it mainly the location of the headquarters that matters?
+
+To test for the relevance of local subsidiaries, we introduce an alternative definition where we define a forecaster to be foreign if its headquarters are located in another country, whether a subsidiary is present or not.  Compared to the 28\% of foreign forecasters in the baseline results, 64\% of the forecasters are defined to be foreign according to the alternative definition. 
+
+{\setstretch{1}
+\input{Tables/error_reg_labs_mult}
+}
+
+We construct a single sample of observations by stacking observations of inflation and GDP growth errors and errors at different horizons. We first estimate our baseline regression:
+\begin{align}
+	\ln(|Error_{ijt,t+h}^{m,x}|)= \delta_{it,h}^{m,x} +\tilde\delta_{jt,h}^{m,x} +  \beta \text{Foreign}_{ij} +\varepsilon_{ij,t}^m  \,, \label{eq:geography}
+\end{align}
+where $x=growth, inflation$ and $h=0,1$ stand respectively for the forecast variable and the horizon, and $ \delta_{it,h}^{m,x}$ and $\tilde\delta_{jt,h}^{m,x}$ are forecaster-date-variable-horizon fixed effects and country-date-variable-horizon fixed effects. $\beta$ identifies the average effect of the Foreign dummy across variables and horizons. The results are reported in Column (1) of Table \ref{tab:error_reg_labs_mult}. The coefficient is equal to 0.06 and highly significant. This reflects the average impact of Foreign across variables and horizons.
+
+We then report the estimates with our baseline definition when distinguishing multinational from non-multinational firms. By comparing Columns (2) and (3), we can see that non-multinational firms have a higher foreign penalty than multinational firms (0.25 against 0.04). This is not surprising, as multinational firms are likely to have more resources and departments dedicated to forecasting. The coefficient of multinational firms is closer to our main estimate, because, as we have seen below, multinationals account for the bulk of our sample. Note however that, because the coefficient of Foreign is imprecisely estimated for non-multinational firms, we cannot statistically distinguish it from the Foreign coefficient of multinational firms.
+
+In Column (4), we replace the Foreign dummy with ForeignHQ. ForeignHQ is not significant. It is expected that, if our assumption that the location of subsidiaries matter is true, then ForeignHQ would include a heterogeneous mix of purely foreign forecasters and forecasters who are present through their subsidiaries. To further test this, we add an additional dummy variable that accounts for the presence of a local subsidiary: Local Subsidiary is equal to one if the forecaster has a subsidiary in the country, but no headquarters. In Column (5), now that we control for the presence of a local subsidiary, ForeignHQ becomes significantly positive. Interestingly, the sum of the two coefficients is not statistically different from zero. This means that a forecaster with no headquarters, but with a subsidiary located in the country, is just as good at forecasting as a forecaster with headquarters located in the country. It is thus enough to have \emph{some} activity in the country to benefit from a significant ``local'' advantage. This also confirms that our main assumption is valid.
+
+%While this difference is not significant in our sample, this suggests that having headquarters located in the country tends to provide an informational advantage as compared to having only a subsidiary. This could be due to the fact that the specialized forecasting departments within a multinational are typically located in the headquarters, or because often headquarters concentrates a higher share of the multinational's operations and profits (which would be consistent with our evidence on incentives)
+
+Note that this analysis also rules out a potential endogeneity bias. Suppose that a firm opens a subsidiary in a country only if it has good quality information on this country. Then, making lower forecasting mistakes would be the cause and not the consequence of the presence of a subsidiary in the country. In our main analysis, we consider the firm to be ``local'' in this case. This would thus lead to a biased estimation of the Foreign dummy. The corresponding dummy ForeignHQ is not endogenous (at least as long as the headquarter decision is orthogonal to information), but it is significant and of the same magnitude as our main estimate.
+
+\subsection{Barriers}
+
+We construct a single sample of observations by stacking observations of inflation and GDP growth errors and errors at different horizons. We estimate equations of the following form:
+\begin{align}
+	\ln(|Error_{ijt,t+h}^{m,x}|)= \delta_{it,h}^{m,x} +\tilde\delta_{jt,h}^{m,x} +  \beta \text{Foreign}_{ij} +\gamma X_{ijt}^{m,x}+ \varepsilon_{ij,t}^m  \,, \label{eq:geography}
+\end{align}
+where $x=growth, inflation$ and $h=0,1$ stand respectively for the forecast variable and the horizon, and $ \delta_{it,h}^{m,x}$ and $\tilde\delta_{jt,h}^{m,x}$ are forecaster-date-variable-horizon fixed effects and country-date-variable-horizon fixed effects. $X_{ijt}^{m,x}$ is a set of variables that have a forecast country-forecaster country dimension. We consider two types of variables: variables that account for the cost of information, and variables that account for the benefits of information. 
+
+To assess the role of the barriers to information, we build on the trade and capital flow literature that has interpreted information as one of the impediments to the cross-border circulation of products and capital. This literature has shown that geography, and in particular distance, retains a high explanatory power for both bilateral trade and bilateral holdings of financial assets. While in the case of trade, information is only one of the many reasons why distance plays a role, the main one being shipping costs \citep{AndersonvanWincoop2004,HeadMayer2013,Allen2014}, in the case  of capital flows,  the cost of information has been the main interpretation of the role of distance \citep{Ghosh2000,DiGiovanni2005,PortesRey2005}.
+
+Following \citet{Pellegrino2021}, we consider a parsimonious set of geographical variables: physical distance, cultural distance, and linguistic distance. Physical Distance from CEPII's GeoDist dataset \citep{Mayer2011}. It measures the geodesic distance between two countries, based on a population-weighted average of the distances between individual cities. Cultural Distance captures distance in contemporary values and beliefs, introduced by \citet{Spolaore2016}, and Linguistic Distance captures distance in spoken languages, introduced by \citet{Fearon2003} and constructed by \citet{Spolaore2016}.\footnote{See Appendix ?? for a detailed description and source of the variables.} To this set of geographical variables, we add a measure of business cycle comovement. More precisely, we measure to what extent the forecaster country variable can be used as a predictor to the forecast variable by regressing the growth (or inflation) of the forecaster country on the growth (or inflation) of the country that is the object of the forecast. We expect the estimated coefficient to have a negative impact on the error. For all these variables, the forecaster country is defined as the country of the forecaster's closest subsidiary. 
+
+Column (1) of Table \ref{tab:error_reg_labs_gravity} provides the point estimate for Foreign in the absence of other controls. The coefficient is equal to 0.06 and highly significant. This reflects the average impact of Foreign across variables and horizons. Column (2) adds the distance variables. While physical and cultural distances are insignificant, linguistic distance seems to play a crucial role. It is significant and actually fully absorbs the impact of Foreign, which shows that language is a major barrier to information, and one of the major causes of the foreign penalty. This variable is still significant when we add the full set of cost-related controls in Column (4). Introducing Business cycle comovement does not per se remove the explanatory power of the Foreign dummy, but this variable seems to play a role: it is insignificant in the absence of other controls (Column (3)) but significant when controlling for the whole set of explanatory variables (Column (4)). Overall, although other variables may matter, we identify linguistic distance as the main driver of the foreign penalty.
+
+Note that, as widely shown by the above-mentioned literature, barriers to information are also correlated with trade and financial ties, which in turn may increase the incentives to acquire information. As in rational inattention models \citep{Sims2003,Mackowiak2009}, agents can choose to devote more resources to the acquisition and processing of information. Therefore, the impact of geography on the foreign penalty could actually be the indirect result of these choices. In that case, information asymmetries are not an exogenous constraint but rather the result of an endogenous choice to devote less resources to information acquisition. An argument against this interpretation is that physical distance does not appear to be a significant driver of the forecasters' errors. If this indirect channel were at play, physical distance would have been significant. Indeed, because physical distance is a good proxy for transportation costs, it is a robust driver of bilateral trade, and hence of financial linkages. Instead, linguistic distance, which is more directly related to information, plays an important role. This is evidence that information asymmetries are not the mere result of incentives.
+
+Can we still find evidence that the incentives to acquire information play a role? \citet{Baeetal2008} have shown that this channel, which they call the ``demand for information'' channel, is at play for foreign financial analysts. To test this channel, we follow their approach and interact the Foreign dummy with some measures of \emph{de jure} economic protectionism. If this channel is at play, then investors and exporters will devote less resources to acquire information on a protectionist foreign market, and the foreign penalty will be larger for protectionist countries. As long as protectionism is unrelated to information asymmetries, we can interpret a positive interaction term as arising from incentives. In Column (5), we include the interaction between Foreign and the average tariff applied to the most favored nation from the World Trade Organization database (https://stats.wto.org/). This coefficient is positive, but insignificant. Column (6) shows that the Foreign penalty is lower on average among financial forecasters, which are more likely to have investments at stake in foreign countries (0.04 against 0.06 for the whole sample), but this difference is not statistically significant. In Column (7), we add the interaction between Foreign and a measure of \emph{de jure} capital controls from \citet{Fernandez2016}. This coefficient is significantly positive, suggesting that capital controls lower the incentives to acquire information for financial forecasters. However, note that economic protectionism can be correlated with the degree of transparency, which can affect information asymmetries. To control for this, we add the interaction between Foreign and a measure of institutional quality in Column (8). The coefficient now becomes insignificant. The foreign penalty is represented in Figure \ref{fig:interaction} over the range of tariffs and capital controls that is relevant in our sample. We do see a positive slope, but this slope is not steep enough to statistically tell apart the value of the foreign penalty across the distribution. We thus do find \emph{some} evidence that incentives lower the foreign penalty, but this evidence is weak.%\footnote{Note that the fact that the foreign dummy does not mean that the Foreign penalty vanishes, because the average impact of Foreign depends on the combnation of Foreign and the interaction term. For instance, the sum of Foreign and the interaction term, evaluated at the median value of tariffs, which is 5\%, is significant.}
+
+\begin{landscape}
+{\setstretch{1}
+\input{Tables/error_reg_labs_gravity}
+}
+\end{landscape}
+
+
+\begin{figure}[h]
+	
+		\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{Figures/interaction_by_tariff}
+		\caption{Foreign penalty by tariff level}
+		\label{fig:interaction_by_tariff}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{Figures/interaction_by_ka}
+		\caption{Foreign penalty by capital control level}
+		\label{fig:interaction_by_ka}
+	\end{subfigure}
+	
+	\caption{Foreign penalty by tariff and capital control levels}
+	\label{fig:interaction}
+	\begin{fignote}
+		\textit{Notes:} Panels (a) and (b) display the sum of the coefficient of Foreign and the interaction term multiplied by the level of tariffs (Panel (a)) and by the level of capital controls (Panel (b)), along with its 90\% confidence interval. The blue lines represent the baseline specifications of Columns (5) and (7) in Table \ref{tab:error_reg_labs_gravity}. The red lines represent the specifications that controls for the interaction between Foreign and the quality of institutions.
+	\end{fignote}
+\end{figure}
+
