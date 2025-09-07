@@ -5675,6 +5675,493 @@ save "$output/extended_stacked.dta", replace
 
 
 
+
+
+
+********************************************************************************
+********************************************************************************
+* 				ROBUSTNESS CHECKS SUMMARY SECTION 4
+********************************************************************************
+********************************************************************************
+
+
+
+********************************************************************************
+* DATA PREP
+
+********************************************************************************
+* 1. CREATE SAME DATASET, BUT USE ALTERNATIVE VINTAGE SERIES:
+********************************************************************************
+
+use "$datace_imf/data_final_newVintage_3.dta", clear
+
+sort idci datem
+xtset idci datem
+
+drop if year < 1998
+drop if year > 2019
+
+local varlist gdp cpi
+local horlist current future
+foreach var in `varlist' {
+	foreach hor in `horlist' {
+		if "`hor'"=="current" {
+		    rename vintage_`var'_current_aprtp2 `var'_current_a1 // PART THAT NEEDS TO BE ADAPTED TO CHANGE VINTAGE SERIES
+			}
+		if "`hor'"=="future" {
+		    rename vintage_`var'_future_aprtp3 `var'_future_a1 // PART THAT NEEDS TO BE ADAPTED TO CHANGE VINTAGE SERIES
+			}
+			
+		
+		* vintage untrimmed
+		gen `var'_`hor'_a1_ut = `var'_`hor'_a1
+		* forecasts untrimmed
+		gen `var'_`hor'_ut = `var'_`hor'
+		* quantiles over emerging countries
+		egen `var'_`hor'_p25 = pctile(`var'_`hor'), p(25) by(Emerging)
+		egen `var'_`hor'_p75 = pctile(`var'_`hor'), p(75) by(Emerging)
+		egen `var'_`hor'_p50 = pctile(`var'_`hor'), p(50) by(Emerging)
+		* quantiles over country and datem
+		egen `var'_`hor'_cd_p25 = pctile(`var'_`hor'), p(25) by(country datem)
+		egen `var'_`hor'_cd_p75 = pctile(`var'_`hor'), p(75) by(country datem)
+		egen `var'_`hor'_cd_p50 = pctile(`var'_`hor'), p(50) by(country datem)
+		
+		* remove if forecasts are further away than 5*IQR calculated over emerging countries and by country datem.
+		replace `var'_`hor' = . if (`var'_`hor'>`var'_`hor'_p50 + 5*(`var'_`hor'_p75-`var'_`hor'_p25) | `var'_`hor'<`var'_`hor'_p50 - 5*(`var'_`hor'_p75-`var'_`hor'_p25)) | (`var'_`hor'>`var'_`hor'_cd_p50 + 5*(`var'_`hor'_cd_p75-`var'_`hor'_cd_p25) | `var'_`hor'<`var'_`hor'_cd_p50 - 5*(`var'_`hor'_cd_p75-`var'_`hor'_cd_p25))
+		egen `var'_`hor'_a1_p25 = pctile(`var'_`hor'_a1), p(25) by(Emerging)
+		egen `var'_`hor'_a1_p75 = pctile(`var'_`hor'_a1), p(75) by(Emerging)
+		egen `var'_`hor'_a1_p50 = pctile(`var'_`hor'_a1), p(50) by(Emerging)
+		replace `var'_`hor'_a1 = . if (`var'_`hor'_a1>`var'_`hor'_a1_p50 + 5*(`var'_`hor'_a1_p75-`var'_`hor'_a1_p25) | `var'_`hor'_a1<`var'_`hor'_a1_p50 - 5*(`var'_`hor'_a1_p75-`var'_`hor'_a1_p25))
+		replace `var'_`hor'=. if `var'_`hor'_a1==.
+		}
+}
+
+
+
+
+
+* Revisions
+local varlist gdp cpi
+local horlist current future
+foreach var in `varlist' {
+	replace FR_`var' = `var'_current - l12.`var'_future
+	label var FR_`var' "Revision Y-o-Y"
+	replace FR_`var'_current = `var'_current - l1.`var'_current if month!=1
+	replace FR_`var'_current = `var'_current - l1.`var'_future if month==1
+	label var FR_`var'_current  "Revision current `var' M-o-M"
+	replace FR_`var'_future = `var'_future - l1.`var'_future if month!=1
+	label var FR_`var'_future  "Revision future `var' M-o-M"
+	foreach hor in `horlist' {
+		replace FE_`var'_`hor'_a1 = `var'_`hor'_a1 - `var'_`hor'
+		replace labs_FE_`var'_`hor'_a1 = log(abs(FE_`var'_`hor'_a1))
+		replace labs_FE_`var'_`hor'_a1 = max(-6.9,labs_FE_`var'_`hor'_a1) if labs_FE_`var'_`hor'_a1!=.
+		replace labs_FE_`var'_`hor'_a1 = -6.9 if FE_`var'_`hor'_a1==0
+	}
+}
+
+
+
+foreach var in gdp cpi {
+	egen FR_`var'_jt = mean(FR_`var'), by(country datem)
+	label var FR_`var'_jt "Mean Revision by country-date"
+	
+	egen FR_`var'_local = mean(FR_`var') if Foreign==0, by(country datem)
+	label var FR_`var'_local "Mean Revision by country-date if Local"
+	
+	egen FR_`var'_local2 = max(FR_`var'_local), by(country datem)
+	label var FR_`var'_local2 "Maximum Revision by country-date if Local"
+	
+	gen dFR_`var'_local = FR_`var'_local2 - FR_`var'_jt
+	label var dFR_`var'_local "Maximum Revision by country-date and if local minus mean revision by country-date"
+	
+	egen FR_`var'_foreign = mean(FR_`var') if Foreign==1, by(country datem)
+	label var FR_`var'_foreign  "Mean Revision by country-date if Foreign"
+	
+	egen FR_`var'_foreign2 = max(FR_`var'_foreign), by(country datem)
+	label var FR_`var'_foreign2 "Maximum Revision by country-date if Local"
+	
+	gen dFR_`var'_foreign = FR_`var'_foreign2 - FR_`var'_jt
+	label var dFR_`var'_local "Maximum Revision by country-date and if foreign minus mean revision by country-date"
+	
+	gen dFR_`var'_locfor = FR_`var'_local2 - FR_`var'_foreign2
+	label var dFR_`var'_local "Difference of max forecast revision by country-date locals minus those of foreigns"
+	
+	egen `var'_local = mean(`var'_current) if Foreign==0, by(country datem)
+	label var `var'_local "Mean of `var'_current by locals, country date"
+	
+	egen `var'_local2 = max(`var'_local), by(country datem)
+	label var `var'_local2  "Maximum of mean of `var' current by locals, country date"
+	
+	egen `var'_foreign = mean(`var'_current) if Foreign==1, by(country datem)
+	label var `var'_local "Mean of `var'_current by foreigns, country date"
+	
+	egen `var'_foreign2 = max(`var'_foreign), by(country datem)
+	label var `var'_foreign2  "Maximum of mean of `var' current by foreigns, country date"
+	
+	gen d`var'_locfor = `var'_local2 - `var'_foreign2
+	label var `var'_foreign2  "Difference of max of mean of `var'_current between local and foreigns, by countyr-date"
+	
+	
+	
+}
+
+sort institution
+by institution: egen Loc = max(Local)
+by institution: egen For = max(Foreign)
+gen LocFor = Loc*For
+
+gen LocalHQ = 1-ForeignHQ
+sort institution
+by institution: egen LocHQ = max(LocalHQ)
+by institution: egen ForHQ = max(ForeignHQ)
+gen LocForHQ = LocHQ*ForHQ
+
+save $output/rob_a2.dta, replace
+
+
+
+********************************************************************************
+* 2. CREATE SAME DATASET, BUT ONLY USE LOCFOR == 1:
+********************************************************************************
+
+use "$datace_imf/data_final_newVintage_3.dta", clear
+
+
+sort idci datem
+xtset idci datem
+
+drop if year < 1998
+drop if year > 2019
+
+local varlist gdp cpi
+local horlist current future
+foreach var in `varlist' {
+	foreach hor in `horlist' {
+		if "`hor'"=="current" {
+		    rename vintage_`var'_current_aprtp1 `var'_current_a1
+			}
+		if "`hor'"=="future" {
+		    rename vintage_`var'_future_aprtp2 `var'_future_a1
+			}
+			
+		* vintage untrimmed
+		gen `var'_`hor'_a1_ut = `var'_`hor'_a1
+		* forecasts untrimmed
+		gen `var'_`hor'_ut = `var'_`hor'
+		* quantiles over emerging countries
+		egen `var'_`hor'_p25 = pctile(`var'_`hor'), p(25) by(Emerging)
+		egen `var'_`hor'_p75 = pctile(`var'_`hor'), p(75) by(Emerging)
+		egen `var'_`hor'_p50 = pctile(`var'_`hor'), p(50) by(Emerging)
+		* quantiles over country and datem
+		egen `var'_`hor'_cd_p25 = pctile(`var'_`hor'), p(25) by(country datem)
+		egen `var'_`hor'_cd_p75 = pctile(`var'_`hor'), p(75) by(country datem)
+		egen `var'_`hor'_cd_p50 = pctile(`var'_`hor'), p(50) by(country datem)
+		
+		* remove if forecasts are further away than 5*IQR calculated over emerging countries and by country datem.
+		replace `var'_`hor' = . if (`var'_`hor'>`var'_`hor'_p50 + 5*(`var'_`hor'_p75-`var'_`hor'_p25) | `var'_`hor'<`var'_`hor'_p50 - 5*(`var'_`hor'_p75-`var'_`hor'_p25)) | (`var'_`hor'>`var'_`hor'_cd_p50 + 5*(`var'_`hor'_cd_p75-`var'_`hor'_cd_p25) | `var'_`hor'<`var'_`hor'_cd_p50 - 5*(`var'_`hor'_cd_p75-`var'_`hor'_cd_p25))
+		egen `var'_`hor'_a1_p25 = pctile(`var'_`hor'_a1), p(25) by(Emerging)
+		egen `var'_`hor'_a1_p75 = pctile(`var'_`hor'_a1), p(75) by(Emerging)
+		egen `var'_`hor'_a1_p50 = pctile(`var'_`hor'_a1), p(50) by(Emerging)
+		replace `var'_`hor'_a1 = . if (`var'_`hor'_a1>`var'_`hor'_a1_p50 + 5*(`var'_`hor'_a1_p75-`var'_`hor'_a1_p25) | `var'_`hor'_a1<`var'_`hor'_a1_p50 - 5*(`var'_`hor'_a1_p75-`var'_`hor'_a1_p25))
+		replace `var'_`hor'=. if `var'_`hor'_a1==.
+		}
+}
+
+
+
+*** loss due to trimming:
+
+* - 3.7
+su cpi_current
+su cpi_current_ut
+
+* - 1.2
+su gdp_current
+su gdp_current_ut
+
+* -9.7
+su cpi_future
+su cpi_future_ut
+
+* - 7.15
+su gdp_future
+su gdp_future_ut
+****
+
+
+
+
+* Revisions
+local varlist gdp cpi
+local horlist current future
+foreach var in `varlist' {
+	replace FR_`var' = `var'_current - l12.`var'_future
+	label var FR_`var' "Revision Y-o-Y"
+	replace FR_`var'_current = `var'_current - l1.`var'_current if month!=1
+	replace FR_`var'_current = `var'_current - l1.`var'_future if month==1
+	label var FR_`var'_current  "Revision current `var' M-o-M"
+	replace FR_`var'_future = `var'_future - l1.`var'_future if month!=1
+	label var FR_`var'_future  "Revision future `var' M-o-M"
+	foreach hor in `horlist' {
+		replace FE_`var'_`hor'_a1 = `var'_`hor'_a1 - `var'_`hor'
+		replace labs_FE_`var'_`hor'_a1 = log(abs(FE_`var'_`hor'_a1))
+		replace labs_FE_`var'_`hor'_a1 = max(-6.9,labs_FE_`var'_`hor'_a1) if labs_FE_`var'_`hor'_a1!=.
+		replace labs_FE_`var'_`hor'_a1 = -6.9 if FE_`var'_`hor'_a1==0
+	}
+}
+
+
+
+foreach var in gdp cpi {
+	egen FR_`var'_jt = mean(FR_`var'), by(country datem)
+	label var FR_`var'_jt "Mean Revision by country-date"
+	
+	egen FR_`var'_local = mean(FR_`var') if Foreign==0, by(country datem)
+	label var FR_`var'_local "Mean Revision by country-date if Local"
+	
+	egen FR_`var'_local2 = max(FR_`var'_local), by(country datem)
+	label var FR_`var'_local2 "Maximum Revision by country-date if Local"
+	
+	gen dFR_`var'_local = FR_`var'_local2 - FR_`var'_jt
+	label var dFR_`var'_local "Maximum Revision by country-date and if local minus mean revision by country-date"
+	
+	egen FR_`var'_foreign = mean(FR_`var') if Foreign==1, by(country datem)
+	label var FR_`var'_foreign  "Mean Revision by country-date if Foreign"
+	
+	egen FR_`var'_foreign2 = max(FR_`var'_foreign), by(country datem)
+	label var FR_`var'_foreign2 "Maximum Revision by country-date if Local"
+	
+	gen dFR_`var'_foreign = FR_`var'_foreign2 - FR_`var'_jt
+	label var dFR_`var'_local "Maximum Revision by country-date and if foreign minus mean revision by country-date"
+	
+	gen dFR_`var'_locfor = FR_`var'_local2 - FR_`var'_foreign2
+	label var dFR_`var'_local "Difference of max forecast revision by country-date locals minus those of foreigns"
+	
+	egen `var'_local = mean(`var'_current) if Foreign==0, by(country datem)
+	label var `var'_local "Mean of `var'_current by locals, country date"
+	
+	egen `var'_local2 = max(`var'_local), by(country datem)
+	label var `var'_local2  "Maximum of mean of `var' current by locals, country date"
+	
+	egen `var'_foreign = mean(`var'_current) if Foreign==1, by(country datem)
+	label var `var'_local "Mean of `var'_current by foreigns, country date"
+	
+	egen `var'_foreign2 = max(`var'_foreign), by(country datem)
+	label var `var'_foreign2  "Maximum of mean of `var' current by foreigns, country date"
+	
+	gen d`var'_locfor = `var'_local2 - `var'_foreign2
+	label var `var'_foreign2  "Difference of max of mean of `var'_current between local and foreigns, by countyr-date"
+	
+	
+	
+}
+
+sort institution
+by institution: egen Loc = max(Local)
+by institution: egen For = max(Foreign)
+gen LocFor = Loc*For
+
+gen LocalHQ = 1-ForeignHQ
+sort institution
+by institution: egen LocHQ = max(LocalHQ)
+by institution: egen ForHQ = max(ForeignHQ)
+gen LocForHQ = LocHQ*ForHQ
+
+keep if LocFor == 1
+
+save $output/rob_locfor1, replace
+
+ 
+********************************************************************************
+* 3. ALTERNATIVE TRIMMING
+********************************************************************************
+
+use "$datace_imf/data_final_newVintage_3.dta", clear
+
+
+sort idci datem
+xtset idci datem
+
+drop if year < 1998
+drop if year > 2019
+
+local varlist gdp cpi
+local horlist current future
+foreach var in `varlist' {
+	foreach hor in `horlist' {
+		if "`hor'"=="current" {
+		    rename vintage_`var'_current_aprtp1 `var'_current_a1
+			}
+		if "`hor'"=="future" {
+		    rename vintage_`var'_future_aprtp2 `var'_future_a1
+			}
+		
+		* vintage untrimmed
+		gen `var'_`hor'_a1_ut = `var'_`hor'_a1
+		* forecasts untrimmed
+		gen `var'_`hor'_ut = `var'_`hor'
+		* quantiles over emerging countries
+		egen `var'_`hor'_p25 = pctile(`var'_`hor'), p(25) by(Emerging)
+		egen `var'_`hor'_p75 = pctile(`var'_`hor'), p(75) by(Emerging)
+		egen `var'_`hor'_p50 = pctile(`var'_`hor'), p(50) by(Emerging)
+		* quantiles over country and datem
+		egen `var'_`hor'_cd_p25 = pctile(`var'_`hor'), p(25) by(country datem)
+		egen `var'_`hor'_cd_p75 = pctile(`var'_`hor'), p(75) by(country datem)
+		egen `var'_`hor'_cd_p50 = pctile(`var'_`hor'), p(50) by(country datem)
+		
+		* remove if forecasts are further away than 5*IQR calculated over emerging countries and by country datem.
+		replace `var'_`hor' = . if (`var'_`hor'>`var'_`hor'_p50 + 6*(`var'_`hor'_p75-`var'_`hor'_p25) | `var'_`hor'<`var'_`hor'_p50 - 6*(`var'_`hor'_p75-`var'_`hor'_p25)) | (`var'_`hor'>`var'_`hor'_cd_p50 + 6*(`var'_`hor'_cd_p75-`var'_`hor'_cd_p25) | `var'_`hor'<`var'_`hor'_cd_p50 - 6*(`var'_`hor'_cd_p75-`var'_`hor'_cd_p25))
+		egen `var'_`hor'_a1_p25 = pctile(`var'_`hor'_a1), p(25) by(Emerging)
+		egen `var'_`hor'_a1_p75 = pctile(`var'_`hor'_a1), p(75) by(Emerging)
+		egen `var'_`hor'_a1_p50 = pctile(`var'_`hor'_a1), p(50) by(Emerging)
+		replace `var'_`hor'_a1 = . if (`var'_`hor'_a1>`var'_`hor'_a1_p50 + 6*(`var'_`hor'_a1_p75-`var'_`hor'_a1_p25) | `var'_`hor'_a1<`var'_`hor'_a1_p50 - 6*(`var'_`hor'_a1_p75-`var'_`hor'_a1_p25))
+		replace `var'_`hor'=. if `var'_`hor'_a1==.
+		}
+}
+
+
+
+*** loss due to trimming:
+
+* - 3.7
+su cpi_current
+su cpi_current_ut
+
+* - 1.2
+su gdp_current
+su gdp_current_ut
+
+* -9.7
+su cpi_future
+su cpi_future_ut
+
+* - 7.15
+su gdp_future
+su gdp_future_ut
+****
+
+
+
+
+* Revisions
+local varlist gdp cpi
+local horlist current future
+foreach var in `varlist' {
+	replace FR_`var' = `var'_current - l12.`var'_future
+	label var FR_`var' "Revision Y-o-Y"
+	replace FR_`var'_current = `var'_current - l1.`var'_current if month!=1
+	replace FR_`var'_current = `var'_current - l1.`var'_future if month==1
+	label var FR_`var'_current  "Revision current `var' M-o-M"
+	replace FR_`var'_future = `var'_future - l1.`var'_future if month!=1
+	label var FR_`var'_future  "Revision future `var' M-o-M"
+	foreach hor in `horlist' {
+		replace FE_`var'_`hor'_a1 = `var'_`hor'_a1 - `var'_`hor'
+		replace labs_FE_`var'_`hor'_a1 = log(abs(FE_`var'_`hor'_a1))
+		replace labs_FE_`var'_`hor'_a1 = max(-6.9,labs_FE_`var'_`hor'_a1) if labs_FE_`var'_`hor'_a1!=.
+		replace labs_FE_`var'_`hor'_a1 = -6.9 if FE_`var'_`hor'_a1==0
+	}
+}
+
+
+
+foreach var in gdp cpi {
+	egen FR_`var'_jt = mean(FR_`var'), by(country datem)
+	label var FR_`var'_jt "Mean Revision by country-date"
+	
+	egen FR_`var'_local = mean(FR_`var') if Foreign==0, by(country datem)
+	label var FR_`var'_local "Mean Revision by country-date if Local"
+	
+	egen FR_`var'_local2 = max(FR_`var'_local), by(country datem)
+	label var FR_`var'_local2 "Maximum Revision by country-date if Local"
+	
+	gen dFR_`var'_local = FR_`var'_local2 - FR_`var'_jt
+	label var dFR_`var'_local "Maximum Revision by country-date and if local minus mean revision by country-date"
+	
+	egen FR_`var'_foreign = mean(FR_`var') if Foreign==1, by(country datem)
+	label var FR_`var'_foreign  "Mean Revision by country-date if Foreign"
+	
+	egen FR_`var'_foreign2 = max(FR_`var'_foreign), by(country datem)
+	label var FR_`var'_foreign2 "Maximum Revision by country-date if Local"
+	
+	gen dFR_`var'_foreign = FR_`var'_foreign2 - FR_`var'_jt
+	label var dFR_`var'_local "Maximum Revision by country-date and if foreign minus mean revision by country-date"
+	
+	gen dFR_`var'_locfor = FR_`var'_local2 - FR_`var'_foreign2
+	label var dFR_`var'_local "Difference of max forecast revision by country-date locals minus those of foreigns"
+	
+	egen `var'_local = mean(`var'_current) if Foreign==0, by(country datem)
+	label var `var'_local "Mean of `var'_current by locals, country date"
+	
+	egen `var'_local2 = max(`var'_local), by(country datem)
+	label var `var'_local2  "Maximum of mean of `var' current by locals, country date"
+	
+	egen `var'_foreign = mean(`var'_current) if Foreign==1, by(country datem)
+	label var `var'_local "Mean of `var'_current by foreigns, country date"
+	
+	egen `var'_foreign2 = max(`var'_foreign), by(country datem)
+	label var `var'_foreign2  "Maximum of mean of `var' current by foreigns, country date"
+	
+	gen d`var'_locfor = `var'_local2 - `var'_foreign2
+	label var `var'_foreign2  "Difference of max of mean of `var'_current between local and foreigns, by countyr-date"
+	
+	
+	
+}
+
+sort institution
+by institution: egen Loc = max(Local)
+by institution: egen For = max(Foreign)
+gen LocFor = Loc*For
+
+gen LocalHQ = 1-ForeignHQ
+sort institution
+by institution: egen LocHQ = max(LocalHQ)
+by institution: egen ForHQ = max(ForeignHQ)
+gen LocForHQ = LocHQ*ForHQ
+
+
+save $output/rob_trimming, replace
+
+********************************************************************************
+* 4. HEADQUARTER ONLY AS FOREIGN DEFINITION 
+********************************************************************************
+
+
+use $output/baseline.dta, clear
+
+
+cap drop Foreign
+g Foreign = country != Headquarters
+
+gen LocalSub = (ForeignHQ==1)*(Foreign==0)
+
+save $output/rob_headquarter.dta, replace
+
+
+
+********************************************************************************
+* 5. KEEP ONLY FORECASTS THAT UPDATED
+********************************************************************************
+
+
+
+use $output/baseline.dta, clear
+
+sort idci datem
+xtset idci datem
+replace labs_FE_cpi_current_a1 = . if l.cpi_current == cpi_current & month != 1
+replace labs_FE_cpi_current_a1 = . if l.cpi_future == cpi_current & month == 1
+replace labs_FE_gdp_current_a1 = . if l.gdp_current == gdp_current & month != 1
+replace labs_FE_gdp_current_a1 = . if l.gdp_current == gdp_current & month == 1
+replace labs_FE_cpi_future_a1 = . if l.cpi_future == cpi_future & month != 1
+replace labs_FE_gdp_future_a1 = . if l.gdp_future == gdp_future & month != 1
+
+
+
+save $output/rob_changeForecastCurrent.dta, replace
+
+
+
 								* END OF CODE *
 ********************************************************************************
 ********************************************************************************
