@@ -639,11 +639,6 @@ texsave var col_*  using "$tables/error_reg_labs_gravity.tex", ///
 	title(The Geography of Information) varlabels nofix hlines(0) headersep(0pt) ///
 frag  size(footnotesize)  align(l C C C C C C C m{0.005\textwidth} C C C m{0.005\textwidth} C C) location(H) replace label(tab:error_reg_labs_gravity) headerlines("&\multicolumn{14}{c}{$\ln(|Error_{ijt,t}^m|)$}\tabularnewline\cline{2-15} \tabularnewline  \cline{2-8} \cline{10-12} \cline{14-15}\tabularnewline  &{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)}&{(7)}&&{(8)}&{(9)}&{(10)}&&{(11)}&{(12)}") footnote(		"\begin{minipage}{1\linewidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:}   The table shows the regression of the log absolute forecast error on regressors accounting for the geography of information. All standard errors are clustered at the country, forecaster and date levels. \end{tabnote} \end{minipage}  ")
 
-/*
-texsave var col_*  using "$tables/error_reg_labs_gravity.tex", ///
-	title(The Geography of Information) varlabels nofix hlines(0) headersep(0pt) ///
-frag  size(footnotesize)  align(l C C C C m{0.005\textwidth} C C C C) location(H) replace label(tab:error_reg_labs_gravity) headerlines("&\multicolumn{9}{c}{$\ln(|Error_{ijt,t}^m|)$}\tabularnewline\cline{2-10} \tabularnewline &\multicolumn{4}{c}{Barriers}&&\multicolumn{4}{c}{Incentives} \tabularnewline \cline{2-5} \cline{7-10}\tabularnewline  &{(1)}&{(2)}&{(3)}&{(4)}&&{(5)}&{(6)}&{(7)}&{(8)}") footnote(		"\begin{minipage}{1\linewidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:}   The table shows the regression of the log absolute forecast error of current and future CPI and GDP on regressors accounting for the geography of information. All standard errors are clustered at the country-closest subsidiary country pair and date levels. \end{tabnote} \end{minipage}  ")
-*/
 
 ***********************
 **** cross-section ****
