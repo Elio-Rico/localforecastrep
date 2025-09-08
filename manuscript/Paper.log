@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.10.22)  7 SEP 2025 17:27
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.10.22)  8 SEP 2025 10:00
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -467,10 +467,10 @@ Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
 Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
 )
-(/usr/local/texlive/2021/texmf-dist/tex/latex/tools/xr.sty
-Package: xr 2020-05-10 v5.06 eXternal References (DPC)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/hyperref/xr-hyper.sty
+Package: xr-hyper 2021-02-27 v7.00k eXternal References (DPC)
 )
-Package xr Info: IMPORTING LABELS FROM Appendix.aux on input line 34.
+Package xr Info: IMPORTING LABELS FROM Appendix.aux on input line 35.
 
 (/usr/local/texlive/2021/texmf-dist/tex/latex/datatool/datatool.sty
 Package: datatool 2019/09/27 v2.32 (NLCT)
@@ -1134,10 +1134,6 @@ t the in-for-ma-tion struc-ture is coun-try, month, and forecaster-
 (./Sections/geography.tex [28] (../output/tables/error_reg_labs_mult.tex)
 [29] [30] [31] (../output/tables/error_reg_labs_gravity.tex) [32] [33] [34]
 [35]) (./Sections/heterogeneity.tex [36] [37]
-
-LaTeX Warning: Reference `app:tab_emerging_advanced' on page 38 undefined on in
-put line 24.
-
 (../output/tables/error_reg_labs_cs.tex
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
 (Font)              scaled to size 8.0pt on input line 6.
@@ -1147,17 +1143,14 @@ LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
 Package natbib Warning: There were multiply defined citations.
 
 [45] (./Paper.aux)
-
-LaTeX Warning: There were undefined references.
-
 Package rerunfilecheck Info: File `Paper.out' has not changed.
 (rerunfilecheck)             Checksum: 584382DF33DDA9462DFC76FB64299FC3;4303.
  ) 
 Here is how much of TeX's memory you used:
- 19716 strings out of 478994
- 295962 string characters out of 5858183
- 811499 words of memory out of 5000000
- 36500 multiletter control sequences out of 15000+600000
+ 19721 strings out of 478994
+ 296052 string characters out of 5858183
+ 812608 words of memory out of 5000000
+ 36506 multiletter control sequences out of 15000+600000
  550079 words of font info for 217 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  102i,16n,117p,2305b,1609s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1263,10 +1256,10 @@ fb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/newtx/txsys.pfb></usr
 xlive/2021/texmf-dist/fonts/type1/public/newtx/ztmbi.pfb></usr/local/texlive/20
 21/texmf-dist/fonts/type1/public/newtx/ztmr.pfb></usr/local/texlive/2021/texmf-
 dist/fonts/type1/public/newtx/ztmri.pfb>
-Output written on Paper.pdf (46 pages, 398852 bytes).
+Output written on Paper.pdf (46 pages, 398867 bytes).
 PDF statistics:
- 826 PDF objects out of 1000 (max. 8388607)
- 741 compressed objects within 8 object streams
+ 827 PDF objects out of 1000 (max. 8388607)
+ 742 compressed objects within 8 object streams
  216 named destinations out of 1000 (max. 500000)
  169 words of extra memory for PDF output out of 10000 (max. 10000000)
 

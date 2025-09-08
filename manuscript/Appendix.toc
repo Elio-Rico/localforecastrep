@@ -8,9 +8,9 @@
 \contentsline {paragraph}{Alternative Clustering.}{4}{section*.8}%
 \contentsline {section}{\numberline {C}Tables}{7}{appendix.C}%
 \contentsline {section}{\numberline {D}Figures}{23}{appendix.D}%
-\contentsline {section}{\numberline {E}Proofs}{31}{appendix.E}%
-\contentsline {subsection}{\numberline {E.1}Proof of Proposition \ref {prop:variance}}{31}{subsection.E.1}%
-\contentsline {subsection}{\numberline {E.2}Proof of Proposition \ref {prop:BGMS}}{32}{subsection.E.2}%
-\contentsline {subsection}{\numberline {E.3}Proof of Proposition \ref {prop:consensus}}{36}{subsection.E.3}%
-\contentsline {subsection}{\numberline {E.4}Proof of Proposition \ref {prop:pooledFE}}{38}{subsection.E.4}%
-\contentsline {subsection}{\numberline {E.5}Proof of Proposition \ref {prop:disagreement}}{39}{subsection.E.5}%
+\contentsline {section}{\numberline {E}Proofs}{30}{appendix.E}%
+\contentsline {subsection}{\numberline {E.1}Proof of Proposition \ref {prop:variance}}{30}{subsection.E.1}%
+\contentsline {subsection}{\numberline {E.2}Proof of Proposition \ref {prop:BGMS}}{31}{subsection.E.2}%
+\contentsline {subsection}{\numberline {E.3}Proof of Proposition \ref {prop:consensus}}{35}{subsection.E.3}%
+\contentsline {subsection}{\numberline {E.4}Proof of Proposition \ref {prop:pooledFE}}{37}{subsection.E.4}%
+\contentsline {subsection}{\numberline {E.5}Proof of Proposition \ref {prop:disagreement}}{38}{subsection.E.5}%
