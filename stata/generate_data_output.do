@@ -2467,6 +2467,8 @@ egen N = count(gdp_current), by(institution date)
 *egen crisis = rowmax(Banking_Crisis Currency_Crises Systemic_Crises Inflation_Crises Domestic* External* Sovereign*)
 *replace crisis = 1 if crisis==2
 
+
+* in the end location is entirely defined by what we have in the trees data files.
 egen idci = group(country institution)
 
 g location_sub_n = .
