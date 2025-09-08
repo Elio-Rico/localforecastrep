@@ -3,7 +3,7 @@ devtools::load_all(".")
 library("tidyverse")
 library("haven")
 library("cli")
-renv::init()
+
 
 list_of_countries <- c("Austria","Argentina", "Brazil","Belgium","Bulgaria","Canada","Chile","China",
                        "Colombia","Croatia","Czech Republic","Denmark",
