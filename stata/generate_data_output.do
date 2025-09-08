@@ -1,12 +1,12 @@
 ********************************************************************************
 *
-*						CONSENSUS ECONOMICS DATA
-*
+*				Do Local Forecasters Have Better Information?
+*						replication code
 ********************************************************************************
 
 /*
 
-
+generates all data needed for the analysis
 
 */
 
@@ -16,7 +16,6 @@
 clear all
 set more off
 
-cd "/Users/ebollige/Dropbox/1_1_replication_forecasters/localforecastrep/stata/"
 
 * do file location:
 local dofile = "`c(pwd)'"

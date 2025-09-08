@@ -41,12 +41,14 @@ Inputs are stored in [inst/data/raw/ce](inst/data/raw/ce/), with 4 different fol
 ### 3. Stata Codes
 
 #### 3.1 [stata/](stata/)
-This folder contains the do-files, which are numbered and must be run in that order. It saves the final dataset in the folder data.
+This folder contains the do-files. Users can run the do-file `masters.do`. **Note to adapt the `cd` command in this do-file**. 
+
+The `masters.do` will run the `generate_data_output.do` file, which produces different data stored in the folder [data/](data/) used for the analysis. It then runs the do files `results_section2.do`, `results_section3.do`, `results_section4.do`, `results_section5_and6.do`, which produce all results shown in the paper for the corresponding sections.
 
 
 ### 4. [data/](data/)
 
-This folder contains the final data which is used to produce all figures and tables from the paper.
+This folder contains the final data which is used in the do-files to produce all figures and tables from the paper.
 
 
 

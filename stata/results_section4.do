@@ -1,11 +1,18 @@
+********************************************************************************
+*
+*				Do Local Forecasters Have Better Information?
+*						replication code
+********************************************************************************
 
-* reproduce data in section 4:
+/*
 
+generates results for section 4
+
+*/
 
 clear all
 set more off
 
-cd "/Users/ebollige/Dropbox/1_1_replication_forecasters/localforecastrep/stata/"
 
 * do file location:
 local dofile = "`c(pwd)'"
