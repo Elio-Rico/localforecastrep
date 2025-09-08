@@ -403,15 +403,6 @@ reghdfe b_FR_`var' Foreign [aweight=weight_`var'], absorb(idi#month country_num#
 
 	save $temp_data/overextr_mg, replace
 
-	/*
-	* produce the tables
-	
-
-texsave var cpi1 gdp1 using "$tables/overextr_main.tex", ///
-				title(Behavioral Biases - Over-extrapolation  regressions) varlabels nofix hlines(0) headersep(0pt) autonumber ///
-			frag  size(footnotesize)  align( l l C C C C C C) location(H) replace label(tab:overextr_main) footnote(		"\begin{minipage}{1\textwidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} The table shows the results of a regression of the perceived autocorrelation coefficients $\hat\rho$ on the Foreign dummy, where the $\hat\rho$ is estimated using Equation \eqref{eq:rhohat} on different sub-groups of our sample. \textit{Average locals} corresponds to the constant term (or average fixed effect). \textit{Foreign} corresponds to the coefficient of the Foreign dummy. The obervations are clustered at the country level in specifications (1) and (2), and at the country and forecaster levels in specifications (3) to (6).  \end{tabnote} \end{minipage}  ") 
-	
-*/
 
 **************
 * Robustness
@@ -790,26 +781,6 @@ collapse Emerging, by(country country_num Foreign)
 merge 1:1 country_num Foreign using $temp_data/mg_FR, nogen
 save $temp_data/mg_BGMS_cty, replace
 
-* To be added
-/*
-reghdfe b_FR_gdp Foreign [aweight=N_FR_gdp], absorb(country_num) vce(robust)
-reghdfe b_FR_cpi Foreign [aweight=N_FR_cpi], absorb(country_num) vce(robust)
-
-reghdfe b_FR_gdp Foreign [aweight=N_FR_gdp], noabsorb vce(robust)
-reghdfe b_FR_cpi Foreign [aweight=N_FR_cpi], noabsorb vce(robust)
-
-sort country_num
-by country_num: egen mb_FR_cpi_cty = median(b_FR_cpi)
-egen country_num1 = group(mb_FR_cpi_cty)
-by country_num: egen mb_FR_gdp_cty = median(b_FR_gdp)
-egen country_num2 = group(mb_FR_gdp_cty)
-twoway (scatter b_FR_cpi country_num1) (scatter b_FR_cpi country_num1 if Emerging==1) (scatter b_FR_cpi country_num1 if country=="United States")
-twoway (scatter b_FR_gdp country_num2) (scatter b_FR_gdp country_num2 if Emerging==1) (scatter b_FR_gdp country_num2 if country=="United States")
-hist b_FR_gdp 
-hist b_FR_cpi
-reghdfe b_FR_gdp Foreign [aweight=N_FR_gdp], absorb(country_num idi) vce(cluster country_num idi)
-reghdfe b_FR_cpi Foreign [aweight=N_FR_cpi], absorb(country_num idi) vce(cluster country_num idi)
-*/
 
 
 use $temp_data/mg_BGMS_cty, clear
@@ -1145,17 +1116,6 @@ foreach var in cpi gdp {
 
 	save $temp_data/bgms_mg, replace
 
-/*
-	* produce the tables
-	
-	drop if _n >12
-	drop sample
-
-texsave var cpi gdp cpi2 gdp2 cpi3 gdp3 using "$tables/bgms_main.tex", ///
-				title(Behavioral Biases - BGMS regressions) varlabels nofix hlines(0) headersep(0pt) autonumber ///
-			frag  size(footnotesize)  align( l C C C C C C) location(H) replace label(tab:bgms_main) footnote(		"\begin{minipage}{1\textwidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} The table shows the results of a regression of the $\beta^{BGMS}$ coefficients on the Foreign dummy, where the $\beta^{BGMS}$ are estimated using Equation \eqref{eq:BGMS} on different sub-groups of our sample. \textit{Average locals} corresponds to the constant term (or average fixed effect). \textit{Foreign} corresponds to the coefficient of the Foreign dummy. The observations are clustered at the country level in specifications (1) and (2), and at the country and forecaster levels in specifications (3) to (6). \end{tabnote} \end{minipage}  ") 
-	
-*/
 
 
 **************
@@ -1685,17 +1645,7 @@ foreach var in cpi gdp {
 
 	save $temp_data/FE_mg, replace
 	
-/*
-* Produce the tables
-			
-			drop if _n > 10
-			drop sample
 
-	texsave var cpi gdp cpi2 gdp2 using "$tables/FE_reg_main.tex", ///
-				title(Information Asymmetries - Fixed-effect regressions) varlabels nofix hlines(0) headersep(0pt) autonumber ///
-			frag  size(footnotesize)  align( l C C C C) location(H) replace label(tab:FE_reg_main) footnote(		"\begin{minipage}{1\textwidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} The table shows the results of a regression of the $\beta^{FE}$ coefficients on the Foreign dummy, where the $\beta^{FE}$ are estimated using Equation \eqref{eq:pooledFE} on different sub-groups of our sample. \textit{Average locals} corresponds to the constant term (or average fixed effect). \textit{Foreign} corresponds to the coefficient of the Foreign dummy. The observations are clustered at the country level in specifications (1) to (4). \end{tabnote} \end{minipage}  ") 
-	
-*/
 
 
 **************
@@ -2136,16 +2086,6 @@ foreach var in cpi gdp {
 
 	save $temp_data/disag_mg, replace
 	
-/*
-* Produce the tables		
-			
-			drop if _n > 6
-			drop sample
-
-	texsave var cpi gdp cpi2 gdp2 using "$tables/disag_main.tex", ///
-				title(Information Asymmetries - Disagreement regressions) varlabels nofix hlines(0) headersep(0pt) autonumber ///
-			frag  size(footnotesize)  align( l C C C C) location(H) replace label(tab:disag_main) footnote(		"\begin{minipage}{1\textwidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:} The table shows the results of a regression of the $\beta^{Dis}$ coefficients on the constant, where the $\beta^{Dis}$ are estimated using Equation \eqref{eq:disagreement} on different sub-groups of our sample. ``Disagreement'' corresponds to the constant term. In specifications (1) and (2), we show robust standard errors in specifications (3) to (6), standard errors are clustered at the country level. \end{tabnote} \end{minipage}  ") 
-*/			
 		
 **************
 * Robustness
@@ -2630,16 +2570,7 @@ foreach var in cpi gdp {
 
 	save $temp_data/consensus_mg, replace
 
-/*
-* Produce the tables
-	
-			drop if _n > 8
-			drop sample
 
-	texsave var cpi gdp cpi2 gdp2 using "$tables/consensus_main.tex", ///
-				title(Information Asymmetries - Consensus regressions) varlabels nofix hlines(0) headersep(0pt) autonumber ///
-			frag  size(footnotesize)  align( l C C C C) location(H) replace label(tab:consensus_main) footnote(		"\begin{minipage}{1\textwidth} \vspace{-10pt} \begin{tabnote} \textit{Notes:}  The table shows the results of a regression of the $\beta^{CG}$ coefficients on the Foreign dummy, where the $\beta^{CG}$ are estimated using equation \eqref{eq:consensus} on different sub-groups of our sample. \textit{Average locals} corresponds to the constant term (or average fixed effect). \textit{Foreign} corresponds to the coefficient of the Foreign dummy. The obervations are clustered at the country level. \end{tabnote} \end{minipage}  ") 
-*/		
 		
 **************
 * Robustness

@@ -760,29 +760,6 @@ drop _merge
 g year = year(date)
 
 
-******************************
-
-* add vintage data from the US that comes from FRED
-
-/*
-preserve
-
-use "$empRes/us_vintage.dta",clear
-
-g country = "United States"
-
-save us_vintage_ctry.dta, replace
-
-restore
-
-
-merge 1:1 date datem institution country using us_vintage_ctry.dta
-drop _merge
-*/
-
-
-
-
 
 ********************************************************************************
 * standard stuff
@@ -1141,11 +1118,6 @@ save "$datace_imf/DATA2_crisis_NewVintage.dta", replace
 
 
 
-/*
-Note for Elio: There is a lot of data management in this do-file. We start defining
-the location around line 377 with the title "Matching with the main dataset"
-*/
-
 
 ********************************************************************************
 ************************** Company Tree Structure ******************************
@@ -1256,18 +1228,6 @@ save "$eikonf/Trees.dta", replace
 ************************** Matching the Datasets *******************************
 
 // load the main datasets
-/*
-clear all
-use "/Users/eliob/Desktop/Data/Data to match/Trees/DATA2_crisis.dta"
-
-// some corrections regarding the institution names
-replace institution = "ALPHA FINANCE ROMANIA" if strmatch(institution, "ALPHA*") & country == "Romania" // modified
-replace institution = "ALPHA" if strmatch(institution, "ALPHA*") & country == "Argentina" // modified
-replace institution = "BANKBOSTON" if institution == "BANK OF BOSTON" & country == "Peru" // modified
-replace institution = "CAISSE DES DEPOTS" if strmatch(institution, "CAISSE DE DEPOT") & country == "France" // modified
-replace institution = "DANAREKSA SECURITIES" if strmatch(institution, "DANARESKSA SECURITIES") // modified
-This part is already added to Elio's do-file
-*/
 
 // making a list of counntries per institution
 // for subsidiaries
@@ -2734,10 +2694,8 @@ replace N_cty_by_year = 1 if N_cty_by_year2>=10
 
 
 * TRIM ERRORS
-*use dat.dta, clear
-drop if location==.
 
-*drop if year == 1995 & country == "United States"
+drop if location==.
 
 
 * TRIM ERRORS
@@ -2974,20 +2932,26 @@ save "$datace_imf/data_final_newVintage_2.dta", replace
 * MERGE GRAVITY DATABASE
 
 
-use "$gravity/gravity.dta", clear
+
+use "$datace_imf/data_final_newVintage_2.dta", clear
+
+collapse country_num, by(country)
+drop country_num
+
+save "$gravityf/list_countries_ce.dta", replace
+
+
+use "$gravity/Gravity.dta", clear
 
 rename country_o country
-
 rename country_d Headquarters
 
 replace country = "United States" if country == "United States of America"
-
 replace Headquarters = "United States" if Headquarters == "United States of America"
 
-merge m:1 country using "C:\Users\eliob\Dropbox\4Foreign vs local expectations\Data\Gravity Data\list_countries_ce.dta"
+merge m:1 country using "$gravityf/list_countries_ce.dta"
 
 drop if _merge == 1
-
 drop _merge
 
 save "$gravityf/gravity_to_merge.dta", replace
@@ -5675,11 +5639,9 @@ save "$output/extended_stacked.dta", replace
 
 
 
-
-
 ********************************************************************************
 ********************************************************************************
-* 				ROBUSTNESS CHECKS SUMMARY SECTION 4
+* 			ROBUSTNESS CHECKS SUMMARY SECTION 4 - DATABASE
 ********************************************************************************
 ********************************************************************************
 

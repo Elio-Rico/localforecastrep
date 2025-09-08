@@ -1797,10 +1797,6 @@ ce_prep_data_stata <- function(data, institution_info){
            local.2 = as.factor(local.2),
            current = as.factor(current)
     ) |>
-    #   mutate(
-    #     local = labelled(local, labels = c("Foreign" = 0, "Local" = 1)),
-    #     local.2 = labelled(local.2, labels = c("Local" = 1, "Multinational" = 2, "Foreign" = 3))
-    #   ) |>
     rename(year_forecast = year) |>
     mutate(headquarter = replace(headquarter, headquarter == "Argentina", "ARG"),
            headquarter = replace(headquarter, headquarter == "Japan", "JPN"),
@@ -1837,8 +1833,6 @@ ce_write_data <- function(data_input, indicator = "gdp") {
   # Remove columns from main data
   clean_data <- data_input[["df_stata"]] |>
      dplyr::rename(local_2 = local.2)
-  # # |>
-  #   dplyr::select(-local, -local.2, -source, -headquarter)
 
   clean_summary <- data_input[["df_stata_sum"]]
 
