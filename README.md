@@ -25,7 +25,7 @@ We used Stata version 18.0. We provide a full ado-directory (zipped) in the fold
 ```r
 sysdir set PLUS "$path/to/localforecastrep/stata/ado"
 ```
-
+Alternatively, we provide a do-file [stata/dependencies.do](stata/dependencies.do/) which installs all packages. However, same version number is not guaranteed with this approach which might lead to problems when running the code.
 
 ### 2. R-codes
 
