@@ -139,7 +139,7 @@ graph export "$figures//heterogeneity_by_year.pdf", as(pdf) replace
 local se cluster idi datem country_num
 local FE idi#Var#Hor#datem country_num#Var#Hor#datem
 reghdfe labs_FE_a1 c.Foreign#i.month, nocons absorb(`FE') vce(`se')
-coefplot, ylab(, labs(medlarge)) ci(90) xline(0) omitted baselevels
+coefplot, ylab(, labs(medlarge)) ci(90) xline(0) omitted baselevels 
 graph export "$figures//heterogeneity_by_month.pdf", as(pdf) replace
 
 bys idci month var hor: egen NN = count(labs_FE_a1)
@@ -150,8 +150,55 @@ reghdfe labs_FE_a1 c.Foreign#i.country_num#c.Emerging c.Foreign#i.country_num, n
 estimates store Advanced
 reghdfe labs_FE_a1 c.Foreign#i.country_num#c.Advanced c.Foreign#i.country_num, nocons absorb(`FE') vce(`se')
 estimates store Emerging
-coefplot Emerging Advanced, keep(*country_num#c.Foreign)  xline(0) sort plotlabels("Emerging" "Advanced") ylab(, nolabel) ci(90) baselevels
-graph export "$figures//heterogeneity_by_cty.pdf", as(pdf) replace
+*coefplot Emerging Advanced, keep(*country_num#c.Foreign)  xline(0) sort plotlabels("Emerging" "Advanced") ylab(, nolabel) ci(90) baselevels
+
+
+preserve
+	estimates restore Emerging
+	parmest, saving($temp_data/emerging_data, replace)
+	use $temp_data/emerging_data, clear
+	gen model = "Emerging"
+	save $temp_data/emerging_data, replace
+restore
+
+preserve
+	estimates restore Advanced
+	parmest, saving($temp_data/advanced_data, replace)
+	use $temp_data/advanced_data, clear
+	gen model = "Advanced"
+	save $temp_data/advanced_data, replace
+
+	* Append the two datasets to create a single file for plotting
+	use $temp_data/emerging_data, clear
+	append using $temp_data/advanced_data
+	
+	
+	drop if estimate == 0
+	drop if regexm(parm, "country_num#c.Foreign") & !regexm(parm, "Emerging|Advanced")
+	
+	* Sort the data for proper plotting order (Emerging first, then Advanced)
+	gsort -estimate
+	gen y_index = _n
+	
+	twoway ///
+		(rcap min95 max95 y_index if model == "Emerging" , horizontal lcolor("212 17 89") lwidth(medium) msize(0)) ///
+		(scatter  y_index estimate  if model == "Emerging" , mcolor("212 17 89") msize(vsmall)) ///
+		(rcap min95 max95 y_index if model == "Advanced" , horizontal lcolor("26 133 255") lwidth(medium) msize(0)) ///
+		(scatter  y_index estimate  if model == "Advanced" , mcolor("26 133 255") msize(vsmall)) , ///
+		xline(0, lpattern(dash) lwidth(thin)) ///
+		ylabel(0(1)51,  labsize(small) grid nolabels gstyle(dot)) ///
+		xtitle("") ///
+		ytitle("") ///
+		legend(order( 4 "Emerging" 2 "Advanced") position(3) row(2) cols(1)) ///
+		graphregion(fcolor(white) lcolor(white)) ///
+		plotregion(fcolor(white) lcolor(white)) xlabel(, grid gstyle(dot)) 
+			
+
+	graph export "$figures//heterogeneity_by_cty.pdf", as(pdf) replace
+	
+restore
+
+
 
 local se cluster idi datem country_num
 local FE country_num#Var#Hor#datem idi#Var#Hor#datem
@@ -159,16 +206,54 @@ reghdfe labs_FE_a1 c.Foreign#i.idi#c.Multinational c.Foreign#i.idi, nocons absor
 estimates store National
 reghdfe labs_FE_a1 c.Foreign#i.idi#c.National c.Foreign#i.idi, nocons absorb(`FE') vce(`se')
 estimates store Multinational
-coefplot Multinational National, keep(*idi#c.Foreign)  xline(0) sort plotlabels("Multinational" "National") ylab(, nolabel) ci(90) baselevels
-graph export "$figures//heterogeneity_by_for.pdf", as(pdf) replace
+*coefplot Multinational National, keep(*idi#c.Foreign)  xline(0) sort plotlabels("Multinational" "National") ylab(, nolabel) ci(90) baselevels
 
-*reghdfe labs_FE_a1, absorb(idi#datem#Var#Hor country_num, savefe) // saves with '__hdfe' prefix
+preserve
+	estimates restore National
+	parmest, saving($temp_data/National_data, replace)
+	use $temp_data/National_data, clear
+	gen model = "National"
+	save $temp_data/National_data, replace
+restore
 
-* role of size: not robust
-local se cluster idi datem country_num
-local FE idi#Var#Hor#datem datem#country_num#Var#Hor
-reghdfe labs_FE_a1 c.Foreign#c.small c.Foreign#c.large, absorb(`FE') vce(`se')
-coefplot, drop(_cons)	
+preserve
+	estimates restore Multinational
+	parmest, saving($temp_data/Multinational_data, replace)
+	use $temp_data/Multinational_data, clear
+	gen model = "Multinational"
+	save $temp_data/Multinational_data, replace
+
+	* Append the two datasets to create a single file for plotting
+	use $temp_data/National_data, clear
+	append using $temp_data/Multinational_data
+	
+	
+	drop if estimate == 0
+	drop if regexm(parm, "idi#c.Foreign") & !regexm(parm, "National|Multinational")
+	
+	* Sort the data for proper plotting order (Emerging first, then Advanced)
+	gsort -estimate
+	gen y_index = _n
+	
+twoway ///
+    (rcap min95 max95 y_index if model == "Multinational" , horizontal lcolor("212 17 89") lwidth(medium) msize(0)) ///
+    (scatter  y_index estimate  if model == "Multinational" , mcolor("212 17 89") msize(vsmall)) ///
+    (rcap min95 max95 y_index if model == "National" , horizontal lcolor("26 133 255") lwidth(medium) msize(0)) ///
+    (scatter  y_index estimate  if model == "National" , mcolor("26 133 255") msize(vsmall)) , ///
+    xline(0, lpattern(dash) lwidth(thin)) ///
+    ylabel(1(1)84,  labsize(small) grid nolabels gstyle(dot)) ///
+    xtitle("") ///
+    ytitle("") ///
+    legend(order( 4 "Multinational" 2 "National") position(3) row(2) cols(1)) ///
+    graphregion(fcolor(white) lcolor(white)) ///
+    plotregion(fcolor(white) lcolor(white)) xlabel(, grid gstyle(dot)) 
+		
+	graph export "$figures//heterogeneity_by_for.pdf", as(pdf) replace
+	
+restore
+
+
+
 
 * variable by variable
 
@@ -307,69 +392,6 @@ reghdfe labs_FE_a1 Foreign distw_lingdist_dominant lingdist_dominant, absorb(`FE
 regsave using "$temp_data/reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_10, asterisk(10 5 1) parentheses(stderr) format(%6.0g) )
 reghdfe labs_FE_a1 Foreign distw_trade_exports trade_exports, absorb(`FE') vce(`se')
 regsave using "$temp_data/reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_11, asterisk(10 5 1) parentheses(stderr) format(%6.0g) order(Foreign distw_distw distw_cultural_distance distw_lingdist_dominant distw_time_overlap distw_r2 distw_migration_2000 distw_trade_exports lingdist_dominant trade_exports trade c.Foreign#c.ka_o_dummy c.Foreign#c.WDI_institutions))
-
-
-/*
-local FE idi#Var#Hor#datem datem#country_num#Var#Hor
-local se cluster datem country_num idi
-ivreghdfe labs_FE_a1 Foreign (trade_exports = gatt rta_type1 rta_type2 rta_type4 rta_type5 rta_type6) distw_distw distw_cultural_distance distw_lingdist_dominant distw_beta, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_10, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-ivreghdfe labs_FE_a1 Foreign (trade_exports = gatt rta_type1 rta_type2 rta_type4 rta_type5 rta_type6) distw_distw distw_cultural_distance distw_lingdist_dominant distw_beta if Finance==1, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_11, asterisk(10 5 1) parentheses(stderr) format(%7.2f) order(Foreign distw_distw distw_cultural_distance distw_lingdist_dominant distw_time_overlap distw_beta distw_trade_exports lingdist_dominant trade_exports trade))
-*/
-
-/*
-reghdfe labs_FE_a1 Foreign, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", replace addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_1, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-reghdfe labs_FE_a1 Foreign distw_distw distw_cultural_distance distw_lingdist_dominant, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_2, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-reghdfe labs_FE_a1 Foreign distw_beta, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_3, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-reghdfe labs_FE_a1 Foreign distw_distw distw_cultural_distance distw_lingdist_dominant  distw_beta, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_4, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-reghdfe labs_FE_a1 Foreign c.Foreign#c.tariff, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_5, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-reghdfe labs_FE_a1 Foreign if Finance==1, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_6, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-reghdfe labs_FE_a1 Foreign c.Foreign#c.ka_o if Finance==1, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_7, asterisk(10 5 1) parentheses(stderr) format(%7.2f) order(Foreign distw_distw distw_cultural_distance distw_lingdist_dominant distw_time_overlap distw_beta c.Foreign#c.tariff c.Foreign#c.ka_o))
-reghdfe labs_FE_a1 Foreign c.Foreign#c.ka_o c.Foreign#c.WDI_inst if Finance==1, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_8, asterisk(10 5 1) parentheses(stderr) format(%7.2f) order(Foreign distw_distw distw_cultural_distance distw_lingdist_dominant distw_time_overlap distw_beta c.Foreign#c.tariff c.Foreign#c.ka_o c.Foreign#c.WDI_inst))
-*/
-
-/*
-reghdfe labs_FE_a1 Foreign, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", replace addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_1, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-reghdfe labs_FE_a1 Foreign distw_distw distw_cultural_distance distw_lingdist_dominant, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_4, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-reghdfe labs_FE_a1 Foreign distw_time_overlap, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_3, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-reghdfe labs_FE_a1 Foreign distw_corr_wdi_res, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_2, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-local se cluster datem id4 id3
-reghdfe labs_FE_a1 Foreign trade_exports, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_5, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-reghdfe labs_FE_a1 Foreign distw_lingdist_dominant distw_time_overlap distw_corr_wdi_res trade_exports, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "") table(col_6, asterisk(10 5 1) parentheses(stderr) format(%7.2f))
-ivreghdfe labs_FE_a1 (trade_exports = gatt rta_type1 rta_type2 rta_type4 rta_type5 rta_type6) Foreign distw_lingdist_dominant distw_time_overlap distw_corr_wdi_res, absorb(`FE') vce(`se')
-regsave using "reg_labs_gravity", append addlabel(FE1, "\checkmark", FE2, "\checkmark", FE3, "\checkmark") table(col_7, asterisk(10 5 1) parentheses(stderr) format(%7.2f) order(Foreign distw_distw distw_cultural_distance distw_lingdist_dominant distw_time_overlap distw_corr_wdi_res trade_exports))
-*/
-
-
-/*
-local FE idi#datem#Var#Hor country_num#datem#Var#Hor 
-local se cluster datem id4 id3
-reghdfe labs_FE_a1 c.Foreign##c.distw_time_overlap, absorb(`FE') vce(`se')
-reghdfe labs_FE_a1 c.Foreign##c.distw_lingdist_dominant, absorb(`FE') vce(`se')
-reghdfe labs_FE_a1 c.Foreign##c.distw_corr_wdi_res, absorb(`FE') vce(`se')
-reghdfe labs_FE_a1 c.Foreign##c.trade_exports, absorb(`FE') vce(`se')
-reghdfe labs_FE_a1 c.Foreign##c.(distw_time_overlap distw_corr_wdi_res distw_lingdist_dominant trade_exports), absorb(`FE') vce(`se')
-
-reghdfe labs_FE_a1 distw_time_overlap if Foreign==1, absorb(`FE') vce(`se')
-reghdfe labs_FE_a1 distw_lingdist_dominant if Foreign==1, absorb(`FE') vce(`se')
-reghdfe labs_FE_a1 distw_corr_wdi_res if Foreign==1, absorb(`FE') vce(`se')
-reghdfe labs_FE_a1 distw_time_overlap distw_corr_wdi_res distw_lingdist_dominant if Foreign==1, absorb(`FE') vce(`se')
-*/
 
 
 
