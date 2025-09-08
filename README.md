@@ -2,11 +2,11 @@
 This repository contains the replication files for the paper "Do Local Forecasters Have Better Information?" (Benhima & Bolliger, 2025)
 
 ## 1. Replication process
-Below, we provide an overview of the folders, the inputs required, and the scripts. It is in chronological order to re-create the dataset from scratch. Note that many input data is confidential and we used a placeholder instead, such that the code can run through.
+Below, we provide information about the dependencies, the codes, the data, and the manuscript.
 
 ### 1.1 Dependencies
 
-#### R
+#### 1.1.1 R
 
 To install the `localforecastrep` package from GitHub using devtools, you must first ensure you have the `devtools` package installed and loaded.
 
@@ -19,7 +19,7 @@ devtools::install_github("Elio-Rico/localforecastrep")
 renv::restore()
 ```
 
-#### Stata
+#### 1.1.2 Stata
 
 We used Stata version 18.0. We provide a full ado-directory (zipped) in the folder [stata/ado](stata/ado/). Users can un-zip these ado files, and add the following line to the do-files specifying the path.
 ```r
