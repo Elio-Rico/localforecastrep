@@ -206,7 +206,7 @@ reghdfe labs_FE_a1 c.Foreign#i.idi#c.Multinational c.Foreign#i.idi, nocons absor
 estimates store National
 reghdfe labs_FE_a1 c.Foreign#i.idi#c.National c.Foreign#i.idi, nocons absorb(`FE') vce(`se')
 estimates store Multinational
-*coefplot Multinational National, keep(*idi#c.Foreign)  xline(0) sort plotlabels("Multinational" "National") ylab(, nolabel) ci(90) baselevels
+
 
 preserve
 	estimates restore National
@@ -231,7 +231,7 @@ preserve
 	drop if estimate == 0
 	drop if regexm(parm, "idi#c.Foreign") & !regexm(parm, "National|Multinational")
 	
-	* Sort the data for proper plotting order (Emerging first, then Advanced)
+	
 	gsort -estimate
 	gen y_index = _n
 	
@@ -648,6 +648,79 @@ frag  size(footnotesize)  align(l C C C C m{0.005\textwidth} C C C C) location(H
 ***********************
 **** cross-section ****
 ***********************
+
+
+
+*** by country and month ***
+
+use $data/baseline.dta, clear
+
+
+local varlist gdp cpi
+		
+* Run individual regressions ans save results (b_: coeff., N_: number of observations)
+foreach var in `varlist' {
+	preserve
+	egen Nobs1 = count(FE_`var'_current_a1), by(country month Foreign)
+	egen Nobs2 = count(FR_`var'), by(country month Foreign)
+	drop if Nobs1<10 | Nobs2<10
+	gen country_num2 = .
+	gen Foreign2 = .
+	gen month2 = .
+	gen b_FR_`var' = .
+	gen N_FR_`var' = .
+	gen sd_FR_`var' = .
+	forval i = 1(1)51 {
+		forval k=1(1)12 {
+			capture reghdfe FE_`var'_current_a1 FR_`var' if country_num==`i' & month==`k' & Foreign==0, absorb(datem idi)
+			capture replace b_FR_`var' = _b[FR_`var']   if _n == `i'+102*(`k'-1)
+			capture replace sd_FR_`var' = _se[FR_`var'] if _n == `i'+102*(`k'-1)
+			capture replace N_FR_`var' = e(N)	        if _n == `i'+102*(`k'-1)
+			capture replace country_num2 = `i'		 	if _n == `i'+102*(`k'-1)
+			capture replace Foreign2 = 0		 		if _n == `i'+102*(`k'-1)
+			capture replace month2 = `k'		 		if _n == `i'+102*(`k'-1)
+			capture reghdfe FE_`var'_current_a1 FR_`var' if country_num==`i' & month==`k' & Foreign==1, absorb(datem idi)
+			capture replace b_FR_`var' = _b[FR_`var']   if _n == `i'+51+102*(`k'-1)
+			capture replace sd_FR_`var' = _se[FR_`var'] if _n == `i'+51+102*(`k'-1)
+			capture replace N_FR_`var' = e(N)	        if _n == `i'+51+102*(`k'-1)
+			capture replace country_num2 = `i'		 	if _n == `i'+51+102*(`k'-1)
+			capture replace Foreign2 = 1		 		if _n == `i'+51+102*(`k'-1)
+			capture replace month2 = `k'		 		if _n == `i'+51+102*(`k'-1)
+		}
+	}
+	keep b_FR_`var' N_FR_`var' sd_FR_`var' country_num2 Foreign2 month2
+	sort country_num2 Foreign2 month2
+	rename country_num2 country_num
+	rename Foreign2 Foreign
+	rename month2 month
+	keep if b_FR_`var' != .
+	save $temp_data/mg_FR_`var', replace
+	restore
+}
+
+* Put results in single dataset 
+local var1: word 1 of `varlist'
+
+foreach var in `varlist' {
+		if "`var'" ==  "`var1'" {
+			use "$temp_data/mg_FR_`var'.dta", clear
+		}
+		else {
+			merge 1:1 country_num Foreign month using "$temp_data/mg_FR_`var'.dta", nogen
+		}
+	}
+save $temp_data/mg_FR, replace
+
+* Results
+
+use $data/baseline.dta, clear
+
+keep country country_num Emerging Foreign month
+sort country_num Foreign month
+collapse Emerging , by(country country_num Foreign month)
+merge 1:1 country_num Foreign month using $temp_data/mg_FR, nogen
+save $temp_data/mg_FE_reg_cty_month, replace
+
 
 **** FE regressions ****
 

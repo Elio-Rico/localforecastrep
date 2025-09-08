@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.10.22)  8 SEP 2025 13:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.10.22)  8 SEP 2025 14:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -941,18 +941,18 @@ Underfull \hbox (badness 10000) in alignment at lines 274--274
  []
 
 [21] [22]
-<../output/figures/hq_sub_obs.pdf, id=298, 289.08pt x 289.08pt>
+<../output/figures/hq_sub_obs.pdf, id=298, 289.08pt x 325.215pt>
 File: ../output/figures/hq_sub_obs.pdf Graphic file (type pdf)
 <use ../output/figures/hq_sub_obs.pdf>
 Package pdftex.def Info: ../output/figures/hq_sub_obs.pdf  used on input line 2
 94.
-(pdftex.def)             Requested size: 187.89914pt x 187.89977pt.
-<../output/figures/hq_sub_pairs.pdf, id=299, 289.08pt x 289.08pt>
+(pdftex.def)             Requested size: 187.89914pt x 211.38724pt.
+<../output/figures/hq_sub_pairs.pdf, id=299, 289.08pt x 325.215pt>
 File: ../output/figures/hq_sub_pairs.pdf Graphic file (type pdf)
 <use ../output/figures/hq_sub_pairs.pdf>
 Package pdftex.def Info: ../output/figures/hq_sub_pairs.pdf  used on input line
  295.
-(pdftex.def)             Requested size: 187.89914pt x 187.89977pt.
+(pdftex.def)             Requested size: 187.89914pt x 211.38724pt.
 <../output/figures/hq_sub_obs_by_cty.pdf, id=300, 397.485pt x 289.08pt>
 File: ../output/figures/hq_sub_obs_by_cty.pdf Graphic file (type pdf)
 <use ../output/figures/hq_sub_obs_by_cty.pdf>
@@ -960,31 +960,31 @@ Package pdftex.def Info: ../output/figures/hq_sub_obs_by_cty.pdf  used on input
  line 306.
 (pdftex.def)             Requested size: 422.77664pt x 307.48196pt.
  [23 <../output/figures/hq_sub_obs.pdf> <../output/figures/hq_sub_pairs.pdf>]
-<../output/figures/loc_for_inst.pdf, id=319, 289.08pt x 289.08pt>
+<../output/figures/loc_for_inst.pdf, id=319, 289.08pt x 325.215pt>
 File: ../output/figures/loc_for_inst.pdf Graphic file (type pdf)
 <use ../output/figures/loc_for_inst.pdf>
 Package pdftex.def Info: ../output/figures/loc_for_inst.pdf  used on input line
  317.
-(pdftex.def)             Requested size: 187.89914pt x 187.89977pt.
-<../output/figures/loc_for_obs.pdf, id=320, 289.08pt x 289.08pt>
+(pdftex.def)             Requested size: 187.89914pt x 211.38724pt.
+<../output/figures/loc_for_obs.pdf, id=320, 289.08pt x 325.215pt>
 File: ../output/figures/loc_for_obs.pdf Graphic file (type pdf)
 <use ../output/figures/loc_for_obs.pdf>
 Package pdftex.def Info: ../output/figures/loc_for_obs.pdf  used on input line 
 318.
-(pdftex.def)             Requested size: 187.89914pt x 187.89977pt.
+(pdftex.def)             Requested size: 187.89914pt x 211.38724pt.
  [24 <../output/figures/hq_sub_obs_by_cty.pdf>]
-<../output/figures/hist_mult.pdf, id=333, 397.485pt x 289.08pt>
+<../output/figures/hist_mult.pdf, id=333, 542.025pt x 325.215pt>
 File: ../output/figures/hist_mult.pdf Graphic file (type pdf)
 <use ../output/figures/hist_mult.pdf>
 Package pdftex.def Info: ../output/figures/hist_mult.pdf  used on input line 33
 0.
-(pdftex.def)             Requested size: 187.89914pt x 136.65718pt.
-<../output/figures/hist_nat.pdf, id=334, 397.485pt x 289.08pt>
+(pdftex.def)             Requested size: 187.89914pt x 112.74019pt.
+<../output/figures/hist_nat.pdf, id=334, 542.025pt x 325.215pt>
 File: ../output/figures/hist_nat.pdf Graphic file (type pdf)
 <use ../output/figures/hist_nat.pdf>
 Package pdftex.def Info: ../output/figures/hist_nat.pdf  used on input line 331
 .
-(pdftex.def)             Requested size: 187.89914pt x 136.65718pt.
+(pdftex.def)             Requested size: 187.89914pt x 112.74019pt.
  [25 <../output/figures/loc_for_inst.pdf> <../output/figures/loc_for_obs.pdf> <
 ../output/figures/hist_mult.pdf> <../output/figures/hist_nat.pdf>]
 <../output/figures/cpi_current_FE_density.pdf, id=365, 397.485pt x 289.08pt>
@@ -1041,18 +1041,18 @@ gures/gdp_future_FE_density.pdf>]
 [27 <../output/figures/cpi_current_N_density.pdf> <../output/figures/gdp_curren
 t_N_density.pdf> <../output/figures/cpi_current_N_density2.pdf> <../output/figu
 res/gdp_current_N_density2.pdf>]
-<../output/figures/dist_beta_cpi_cty.pdf, id=447, 397.485pt x 289.08pt>
+<../output/figures/dist_beta_cpi_cty.pdf, id=447, 542.025pt x 325.215pt>
 File: ../output/figures/dist_beta_cpi_cty.pdf Graphic file (type pdf)
 <use ../output/figures/dist_beta_cpi_cty.pdf>
 Package pdftex.def Info: ../output/figures/dist_beta_cpi_cty.pdf  used on input
  line 452.
-(pdftex.def)             Requested size: 225.4804pt x 163.98773pt.
-<../output/figures/dist_beta_gdp_cty.pdf, id=448, 397.485pt x 289.08pt>
+(pdftex.def)             Requested size: 225.4804pt x 135.28922pt.
+<../output/figures/dist_beta_gdp_cty.pdf, id=448, 542.025pt x 325.215pt>
 File: ../output/figures/dist_beta_gdp_cty.pdf Graphic file (type pdf)
 <use ../output/figures/dist_beta_gdp_cty.pdf>
 Package pdftex.def Info: ../output/figures/dist_beta_gdp_cty.pdf  used on input
  line 459.
-(pdftex.def)             Requested size: 225.4804pt x 163.98773pt.
+(pdftex.def)             Requested size: 225.4804pt x 135.28922pt.
  [28 <../output/figures/dist_beta_cpi_cty.pdf> <../output/figures/dist_beta_gdp
 _cty.pdf>]
 <../output/figures/heterogeneity_by_month.pdf, id=466, 542.025pt x 325.215pt>
@@ -1145,7 +1145,7 @@ Package rerunfilecheck Info: File `Appendix.out' has not changed.
 Here is how much of TeX's memory you used:
  16965 strings out of 478994
  267125 string characters out of 5858183
- 711007 words of memory out of 5000000
+ 711004 words of memory out of 5000000
  33893 multiletter control sequences out of 15000+600000
  419137 words of font info for 84 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1232,7 +1232,7 @@ type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2021/texmf-dist/fo
 nts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2021/texmf-dis
 t/fonts/type1/public/cm-super/sfrm0700.pfb></usr/local/texlive/2021/texmf-dist/
 fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on Appendix.pdf (43 pages, 1673076 bytes).
+Output written on Appendix.pdf (43 pages, 1622781 bytes).
 PDF statistics:
  745 PDF objects out of 1000 (max. 8388607)
  581 compressed objects within 6 object streams
