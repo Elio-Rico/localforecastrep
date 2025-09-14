@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.10.22)  8 SEP 2025 10:00
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.10.22)  14 SEP 2025 15:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1132,7 +1132,11 @@ t the in-for-ma-tion struc-ture is coun-try, month, and forecaster-
 
 ]) (./Sections/precision.tex [22] [23] [24] [25] [26] [27])
 (./Sections/geography.tex [28] (../output/tables/error_reg_labs_mult.tex)
-[29] [30] [31] (../output/tables/error_reg_labs_gravity.tex) [32] [33] [34]
+[29] [30] [31] [32] (../output/tables/error_reg_labs_gravity.tex) [33
+
+] [34
+
+]
 [35]) (./Sections/heterogeneity.tex [36] [37]
 (../output/tables/error_reg_labs_cs.tex
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
@@ -1147,13 +1151,13 @@ Package rerunfilecheck Info: File `Paper.out' has not changed.
 (rerunfilecheck)             Checksum: 584382DF33DDA9462DFC76FB64299FC3;4303.
  ) 
 Here is how much of TeX's memory you used:
- 19721 strings out of 478994
- 296052 string characters out of 5858183
- 812608 words of memory out of 5000000
- 36506 multiletter control sequences out of 15000+600000
+ 19720 strings out of 478994
+ 296047 string characters out of 5858183
+ 808616 words of memory out of 5000000
+ 36505 multiletter control sequences out of 15000+600000
  550079 words of font info for 217 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 102i,16n,117p,2305b,1609s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 102i,15n,117p,2305b,1609s stack positions out of 5000i,500n,10000p,200000b,80000s
 pdfTeX warning (dest): name{table.caption.27} has been referenced but does no
 t exist, replaced by a fixed one
 
@@ -1194,6 +1198,9 @@ pdfTeX warning (dest): name{table.caption.21} has been referenced but does not
 exist, replaced by a fixed one
 
 pdfTeX warning (dest): name{table.caption.18} has been referenced but does not 
+exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{table.caption.17} has been referenced but does not 
 exist, replaced by a fixed one
 
 pdfTeX warning (dest): name{table.caption.20} has been referenced but does not 
@@ -1256,7 +1263,7 @@ fb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/newtx/txsys.pfb></usr
 xlive/2021/texmf-dist/fonts/type1/public/newtx/ztmbi.pfb></usr/local/texlive/20
 21/texmf-dist/fonts/type1/public/newtx/ztmr.pfb></usr/local/texlive/2021/texmf-
 dist/fonts/type1/public/newtx/ztmri.pfb>
-Output written on Paper.pdf (46 pages, 398867 bytes).
+Output written on Paper.pdf (46 pages, 398995 bytes).
 PDF statistics:
  827 PDF objects out of 1000 (max. 8388607)
  742 compressed objects within 8 object streams
